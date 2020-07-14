@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
+import com.example.zutr.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +28,10 @@ import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
+    public static final String TUTOR_PATH = "zutr";
+    public static final String STUDENT_PATH = "student";
+
+
     private Button btnSignUp;
     private EditText etuser_name;
     private EditText etfirst_name;
@@ -35,6 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText etaddress;
     private EditText etemail;
 
+    private User user;
 
     FirebaseFirestore database;
 
@@ -61,14 +67,17 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                registerUser();
+                registerUser(false);
             }
         });
 
 
     }
 
-    private void registerUser() {
+    private void registerUser(boolean tutor) {
+
+        final String path = (tutor ? TUTOR_PATH : STUDENT_PATH);
+
         final String username = etuser_name.getText().toString().trim();
         final String first_name = etfirst_name.getText().toString().trim();
         final String last_name = etlast_name.getText().toString().trim();
@@ -127,14 +136,14 @@ public class SignUpActivity extends AppCompatActivity {
 
                         if (task.isSuccessful()) {
 
-                            Student user = new Student(
+                            user = new User(
                                     username,
                                     first_name,
                                     last_name,
                                     email,
                                     address
                             );
-                            createNewStudent(user);
+                            createNewStudent(user, path);
                         }
 
                     }
@@ -144,18 +153,19 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public void createNewStudent(Student student) {
+    public void createNewStudent(User user, String path) {
 
-        DocumentReference mDocref = database.collection("student").document();
+        //TODO Make this less boilerplate code
+        DocumentReference mDocref = database.collection(path).document();
 
 
         Map<String, Object> dataToSave = new HashMap<String, Object>();
 
-        dataToSave.put(Student.KEY_USERNAME, student.getUsername());
-        dataToSave.put(Student.KEY_FIRSTNAME, student.getFirst_name());
-        dataToSave.put(Student.KEY_LASTNAME, student.getLast_name());
-        dataToSave.put(Student.KEY_EMAIL, student.getEmail());
-        dataToSave.put(Student.KEY_ADDRESS, student.getAddress());
+        dataToSave.put(Student.KEY_USERNAME, user.getUsername());
+        dataToSave.put(Student.KEY_FIRSTNAME, user.getFirst_name());
+        dataToSave.put(Student.KEY_LASTNAME, user.getLast_name());
+        dataToSave.put(Student.KEY_EMAIL, user.getEmail());
+        dataToSave.put(Student.KEY_ADDRESS, user.getAddress());
 
         Log.i("button", "onClick: ");
         mDocref.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {

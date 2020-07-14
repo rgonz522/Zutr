@@ -1,44 +1,53 @@
 package com.example.zutr.models;
 
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 public class Session {
 
-    private String student_id;
-    private String tutor_id;
+    public static final String QUESTION_TIME = "000";
+
+    private String student_username;
+    private String tutor_username;
     private String time_ended;
     private String time_started;
     private Double wage;
     private String subject;     //future implementation
 
 
-
-
-    public Session(){
+    public Session() {
 
     }
 
-    public Session(String student_id, String tutor_id, String time_ended, String time_started, Double wage) {
-        this.student_id = student_id;
-        this.tutor_id = tutor_id;
+    public Session(String student_username, String tutor_username, String time_ended, String time_started, Double wage) {
+        this.student_username = student_username;
+        this.tutor_username = tutor_username;
         this.time_ended = time_ended;
         this.time_started = time_started;
         this.wage = wage;
     }
 
-
-    public String getStudent_id() {
-        return student_id;
+    public Session(String student_username, String tutor_username, Double wage) {
+        this.student_username = student_username;
+        this.tutor_username = tutor_username;
+        this.time_ended = QUESTION_TIME;
+        this.time_started = QUESTION_TIME;
+        this.wage = wage;
     }
 
-    public void setStudent_id(String student_id) {
-        this.student_id = student_id;
+    public String getStudent_username() {
+        return student_username;
     }
 
-    public String getTutor_id() {
-        return tutor_id;
+    public void setStudent_username(String student_username) {
+        this.student_username = student_username;
     }
 
-    public void setTutor_id(String tutor_id) {
-        this.tutor_id = tutor_id;
+    public String getTutor_username() {
+        return tutor_username;
+    }
+
+    public void setTutor_username(String tutor_username) {
+        this.tutor_username = tutor_username;
     }
 
     public String getTime_ended() {

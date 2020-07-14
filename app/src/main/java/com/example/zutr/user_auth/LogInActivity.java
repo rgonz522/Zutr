@@ -25,7 +25,7 @@ public class LogInActivity extends AppCompatActivity {
     private EditText et_email;
     private EditText et_password;
     private Button btn_login;
-    private Button btn_signout;
+    private Button btn_signup;
 
     private FirebaseAuth mAuth;
 
@@ -35,8 +35,10 @@ public class LogInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_log_in);
 
 
+
         //using Firebase's email and pw auth.
         mAuth = FirebaseAuth.getInstance();
+
 
         Log.i(TAG, "onCreate: Logged in:" + mAuth.getCurrentUser());
         if (mAuth.getCurrentUser() != null) {
@@ -45,7 +47,7 @@ public class LogInActivity extends AppCompatActivity {
         et_email = findViewById(R.id.etEmail);
         et_password = findViewById(R.id.etPassword);
         btn_login = findViewById(R.id.btnLogin);
-
+        btn_signup = findViewById(R.id.btnSignUp);
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +58,15 @@ public class LogInActivity extends AppCompatActivity {
                 String password = et_password.getText().toString();
 
                 authorizingUser(email, password);
+
+            }
+        });
+
+        btn_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -72,7 +83,7 @@ public class LogInActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            finish();
+                            startMainActivity();
 
                         } else {
                             // If sign in fails, display a message to the user.
