@@ -2,17 +2,25 @@ package com.example.zutr;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.zutr.fragments.GetZutrFragment;
+import com.example.zutr.fragments.HistoryFragment;
+import com.example.zutr.fragments.HomeFragment;
+import com.example.zutr.fragments.ProfileFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,15 +39,14 @@ import com.example.zutr.user_auth.*;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
-    FirebaseAnalytics analytics;
+
+
+    private BottomNavigationView bottomNavigationView;
+
     Button button;
     Button button2;
     EditText textView;
-    List<Student> students;
-    int count = 0;
-
-    String name;
-    DocumentReference mDocref = FirebaseFirestore.getInstance().document("student/5kf7FCWkyOFB3LPilN0Z");
+    FragmentManager fragmentManager;
 
 
     FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -52,9 +59,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        students = new ArrayList<>();
+
         button = findViewById(R.id.button);
         textView = findViewById(R.id.tvName);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+
+        fragmentManager = getSupportFragmentManager();
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -66,6 +77,38 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                final Fragment fragment;
+                switch (menuItem.getItemId()) {
+                    case R.id.action_profile:
+
+                        fragment = new ProfileFragment();
+                        break;
+                    case R.id.action_compose:
+
+                        fragment = new GetZutrFragment();
+                        break;
+                    case R.id.action_home:
+
+                        fragment = new HomeFragment();
+                        break;
+                    case R.id.action_history:
+
+                        fragment = new HistoryFragment();
+                        break;
+                    default:
+                        fragment = null;
+                }
+
+                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                return true;
+            }
+        });
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
 
 
     }
@@ -102,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void fetchQuote(View view) {
+   /* public void fetchQuote(View view) {
 
         database.collection("student").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -146,6 +189,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    }
+    }*/
 
     }

@@ -2,6 +2,7 @@ package com.example.zutr.user_auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,6 +25,7 @@ public class LogInActivity extends AppCompatActivity {
     private EditText et_email;
     private EditText et_password;
     private Button btn_login;
+    private Button btn_signout;
 
     private FirebaseAuth mAuth;
 
@@ -35,7 +38,10 @@ public class LogInActivity extends AppCompatActivity {
         //using Firebase's email and pw auth.
         mAuth = FirebaseAuth.getInstance();
 
-
+        Log.i(TAG, "onCreate: Logged in:" + mAuth.getCurrentUser());
+        if (mAuth.getCurrentUser() != null) {
+            startMainActivity();
+        }
         et_email = findViewById(R.id.etEmail);
         et_password = findViewById(R.id.etPassword);
         btn_login = findViewById(R.id.btnLogin);
@@ -52,6 +58,7 @@ public class LogInActivity extends AppCompatActivity {
                 authorizingUser(email, password);
             }
         });
+
 
     }
 
@@ -78,6 +85,11 @@ public class LogInActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

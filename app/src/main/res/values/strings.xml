@@ -10,4 +10,6 @@
     <string name="registration_success">Successfully Signed Up</string>
     <string name="input_error_username">Username is empty</string>
     <string name="input_error_sign_up">An account with that email already exists</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
