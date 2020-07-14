@@ -3,38 +3,37 @@ package com.example.zutr;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import models.Student;
-import models.Tutor;
+import com.example.zutr.models.Student;
+
+import com.example.zutr.user_auth.*;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
     FirebaseAnalytics analytics;
     Button button;
+    Button button2;
     EditText textView;
     List<Student> students;
     int count = 0;
@@ -44,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+    private FirebaseAuth mAuth;
 
 
     @Override
@@ -55,18 +56,17 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.button);
         textView = findViewById(R.id.tvName);
 
-        analytics = FirebaseAnalytics.getInstance(this);
-
-
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fetchQuote(view);
+                Intent intent = new Intent(MainActivity.this, LogInActivity.class);
+                startActivity(intent);
 
 
             }
         });
+
 
     }
 

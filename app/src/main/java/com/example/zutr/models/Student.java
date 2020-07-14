@@ -1,4 +1,4 @@
-package models;
+package com.example.zutr.models;
 
 public class Student {
 

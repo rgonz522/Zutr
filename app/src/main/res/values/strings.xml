@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Zutr</string>
+    <string name="input_error_email_invalid">Invalid Email</string>
+    <string name="input_error_password">Password Error</string>
+    <string name="input_error_password_length">Password is too short</string>
+    <string name="input_error_lastname">Lastname is not filled out</string>
+    <string name="input_error_firstname_invalid">Firstname is not filled out</string>
+    <string name="input_error_name">First Name is not filled out</string>
+    <string name="input_error_email">Email is invalid</string>
+    <string name="registration_success">Successfully Signed Up</string>
+    <string name="input_error_username">Username is empty</string>
+    <string name="input_error_sign_up">An account with that email already exists</string>
 </resources>
