@@ -2,13 +2,17 @@ package com.example.zutr.models;
 
 public abstract class User {
 
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_FIRSTNAME = "first_name";
+    public static final String KEY_LASTNAME = "last_name";
+    public static final String KEY_EMAIL = "email";
+    public static final String KEY_ADDRESS = "address";
 
     private String username;
     private String first_name;
     private String last_name;
     private String email;
     private String address;
-    private String PATH;
 
 
     public User() {
@@ -65,8 +69,6 @@ public abstract class User {
     public void setAddress(String address) {
         this.address = address;
     }
-
-    public abstract String getPath();
 
 
 }

@@ -161,19 +161,20 @@ public class GetZutrSessionFragment extends Fragment {
 
     }
 
-    private void saveSession(String currentUser, Double price, String question, int type_of_session) {
+    private void saveSession(String currentUser, Double price, final String question, int type_of_session) {
 
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
 
-        Session session = new Session(currentUser, null, price, question, type_of_session);
+        Session session = new Session(currentUser, price, question, type_of_session);
 
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.i(TAG, "onSuccess: " + task.getResult());
+                        Log.i(TAG, "onComplete: session details" + question);
                         startMainActivity();
 
                     }

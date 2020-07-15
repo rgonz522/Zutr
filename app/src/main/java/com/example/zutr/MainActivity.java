@@ -6,25 +6,25 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+
 import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.zutr.fragments.GetZutrFragment;
 import com.example.zutr.fragments.HistoryFragment;
 import com.example.zutr.fragments.HomeFragment;
+import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
+import com.example.zutr.models.Student;
+import com.example.zutr.models.Tutor;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-
-
-import com.example.zutr.models.Student;
 
 
 
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
+    public static boolean IS_TUTOR;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         DataBase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         CurrentUser = mAuth.getCurrentUser();
+        isTutor();
 
     }
 
@@ -72,11 +74,14 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.action_profile:
 
-                        fragment = new ProfileFragment();
+                        fragment = new ProfileFragment(true);
                         break;
                     case R.id.action_compose:
 
                         fragment = new GetZutrFragment();
+
+                        Log.i(TAG, "onNavigationItemSelected: " + IS_TUTOR);
+
                         break;
                     case R.id.action_home:
 
@@ -99,82 +104,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public boolean isTutor() {
 
-    public void writeData(){
-
-
-        Student tutor = new Student("rgonz522", "rebeca", "gonzalez",
-                "ganahil@yahoo.com", "8430 SW  107th Ave");
-
-
-        Log.i("button", "onClick: ");
-
-        DataBase.collection("student").document().set(tutor);
-
-    }
-
-    public void getStudents(){
-        // [START get_all_users]
-        DataBase.collection("zutr")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.get("username"));
-                            }
-                        } else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
-                        }
-                    }
-                });
-    }
-
-   /* public void fetchQuote(View view) {
-
-        database.collection("student").get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documentSnapshot: task.getResult()) {
-                                Student student =
-                                        new Student((String) documentSnapshot.get(Student.KEY_USERNAME)
-                                                ,(String) documentSnapshot.get(Student.KEY_FIRSTNAME)
-                                                ,(String) documentSnapshot.get(Student.KEY_LASTNAME)
-                                                ,(String) documentSnapshot.get(Student.KEY_EMAIL)
-                                                ,(String) documentSnapshot.get(Student.KEY_ADDRESS));
-
-
-                                Log.i(TAG, "onComplete: " + student.getFirst_name());
-                                Log.i(TAG, "onComplete: " + student);
-                                students.add(student);
-                                Log.i(TAG, "onComplete: " +  students.get(count++).getAddress());
-                            }
-                        }
-                        else {
-                            Log.w(TAG, "Error getting documents.", task.getException());
-                        }
-
-
-
-
-                        Log.i(TAG, "onClick: amt of students" + students.size());
-                        for(Student student : students){
-                            Log.i(TAG, "onClick: Student : " + student.getFirst_name());
-                        }
-                    }
-
-
-
-
-
+        DataBase.collection(Tutor.PATH).document(CurrentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                IS_TUTOR = true;
+            }
         });
-
-
-
-
-    }*/
+        return IS_TUTOR;
+    }
 
     }

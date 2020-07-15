@@ -142,7 +142,7 @@ public class GetZutrQuestionFragment extends Fragment {
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
-        Session session = new Session(currentUser, null, price, null, question);
+        Session session = new Session(currentUser, price, null, question);
 
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -2,7 +2,6 @@ package com.example.zutr.fragments;
 
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,11 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionsAdapter;
 import com.example.zutr.models.Session;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,9 +28,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
 
-    public static final String TAG = "HomeFragment";
+public class OpenSessionsFragment extends Fragment {
+
+
+    public static final String TAG = "OpenSessionsFragment";
+
 
     private RecyclerView rvSessions;
     private SessionsAdapter adapter;
@@ -41,12 +43,12 @@ public class HomeFragment extends Fragment {
     private FirebaseUser current_user;
 
 
-    public HomeFragment() {
+    public OpenSessionsFragment() {
         // Required empty public constructor
     }
 
-    public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
+    public static OpenSessionsFragment newInstance() {
+        OpenSessionsFragment fragment = new OpenSessionsFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -54,29 +56,23 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-
-            }
-        };
-        getActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        return inflater.inflate(R.layout.fragment_open_sessions, container, false);
     }
 
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
         current_user = FirebaseAuth.getInstance().getCurrentUser();
         dataBase = FirebaseFirestore.getInstance();
         sessions = new ArrayList<>();
@@ -91,16 +87,14 @@ public class HomeFragment extends Fragment {
         querySessions();
     }
 
-
     protected void querySessions() {
 
-        String session_user_id = MainActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
-
-        Log.i(TAG, "querySessions: session user id : " + session_user_id);
+        //Open Sessions are those without tutor's aka where
+        //tutor id is null
 
         final List<Session> newSessions = new ArrayList<>();
 
-        dataBase.collection(Session.PATH).whereEqualTo(session_user_id, current_user.getUid()).get()
+        dataBase.collection(Session.PATH).whereEqualTo(Session.KEY_TUTOR_UID, null).whereEqualTo(Session.KEY_TUTOR_UID, null).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -120,11 +114,13 @@ public class HomeFragment extends Fragment {
                                     newSessions.add(session);
                                 }
                             }
+                        } else {
+                            Log.i(TAG, "onComplete: querying task failed" + task.getResult() + task.getException());
                         }
                         sessions.addAll(newSessions);
                         adapter.notifyDataSetChanged();
                     }
-        });
+                });
 
     }
 }

@@ -49,6 +49,9 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        final boolean tutor = getIntent().getBooleanExtra("Tutor", false);
+
+
         btnSignUp = findViewById(R.id.btnSignUp);
         etuser_name = findViewById(R.id.etEmail);
         etfirst_name = findViewById(R.id.etFirstName);
@@ -64,7 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                registerUser(false);
+                registerUser(tutor);
             }
         });
 
@@ -136,7 +139,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
 
                             Log.i(TAG, "onComplete: created autho successfully");
-                            createNewUser(new Student(username, first_name, last_name, email, address), SignUpActivity.STUDENT_PATH);
+                            createNewUser(new Student(username, first_name, last_name, email, address), path, task.getResult().getUser().getUid());
                             startLoginActivity();
 
 
@@ -153,9 +156,9 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public void createNewUser(User user, String path) {
+    public void createNewUser(User user, String path, String docID) {
 
-        database.collection(path).document().set(user)
+        database.collection(path).document(docID).set(user)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -167,7 +170,6 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     }
-
 
     public void startLoginActivity() {
 

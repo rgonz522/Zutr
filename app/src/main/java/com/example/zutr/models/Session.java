@@ -3,13 +3,13 @@ package com.example.zutr.models;
 public class Session {
 
     public static final String QUESTION_TIME = "000";
+    public static final String NO_TUTOR_YET = "404";
 
     public static final String KEY_SUBJECT = "subject";
     public static final String KEY_QUESTION = "question";
-    public static final String KEY_TIMEEND = "time_ended";
-    public static final String KEY_TIMESTART = "time_ended";
-    public static final String KEY_TUTOREMAIL = "tutor_email";
-    public static final String KEY_STUDENT_EMAIL = "student_email";
+
+    public static final String KEY_TUTOR_UID = "tutor_id";
+    public static final String KEY_STUDENT_UID = "student_id";
     public static final String KEY_WAGE = "wage";
 
     public static final String PATH = "session";
@@ -21,8 +21,8 @@ public class Session {
 
 
     private String question;
-    private String student_email;
-    private String tutor_email;
+    private String student_id;
+    private String tutor_id;
     private String time_ended;
     private String time_started;
     private Double wage;
@@ -36,9 +36,9 @@ public class Session {
 
     }
 
-    public Session(String student_email, String tutor_email, Double wage, String subject, int sessiontype) {
-        this.student_email = student_email;
-        this.tutor_email = tutor_email;
+    public Session(String student_id, Double wage, String subject, int sessiontype) {
+        this.student_id = student_id;
+        this.tutor_id = NO_TUTOR_YET;
         this.time_ended = time_ended;
         this.time_started = time_started;
         this.wage = wage;
@@ -46,30 +46,33 @@ public class Session {
         this.session_type = sessiontype;
     }
 
-    public Session(String student_email, String tutor_email, Double wage, String subject, String question) {
-        this.student_email = student_email;
-        this.tutor_email = tutor_email;
-        this.time_ended = QUESTION_TIME;
-        this.time_started = QUESTION_TIME;
+    public Session(String student_id, Double wage, String subject, String question) {
+        this.student_id = student_id;
         this.wage = wage;
         this.subject = subject;
         this.question = question;
+
+
+        this.tutor_id = NO_TUTOR_YET;
+        this.time_ended = QUESTION_TIME;
+        this.time_started = QUESTION_TIME;
+
     }
 
-    public String getStudent_email() {
-        return student_email;
+    public String getStudent_id() {
+        return student_id;
     }
 
-    public void setStudent_email(String student_username) {
-        this.student_email = student_username;
+    public void setStudent_id(String student_username) {
+        this.student_id = student_username;
     }
 
-    public String getTutor_email() {
-        return tutor_email;
+    public String getTutor_id() {
+        return tutor_id;
     }
 
-    public void setTutor_email(String tutor_email) {
-        this.tutor_email = tutor_email;
+    public void setTutor_id(String tutor_id) {
+        this.tutor_id = tutor_id;
     }
 
     public String getTime_ended() {
@@ -124,6 +127,6 @@ public class Session {
     }
 
     public boolean isSessionQuestion() {
-        return (time_started.equals(QUESTION_TIME));
+        return (hasSessionStarted() && time_started.equals(QUESTION_TIME));
     }
 }

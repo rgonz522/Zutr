@@ -3,6 +3,7 @@ package com.example.zutr.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,19 +19,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.zutr.MainActivity;
+
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
+import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
-import com.example.zutr.user_auth.SignUpActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 public class ProfileFragment extends Fragment {
@@ -44,15 +44,23 @@ public class ProfileFragment extends Fragment {
     private TextView tvSubjects;
     private Button btnSignut;
 
+    private boolean tutor;
+
 
     private FirebaseFirestore database;
     private FirebaseStorage storage;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
 
-    public ProfileFragment() {
+    public ProfileFragment(boolean tutor) {
+
+        this.tutor = tutor;
     }
 
+
+    public ProfileFragment() {
+
+    }
 
     public static ProfileFragment newInstance() {
         ProfileFragment fragment = new ProfileFragment();
@@ -61,11 +69,6 @@ public class ProfileFragment extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,6 +82,10 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+        final String path = (tutor ? Tutor.PATH : Student.PATH);
+
+        Log.i(TAG, "onViewCreated: " + path);
         database = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -91,23 +98,24 @@ public class ProfileFragment extends Fragment {
         tvUsername = view.findViewById(R.id.tvUsername);
         btnSignut = view.findViewById(R.id.btnSignOut);
 
-        database.collection(Student.PATH).whereEqualTo(Student.KEY_EMAIL, user.getEmail()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        database.collection(path).document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                 if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
 
-                        Log.i(TAG, "onComplete: " + documentSnapshot.get(Student.KEY_FIRSTNAME));
-                        tvUsername.setText(String.format("@%s", documentSnapshot.get(Student.KEY_USERNAME)));
+                    Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_FIRSTNAME));
+                    tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
+                    Log.i(TAG, "onComplete: " + tvUsername.getText().toString());
 
-                        tvFullName.setText(String.format("%s  %s", documentSnapshot.get(Student.KEY_FIRSTNAME), documentSnapshot.get(Student.KEY_LASTNAME)));
-                    }
-
+                    tvFullName.setText(String.format("%s  %s", documentSnapshot.get(User.KEY_FIRSTNAME), documentSnapshot.get(User.KEY_LASTNAME)));
                 }
 
             }
         });
+
 
         //Load ivProfilePic with user's image uri
 

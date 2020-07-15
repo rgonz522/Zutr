@@ -39,7 +39,9 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
     public void onBindViewHolder(@NonNull SessionsAdapter.ViewHolder holder, int position) {
         Session session = sessions.get(position);
 
+
         holder.bind(session);
+
     }
 
     @Override
@@ -74,15 +76,15 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         public void bind(Session session) {
 
-            if (session.getQuestion() != null) {
+
                 tvQuestion.setText(Session.KEY_QUESTION + ": " + session.getQuestion());
 
-                if (session.getTutor_email() == null || session.getTutor_email().isEmpty()) {
-                    tvTutor.setText(NO_TUTOR);
-                } else {
-                    //TODO better tutor information
-                    tvTutor.setText(String.format("@%s", session.getTutor_email()));
-                }
+            if (session.getTutor_id() == null || session.getTutor_id().isEmpty()) {
+                tvTutor.setText(NO_TUTOR);
+            } else {
+                //TODO better tutor information
+                tvTutor.setText(String.format("@%s", session.getTutor_id()));
+            }
 
                 tvSubject.setText(Session.KEY_SUBJECT + ": " + session.getSubject());
 
@@ -92,10 +94,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                     tvDate.setText(session.getTime_started());
                 }
 
-            } else {
-                //TODO FIX empty question, item view visibility
-                itemView.setVisibility(View.GONE);
-            }
 
         }
 

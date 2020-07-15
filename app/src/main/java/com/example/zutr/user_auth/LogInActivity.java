@@ -27,6 +27,8 @@ public class LogInActivity extends AppCompatActivity {
     private EditText et_password;
     private Button btn_login;
     private Button btn_signup;
+    private Button btn_sign_zutr;
+
 
     private FirebaseAuth mAuth;
 
@@ -34,7 +36,7 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //Back button will go to main activity
+        //Back button will not go to main activity
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -57,18 +59,22 @@ public class LogInActivity extends AppCompatActivity {
 
         Log.i(TAG, "onCreate: Logged in:" + mAuth.getCurrentUser());
         if (mAuth.getCurrentUser() != null) {
+
             startMainActivity();
+
         }
         et_email = findViewById(R.id.etEmail);
         et_password = findViewById(R.id.etPassword);
         btn_login = findViewById(R.id.btnLogin);
         btn_signup = findViewById(R.id.btnSignUp);
+        btn_sign_zutr = findViewById(R.id.btnZutrSignUp);
+
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                //TODO do a better filtering of user input
+                //TODO do a better filtering of user input with UI
                 String email = et_email.getText().toString();
                 String password = et_password.getText().toString();
 
@@ -77,6 +83,14 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
 
+        btn_sign_zutr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
+                intent.putExtra("Tutor", true);
+                startActivity(intent);
+            }
+        });
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,7 +98,6 @@ public class LogInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
     }
 
@@ -114,8 +127,11 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     private void startMainActivity() {
+        finish();
         Intent intent = new Intent(this, MainActivity.class);
+
         startActivity(intent);
+
     }
 
 }

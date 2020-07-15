@@ -85,16 +85,4 @@ public class GetZutrFragment extends Fragment {
 
     }
 
-
-    public void createSession(String tutorUsername) {
-
-
-        Session session = new Session("abc123", tutorUsername, 8.56, "Science", "whats a ketamine");
-
-
-        Log.i("button", "onClick: ");
-
-        FirebaseFirestore.getInstance().collection("session").document().set(session);
-
-    }
 }
