@@ -5,9 +5,9 @@ Original App Design Project - README Template
 
 ## Table of Contents
 1. [Overview](#Overview)
-1. [Product Spec](#Product-Spec)
-1. [Wireframes](#Wireframes)
-2. [Schema](#Schema)
+2. [Product Spec](#Product-Spec)
+3. [Wireframes](#Wireframes)
+4. [Schema](#Schema)
 
 ## Overview
 ### Description
@@ -113,7 +113,20 @@ A direct link between a student's questions to an answer. Students can publish q
 
 
 
-![](https://i.imgur.com/AIgDLNt.png)
+![](https://raw.githubusercontent.com/rgonz522/Zutr/master/New%20Folder%20With%20Items/Android%20-%201.png)
+
+![](https://github.com/rgonz522/Zutr/blob/master/New%20Folder%20With%20Items/Android%20-%202.png)
+
+
+![](https://github.com/rgonz522/Zutr/blob/master/New%20Folder%20With%20Items/Android%20-%208.png)
+
+![](https://github.com/rgonz522/Zutr/blob/master/New%20Folder%20With%20Items/Android%20-%206.png)
+
+![](https://github.com/rgonz522/Zutr/blob/master/New%20Folder%20With%20Items/Android%20-%207.png)
+
+![](https://github.com/rgonz522/Zutr/blob/master/New%20Folder%20With%20Items/Android%20-%205.png)
+
+
 
 
 ### [BONUS] Digital Wireframes & Mockups
