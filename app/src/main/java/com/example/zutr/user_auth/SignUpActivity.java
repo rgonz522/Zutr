@@ -3,33 +3,30 @@ package com.example.zutr.user_auth;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
     public static final String TUTOR_PATH = "zutr";
     public static final String STUDENT_PATH = "student";
+    private static final String TAG = "SignUpActivity";
 
 
     private Button btnSignUp;
@@ -131,20 +128,23 @@ public class SignUpActivity extends AppCompatActivity {
 
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
 
                         if (task.isSuccessful()) {
 
-                            user = new User(
-                                    username,
-                                    first_name,
-                                    last_name,
-                                    email,
-                                    address
-                            );
-                            createNewStudent(user, path);
+                            Log.i(TAG, "onComplete: created autho successfully");
+                            createNewUser(new Student(username, first_name, last_name, email, address), SignUpActivity.STUDENT_PATH);
+                            startLoginActivity();
+
+
+                        } else {
+                            Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG);
+                            Log.e(TAG, "onComplete: task failed ", task.getException());
                         }
+
 
                     }
                 });
@@ -153,37 +153,26 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-    public void createNewStudent(User user, String path) {
+    public void createNewUser(User user, String path) {
 
-        //TODO Make this less boilerplate code
-        DocumentReference mDocref = database.collection(path).document();
-
-
-        Map<String, Object> dataToSave = new HashMap<String, Object>();
-
-        dataToSave.put(Student.KEY_USERNAME, user.getUsername());
-        dataToSave.put(Student.KEY_FIRSTNAME, user.getFirst_name());
-        dataToSave.put(Student.KEY_LASTNAME, user.getLast_name());
-        dataToSave.put(Student.KEY_EMAIL, user.getEmail());
-        dataToSave.put(Student.KEY_ADDRESS, user.getAddress());
-
-        Log.i("button", "onClick: ");
-        mDocref.set(dataToSave).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-
-                Log.i("SignUpActivty", "onSuccess: ");
-                finish();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+        database.collection(path).document().set(user)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
 
 
-                Log.e("SignUpActivity", "onFailure: ", e);
-            }
-        });
+                        Log.i(TAG, "onSuccess: " + task.getResult());
+                    }
+                });
 
+
+    }
+
+
+    public void startLoginActivity() {
+
+        Intent intent = new Intent(this, LogInActivity.class);
+        startActivity(intent);
 
     }
 }

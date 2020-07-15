@@ -13,8 +13,8 @@
 
         <ImageView
             android:id="@+id/ivProfilePicture"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="50dp"
             app:srcCompat="@drawable/common_google_signin_btn_icon_light"
@@ -25,13 +25,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:textColor="#000000"
+            android:textSize="18sp"
             tools:text="First Last" />
 
         <TextView
             android:id="@+id/tvUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:textColor="#170A0A"
+            tools:text="username" />
 
         <TextView
             android:id="@+id/tvSubjects"
@@ -39,5 +43,13 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             tools:text="Math, Science, COT 3100, Environmental Science" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btnSignOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Out" />
+
 </FrameLayout>

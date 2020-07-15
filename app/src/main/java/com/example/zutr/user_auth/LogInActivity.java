@@ -1,5 +1,6 @@
 package com.example.zutr.user_auth;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -29,11 +30,25 @@ public class LogInActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //Back button will go to main activity
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
-
 
 
         //using Firebase's email and pw auth.

@@ -20,7 +20,7 @@
             android:textSize="24sp" />
 
         <Spinner
-            android:id="@+id/spinner2"
+            android:id="@+id/spnTypeSession"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -33,26 +33,50 @@
             android:textSize="24sp" />
 
         <Spinner
-            android:id="@+id/spinner"
+            android:id="@+id/spnSubject"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How can we help?"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/etQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="be as descriptive as possible"
+            android:inputType="textMultiLine"
+            tools:text="be as descriptive as possible " />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             android:text="Set Hourly Price"
-            android:textSize="24sp"
-            android:layout_margin="5dp" />
+            android:textSize="24sp" />
 
         <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/sbPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp" />
 
+        <EditText
+            android:id="@+id/etHourlyPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal" />
+
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btnSubmitSession"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Submit Session Request" />

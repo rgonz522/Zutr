@@ -19,6 +19,7 @@ import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class GetZutrFragment extends Fragment {
@@ -93,7 +94,7 @@ public class GetZutrFragment extends Fragment {
 
         Log.i("button", "onClick: ");
 
-        MainActivity.DataBase.collection("session").document().set(session);
+        FirebaseFirestore.getInstance().collection("session").document().set(session);
 
     }
 }

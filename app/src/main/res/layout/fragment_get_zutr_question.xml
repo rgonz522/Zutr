@@ -10,6 +10,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="86dp" />
+
         <TextView
             android:id="@+id/textView4"
             android:layout_width="match_parent"
@@ -36,6 +40,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:gravity="start|top"
+            android:hint="be as descriptive as possible"
             android:inputType="textMultiLine"
             tools:text="be as descriptive as possible " />
 
@@ -44,20 +49,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Set Hourly Price"
+            android:text="Set Price"
             android:textSize="24sp" />
 
         <SeekBar
-            android:id="@+id/seekBar"
+            android:id="@+id/sbWage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp" />
 
-        <Button
-            android:id="@+id/button"
+        <EditText
+            android:id="@+id/tvWage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit Session Request" />
+            android:gravity="center"
+            android:inputType="numberDecimal"
+            android:textSize="18sp"
+            tools:text="8.56$" />
+
+        <Space
+            android:layout_width="421dp"
+            android:layout_height="194dp" />
+
+        <Button
+            android:id="@+id/btnSmtQues"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit Question Request" />
     </LinearLayout>
 
 </FrameLayout>

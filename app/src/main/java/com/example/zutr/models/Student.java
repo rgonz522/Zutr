@@ -17,4 +17,10 @@ public class Student extends User {
     public Student(String username, String first_name, String last_name, String email, String address) {
         super(username, first_name, last_name, email, address);
     }
+
+    @Override
+    public String getPath() {
+        return PATH;
+    }
+
 }

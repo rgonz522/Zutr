@@ -5,14 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.zutr.fragments.GetZutrFragment;
 import com.example.zutr.fragments.HistoryFragment;
@@ -21,20 +16,17 @@ import com.example.zutr.fragments.ProfileFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.example.zutr.models.Student;
 
-import com.example.zutr.user_auth.*;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,11 +38,10 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
 
 
-    public static FirebaseUser CurrentUser;
+    private FirebaseUser CurrentUser;
 
     private FirebaseAuth mAuth;
-
-    public static FirebaseFirestore DataBase;
+    private FirebaseFirestore DataBase;
 
     public MainActivity() {
         DataBase = FirebaseFirestore.getInstance();

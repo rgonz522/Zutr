@@ -184,7 +184,7 @@ public class ChangeProfilePicFragment extends Fragment {
                 .setPhotoUri(uri)
                 .build();
 
-        MainActivity.CurrentUser.updateProfile(request)
+       FirebaseAuth.getInstance().getCurrentUser().updateProfile(request)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

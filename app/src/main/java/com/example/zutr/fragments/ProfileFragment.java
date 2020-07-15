@@ -1,5 +1,6 @@
 package com.example.zutr.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +22,7 @@ import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.User;
+import com.example.zutr.user_auth.LogInActivity;
 import com.example.zutr.user_auth.SignUpActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,11 +42,13 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private TextView tvFullName;
     private TextView tvSubjects;
+    private Button btnSignut;
 
 
     private FirebaseFirestore database;
     private FirebaseStorage storage;
     private FirebaseUser user;
+    private FirebaseAuth mAuth;
 
     public ProfileFragment() {
     }
@@ -76,15 +81,17 @@ public class ProfileFragment extends Fragment {
 
         database = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
-        user = MainActivity.CurrentUser;
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
 
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvFullName = view.findViewById(R.id.tvFullName);
         tvSubjects = view.findViewById(R.id.tvSubjects);
         tvUsername = view.findViewById(R.id.tvUsername);
+        btnSignut = view.findViewById(R.id.btnSignOut);
 
-
-        database.collection(Student.PATH).whereEqualTo(Student.KEY_EMAIL, MainActivity.CurrentUser.getEmail()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        database.collection(Student.PATH).whereEqualTo(Student.KEY_EMAIL, user.getEmail()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
@@ -103,9 +110,9 @@ public class ProfileFragment extends Fragment {
         });
 
         //Load ivProfilePic with user's image uri
-        String photo_url = user.getPhotoUrl().toString();
-        if (photo_url != null) {
-            Glide.with(getContext()).load(photo_url).into(ivProfilePic);
+
+        if (user.getPhotoUrl() != null) {
+            Glide.with(getContext()).load(user.getPhotoUrl()).into(ivProfilePic);
         }
 
 
@@ -117,6 +124,15 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        btnSignut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mAuth.signOut();
+                Intent intent = new Intent(getContext(), LogInActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
     }
 

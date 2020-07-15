@@ -1,6 +1,6 @@
 package com.example.zutr.models;
 
-public class User {
+public abstract class User {
 
 
     private String username;
@@ -66,7 +66,7 @@ public class User {
         this.address = address;
     }
 
-    public String getPATH() {
-        return PATH;
-    }
+    public abstract String getPath();
+
+
 }

@@ -15,6 +15,9 @@ import java.util.List;
 
 public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHolder> {
 
+
+    public static final String NO_TUTOR = "Not answered yet";
+
     private Context context;
     private List<Session> sessions;
 
@@ -71,11 +74,28 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         public void bind(Session session) {
 
-            tvTutor.setText(String.format("@%s", session.getTutor_username()));
-            tvSubject.setText(session.getSubject());
-            tvDate.setText(session.getTime_started());
-            tvQuestion.setText(session.getQuestion());
+            if (session.getQuestion() != null) {
+                tvQuestion.setText(Session.KEY_QUESTION + ": " + session.getQuestion());
 
+                if (session.getTutor_email() == null || session.getTutor_email().isEmpty()) {
+                    tvTutor.setText(NO_TUTOR);
+                } else {
+                    //TODO better tutor information
+                    tvTutor.setText(String.format("@%s", session.getTutor_email()));
+                }
+
+                tvSubject.setText(Session.KEY_SUBJECT + ": " + session.getSubject());
+
+                if (session.isSessionQuestion()) {
+                    tvDate.setVisibility(View.GONE);
+                } else {
+                    tvDate.setText(session.getTime_started());
+                }
+
+            } else {
+                //TODO FIX empty question, item view visibility
+                itemView.setVisibility(View.GONE);
+            }
 
         }
 
