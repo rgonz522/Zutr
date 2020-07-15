@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
@@ -25,6 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 public class ProfileFragment extends Fragment {
 
@@ -38,7 +42,8 @@ public class ProfileFragment extends Fragment {
 
 
     private FirebaseFirestore database;
-
+    private FirebaseStorage storage;
+    private FirebaseUser user;
 
     public ProfileFragment() {
     }
@@ -70,7 +75,8 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         database = FirebaseFirestore.getInstance();
-
+        storage = FirebaseStorage.getInstance();
+        user = MainActivity.CurrentUser;
 
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvFullName = view.findViewById(R.id.tvFullName);
@@ -89,8 +95,6 @@ public class ProfileFragment extends Fragment {
                         tvUsername.setText(String.format("@%s", documentSnapshot.get(Student.KEY_USERNAME)));
 
                         tvFullName.setText(String.format("%s  %s", documentSnapshot.get(Student.KEY_FIRSTNAME), documentSnapshot.get(Student.KEY_LASTNAME)));
-
-
                     }
 
                 }
@@ -98,8 +102,31 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        //Load ivProfilePic with user's image uri
+        String photo_url = user.getPhotoUrl().toString();
+        if (photo_url != null) {
+            Glide.with(getContext()).load(photo_url).into(ivProfilePic);
+        }
+
+
+        //Set the picture to be clickable to the edit fragment
+        ivProfilePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startUserProfileFragment();
+            }
+        });
+
 
     }
 
+    public void startUserProfileFragment() {
 
+        ChangeProfilePicFragment changeUserPicFragment = new ChangeProfilePicFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.flContainer, changeUserPicFragment);
+        fragmentTransaction.commit();
+
+    }
 }

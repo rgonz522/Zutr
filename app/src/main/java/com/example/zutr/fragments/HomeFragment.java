@@ -26,7 +26,7 @@ public class HomeFragment extends Fragment {
     private List<Session> sessions;
 
 
-    //TODO  implement recycler view using sessions adapter 
+    //TODO  implement recycler view using sessions adapter
     public HomeFragment() {
         // Required empty public constructor
     }
