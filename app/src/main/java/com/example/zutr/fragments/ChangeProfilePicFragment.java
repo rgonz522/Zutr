@@ -25,10 +25,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
+import com.example.zutr.models.Student;
+import com.example.zutr.models.Tutor;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -179,6 +183,7 @@ public class ChangeProfilePicFragment extends Fragment {
     //update firebaseuser profile img based off Uri
     private void setUserProfileUrl(Uri uri) {
 
+        final String collectionPath = MainActivity.IS_TUTOR ? Tutor.PATH : Student.PATH;
 
         UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
                 .setPhotoUri(uri)
@@ -189,6 +194,11 @@ public class ChangeProfilePicFragment extends Fragment {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Toast.makeText(getContext(), "Updated succesfully", Toast.LENGTH_SHORT).show();
+
+                        FirebaseFirestore database = FirebaseFirestore.getInstance();
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        database.collection(collectionPath).document(user.getUid()).update("profileUrl", user.getPhotoUrl().toString());
                         startUserProfileFragment();
                     }
                 })

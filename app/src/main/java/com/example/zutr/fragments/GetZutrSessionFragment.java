@@ -125,9 +125,7 @@ public class GetZutrSessionFragment extends Fragment {
                     case TEXT:
                         typesession = Session.SESSION_TEXT;
                         break;
-                    case IN_PERSON:
-                        typesession = Session.SESSION_INPERSON;
-                        break;
+
                 }
                 if (price != null && !question.isEmpty() && !user_id.isEmpty() && typesession != 0) {
                     saveSession(user_id, price, question, typesession);
@@ -173,8 +171,6 @@ public class GetZutrSessionFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.i(TAG, "onSuccess: " + task.getResult());
-                        Log.i(TAG, "onComplete: session details" + question);
                         startMainActivity();
 
                     }

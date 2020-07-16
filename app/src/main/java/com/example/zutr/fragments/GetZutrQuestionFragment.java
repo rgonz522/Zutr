@@ -97,7 +97,7 @@ public class GetZutrQuestionFragment extends Fragment {
             public void onClick(View view) {
                 Double price = getPrice(etPrice.getText().toString());
                 String question = etQuestion.getText().toString();
-                String user_email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                String user_email = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
                 if (price != null && !question.isEmpty() && !user_email.isEmpty()) {
@@ -149,7 +149,6 @@ public class GetZutrQuestionFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        Log.i(TAG, "onSuccess: " + task.getResult());
                         startMainActivity();
                     }
                 });

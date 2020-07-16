@@ -1,12 +1,15 @@
 package com.example.zutr.models;
 
-public class Session {
+import java.io.Serializable;
+
+public class Session implements Serializable {
 
     public static final String QUESTION_TIME = "000";
     public static final String NO_TUTOR_YET = "404";
 
     public static final String KEY_SUBJECT = "subject";
     public static final String KEY_QUESTION = "question";
+    public static final String KEY_ANSWER = "answer";
 
     public static final String KEY_TUTOR_UID = "tutor_id";
     public static final String KEY_STUDENT_UID = "student_id";
@@ -14,19 +17,20 @@ public class Session {
 
     public static final String PATH = "session";
 
-    public static final int SESSION_INPERSON = 103456;
+
     public static final int SESSION_VIDEO = 100023;
     public static final int SESSION_CALL = 102345;
     public static final int SESSION_TEXT = 102875;
 
 
     private String question;
-    private String student_id;
-    private String tutor_id;
-    private String time_ended;
-    private String time_started;
+    private String answer;
+    private String studentId;
+    private String tutorId;
+    private String timeEnded;
+    private String timeStart;
     private Double wage;
-    private int session_type;
+    private int sessionType;
 
 
     private String subject; //future implementation
@@ -36,60 +40,68 @@ public class Session {
 
     }
 
-    public Session(String student_id, Double wage, String subject, int sessiontype) {
-        this.student_id = student_id;
-        this.wage = wage;
-        this.subject = subject;
-        this.session_type = sessiontype;
-
-        this.tutor_id = NO_TUTOR_YET;
-        this.time_ended = QUESTION_TIME;
-        this.time_started = QUESTION_TIME;
+    public int getSessionType() {
+        return sessionType;
     }
 
-    public Session(String student_id, Double wage, String subject, String question) {
-        this.student_id = student_id;
+    public void setSessionType(int sessionType) {
+        this.sessionType = sessionType;
+    }
+
+    public Session(String studentId, Double wage, String question, int sessiontype) {
+        this.studentId = studentId;
+        this.wage = wage;
+        this.question = question;
+        this.sessionType = sessiontype;
+
+        this.tutorId = NO_TUTOR_YET;
+        this.timeEnded = QUESTION_TIME;
+        this.timeStart = QUESTION_TIME;
+    }
+
+    public Session(String studentId, Double wage, String subject, String question) {
+        this.studentId = studentId;
         this.wage = wage;
         this.subject = subject;
         this.question = question;
 
 
-        this.tutor_id = NO_TUTOR_YET;
-        this.time_ended = QUESTION_TIME;
-        this.time_started = QUESTION_TIME;
+        this.tutorId = NO_TUTOR_YET;
+        this.timeEnded = QUESTION_TIME;
+        this.timeStart = QUESTION_TIME;
 
     }
 
-    public String getStudent_id() {
-        return student_id;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setStudent_id(String student_username) {
-        this.student_id = student_username;
+    public void setStudentId(String student_username) {
+        this.studentId = student_username;
     }
 
-    public String getTutor_id() {
-        return tutor_id;
+    public String getTutorId() {
+        return tutorId;
     }
 
-    public void setTutor_id(String tutor_id) {
-        this.tutor_id = tutor_id;
+    public void setTutorId(String tutorId) {
+        this.tutorId = tutorId;
     }
 
-    public String getTime_ended() {
-        return time_ended;
+    public String getTimeEnded() {
+        return timeEnded;
     }
 
-    public void setTime_ended(String time_ended) {
-        this.time_ended = time_ended;
+    public void setTimeEnded(String timeEnded) {
+        this.timeEnded = timeEnded;
     }
 
-    public String getTime_started() {
-        return time_started;
+    public String getTimeStart() {
+        return timeStart;
     }
 
-    public void setTime_started(String time_started) {
-        this.time_started = time_started;
+    public void setTimeStart(String timeStart) {
+        this.timeStart = timeStart;
     }
 
     public Double getWage() {
@@ -124,10 +136,23 @@ public class Session {
     }
 
     public boolean hasSessionStarted() {
-        return (time_started != null && !time_started.isEmpty());
+        return (timeStart != null && !timeStart.isEmpty());
     }
 
     public boolean isSessionQuestion() {
-        return (hasSessionStarted() && time_started.equals(QUESTION_TIME));
+        return (hasSessionStarted() && timeStart.equals(QUESTION_TIME));
     }
+
+    public boolean isFinished() {
+        return answer != null;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
 }

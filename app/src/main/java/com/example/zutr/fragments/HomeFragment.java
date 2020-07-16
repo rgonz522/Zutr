@@ -112,22 +112,23 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
+                                String subject = "subject";     //TODO Subject Implementation
 
                                 String question = document.getString(Session.KEY_QUESTION);
+                                Double wage = document.getDouble(Session.KEY_WAGE);
 
-                                if (question != null) {
-                                    Log.d(TAG, "Document data\t" + document.getId() + " => " + document.getData());
-
-
-                                    String subject = "subject";     //TODO Subject Implementation
-                                    Double wage = document.getDouble(Session.KEY_WAGE);
+                                String answer = document.getString(Session.KEY_ANSWER);
 
 
-                                    Log.i(TAG, "onComplete: new session : " + question + subject + wage);
-                                    Session session = new Session(currentUser.getUid(), wage, subject, question);
+                                Session session = new Session(null, wage, subject, question);
 
-                                    newSessions.add(session);
-                                }
+
+                                session.setStudentId(document.getString(Session.KEY_STUDENT_UID));
+                                session.setTutorId(document.getString(Session.KEY_TUTOR_UID));
+                                session.setAnswer(answer);
+
+                                Log.i(TAG, "onComplete: " + document.getString(Session.KEY_TUTOR_UID));
+                                newSessions.add(session);
 
                             }
 

@@ -27,7 +27,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
-
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
@@ -64,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
 
-
-
-
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -79,10 +75,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_compose:
 
                         fragment = IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
-
-                        Log.i(TAG, "onNavigationItemSelected: " + IS_TUTOR);
-                        Log.i(TAG, "onNavigationItemSelected: " + fragment.getClass());
-
                         break;
                     case R.id.action_home:
 
@@ -125,4 +117,4 @@ public class MainActivity extends AppCompatActivity {
         return IS_TUTOR;
     }
 
-    }
+}
