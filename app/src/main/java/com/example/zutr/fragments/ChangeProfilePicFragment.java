@@ -27,6 +27,7 @@ import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
+import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -183,7 +184,7 @@ public class ChangeProfilePicFragment extends Fragment {
     //update firebaseuser profile img based off Uri
     private void setUserProfileUrl(Uri uri) {
 
-        final String collectionPath = MainActivity.IS_TUTOR ? Tutor.PATH : Student.PATH;
+        final String collectionPath = LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH;
 
         UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
                 .setPhotoUri(uri)

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.zutr.models.Session;
+import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,7 +62,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: " + session.getQuestion());
 
 
-        if (MainActivity.IS_TUTOR) {
+        if (LogInActivity.IS_TUTOR) {
 
             btnZutrStart.setVisibility(View.VISIBLE);
             btnZutrStart.setOnClickListener(new View.OnClickListener() {
@@ -78,13 +79,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void updateSessionTutor(String student_id, String question, final String answer) {
+    private void updateSessionTutor(String studentId, String question, final String answer) {
 
         final FirebaseFirestore dataBase = FirebaseFirestore.getInstance();
 
 
         dataBase.collection(Session.PATH)
-                .whereEqualTo(Session.KEY_STUDENT_UID, student_id)
+                .whereEqualTo(Session.KEY_STUDENT_UID, studentId)
                 .whereEqualTo(Session.KEY_QUESTION, question).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

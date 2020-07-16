@@ -23,7 +23,7 @@ import com.example.zutr.models.Session;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GetZutrQuestionFragment extends Fragment {
@@ -97,11 +97,11 @@ public class GetZutrQuestionFragment extends Fragment {
             public void onClick(View view) {
                 Double price = getPrice(etPrice.getText().toString());
                 String question = etQuestion.getText().toString();
-                String user_email = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                String userEmail = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
-                if (price != null && !question.isEmpty() && !user_email.isEmpty()) {
-                    saveSession(user_email, price, question);
+                if (price != null && !question.isEmpty() && !userEmail.isEmpty()) {
+                    saveSession(userEmail, price, question);
 
                     //TODO: Insert Payment/Charging Method.
 

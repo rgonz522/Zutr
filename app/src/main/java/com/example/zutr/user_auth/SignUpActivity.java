@@ -30,12 +30,12 @@ public class SignUpActivity extends AppCompatActivity {
 
 
     private Button btnSignUp;
-    private EditText etuser_name;
-    private EditText etfirst_name;
-    private EditText etlast_name;
-    private EditText etpassword;
-    private EditText etaddress;
-    private EditText etemail;
+    private EditText etUserName;
+    private EditText etFirstName;
+    private EditText etLastName;
+    private EditText etPassword;
+    private EditText etAddress;
+    private EditText etEmail;
 
     private User user;
 
@@ -53,12 +53,12 @@ public class SignUpActivity extends AppCompatActivity {
 
 
         btnSignUp = findViewById(R.id.btnSignUp);
-        etuser_name = findViewById(R.id.etEmail);
-        etfirst_name = findViewById(R.id.etFirstName);
-        etlast_name = findViewById(R.id.etLastName);
-        etpassword = findViewById(R.id.etPassword);
-        etaddress = findViewById(R.id.etAddress);
-        etemail = findViewById(R.id.etEmail);
+        etUserName = findViewById(R.id.etEmail);
+        etFirstName = findViewById(R.id.etFirstName);
+        etLastName = findViewById(R.id.etLastName);
+        etPassword = findViewById(R.id.etPassword);
+        etAddress = findViewById(R.id.etAddress);
+        etEmail = findViewById(R.id.etEmail);
 
 
         mAuth = FirebaseAuth.getInstance();
@@ -78,53 +78,53 @@ public class SignUpActivity extends AppCompatActivity {
 
         final String path = (tutor ? TUTOR_PATH : STUDENT_PATH);
 
-        final String username = etuser_name.getText().toString().trim();
-        final String first_name = etfirst_name.getText().toString().trim();
-        final String last_name = etlast_name.getText().toString().trim();
-        final String email = etemail.getText().toString().trim();
-        final String address = etaddress.getText().toString().trim() + "";
-        final String password = etpassword.getText().toString().trim();
+        final String username = etUserName.getText().toString().trim();
+        final String first_name = etFirstName.getText().toString().trim();
+        final String last_name = etLastName.getText().toString().trim();
+        final String email = etEmail.getText().toString().trim();
+        final String address = etAddress.getText().toString().trim() + "";
+        final String password = etPassword.getText().toString().trim();
 
 
         if (username.isEmpty()) {
-            etuser_name.setError(getString(R.string.input_error_username));
-            etuser_name.requestFocus();
+            etUserName.setError(getString(R.string.input_error_username));
+            etUserName.requestFocus();
             return;
         }
 
         if (first_name.isEmpty()) {
-            etfirst_name.setError(getString(R.string.input_error_name));
-            etfirst_name.requestFocus();
+            etFirstName.setError(getString(R.string.input_error_name));
+            etFirstName.requestFocus();
             return;
         }
 
         if (email.isEmpty()) {
-            etemail.setError(getString(R.string.input_error_email));
-            etemail.requestFocus();
+            etEmail.setError(getString(R.string.input_error_email));
+            etEmail.requestFocus();
             return;
         }
 
         //if email is acceptable format ie: abc@email.com
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etemail.setError(getString(R.string.input_error_email_invalid));
-            etemail.requestFocus();
+            etEmail.setError(getString(R.string.input_error_email_invalid));
+            etEmail.requestFocus();
             return;
         }
         if (password.isEmpty()) {
-            etpassword.setError(getString(R.string.input_error_password));
-            etpassword.requestFocus();
+            etPassword.setError(getString(R.string.input_error_password));
+            etPassword.requestFocus();
             return;
         }
 
         if (password.length() < 6) {
-            etpassword.setError(getString(R.string.input_error_password_length));
-            etpassword.requestFocus();
+            etPassword.setError(getString(R.string.input_error_password_length));
+            etPassword.requestFocus();
             return;
         }
 
         if (last_name.isEmpty()) {
-            etlast_name.setError(getString(R.string.input_error_lastname));
-            etlast_name.requestFocus();
+            etLastName.setError(getString(R.string.input_error_lastname));
+            etLastName.requestFocus();
             return;
         }
 

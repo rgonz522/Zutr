@@ -78,7 +78,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        final String path = (MainActivity.IS_TUTOR ? Tutor.PATH : Student.PATH);
+        final String path = (LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH);
 
         Log.i(TAG, "onViewCreated: " + path);
         database = FirebaseFirestore.getInstance();
@@ -101,13 +101,7 @@ public class ProfileFragment extends Fragment {
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
 
-                    Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_FIRSTNAME));
-                    Log.i(TAG, "onComplete: " + documentSnapshot.getId());
-                    Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_EMAIL));
-                    Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_USERNAME));
                     tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
-                    Log.i(TAG, "onComplete: " + tvUsername.getText().toString());
-
                     tvFullName.setText(String.format("%s  %s", documentSnapshot.get(User.KEY_FIRSTNAME), documentSnapshot.get(User.KEY_LASTNAME)));
                 }
 

@@ -13,11 +13,16 @@ import android.widget.Toast;
 
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
+import com.example.zutr.models.Tutor;
+import com.example.zutr.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -31,8 +36,16 @@ public class LogInActivity extends AppCompatActivity {
 
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore database;
 
 
+    public static boolean IS_TUTOR;
+
+    private boolean tutorChecked;
+
+
+    //overriding the back button so the signed out user
+    // cannot go back to Main while Assync Firebase Loads
     @Override
     protected void onStart() {
         super.onStart();
@@ -40,7 +53,6 @@ public class LogInActivity extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-
             }
         };
         this.getOnBackPressedDispatcher().addCallback(this, callback);
@@ -55,11 +67,14 @@ public class LogInActivity extends AppCompatActivity {
 
         //using Firebase's email and pw auth.
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseFirestore.getInstance();
 
-
-        Log.i(TAG, "onCreate: Logged in:" + mAuth.getCurrentUser());
         if (mAuth.getCurrentUser() != null) {
 
+            isTutor();
+            while (!tutorChecked) {
+                // do not start activity till tutor status has been checked.
+            }
             startMainActivity();
 
         }
@@ -111,6 +126,11 @@ public class LogInActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            isTutor();
+
+                            while (!tutorChecked) {
+                                // do not start activity till tutor status has been checked.
+                            }
                             startMainActivity();
 
                         } else {
@@ -134,4 +154,23 @@ public class LogInActivity extends AppCompatActivity {
 
     }
 
+    public boolean isTutor() {
+
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        database.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                if (documentSnapshot.get(User.KEY_EMAIL) != null) {
+                    IS_TUTOR = true;
+                } else {
+                    IS_TUTOR = false;
+                }
+
+            }
+        });
+        tutorChecked = true;
+        return IS_TUTOR;
+    }
 }

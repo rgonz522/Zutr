@@ -18,6 +18,7 @@ import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionsAdapter;
 import com.example.zutr.models.Session;
+import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -94,9 +95,9 @@ public class HomeFragment extends Fragment {
 
     protected void querySessions() {
 
-        final String session_user_id = MainActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
+        final String sessionUserId = LogInActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
 
-        Log.i(TAG, "querySessions: session user id : " + session_user_id);
+        Log.i(TAG, "querySessions: session user id : " + sessionUserId);
 
         final List<Session> newSessions = new ArrayList<>();
 
@@ -104,7 +105,7 @@ public class HomeFragment extends Fragment {
 
 
         dataBase.collection(Session.PATH)
-                .whereEqualTo(session_user_id, currentUser.getUid())
+                .whereEqualTo(sessionUserId, currentUser.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

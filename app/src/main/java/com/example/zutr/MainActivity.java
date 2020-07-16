@@ -16,14 +16,13 @@ import com.example.zutr.fragments.HomeFragment;
 import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
 
-import com.example.zutr.models.Tutor;
-import com.example.zutr.models.User;
-import com.google.android.gms.tasks.OnSuccessListener;
+
+import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import com.google.firebase.firestore.DocumentSnapshot;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -31,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
-    public static boolean IS_TUTOR;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -47,7 +45,13 @@ public class MainActivity extends AppCompatActivity {
         dataBase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        isTutor();
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
     }
 
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.action_compose:
 
-                        fragment = IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
+                        fragment = LogInActivity.IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
                         break;
                     case R.id.action_home:
 
@@ -97,24 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public boolean isTutor() {
 
-        dataBase.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                if (documentSnapshot.get(User.KEY_EMAIL) != null) {
-                    IS_TUTOR = true;
-                    Log.i(TAG, "onSuccess: " + documentSnapshot.get(User.KEY_EMAIL));
-                    Log.i(TAG, "onSuccess: " + currentUser.getUid());
-                } else {
-                    IS_TUTOR = false;
-                    Log.i(TAG, "onFailure: " + documentSnapshot.get(User.KEY_FIRSTNAME));
-                }
-
-            }
-        });
-        return IS_TUTOR;
-    }
 
 }

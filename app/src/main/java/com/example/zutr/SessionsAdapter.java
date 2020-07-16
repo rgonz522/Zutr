@@ -3,6 +3,7 @@ package com.example.zutr;
 import android.content.Context;
 import android.content.Intent;
 
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
+import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -112,8 +114,8 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                 // path ->> Student Collection
                 // Student Collection ->> ID ->> Document
 
-                String path = MainActivity.IS_TUTOR ? Student.PATH : Tutor.PATH;
-                String userID = MainActivity.IS_TUTOR ? session.getStudentId() : session.getTutorId();
+                String path = LogInActivity.IS_TUTOR ? Student.PATH : Tutor.PATH;
+                String userID = LogInActivity.IS_TUTOR ? session.getStudentId() : session.getTutorId();
 
                 String userName = getUserRealName(path, userID);
                 Log.i(TAG, "bind: userName" + userName);

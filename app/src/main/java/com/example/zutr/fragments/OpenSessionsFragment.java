@@ -104,12 +104,12 @@ public class OpenSessionsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
-                                String tutor_id = documentSnapshot.getString(Session.KEY_TUTOR_UID);
+                                String tutorId = documentSnapshot.getString(Session.KEY_TUTOR_UID);
 
                                 //if no question associated with the session then don't show it
                                 if (documentSnapshot.get(Session.KEY_QUESTION) != null &&
-                                        (tutor_id == null || tutor_id.isEmpty()
-                                                || tutor_id.equals(Session.NO_TUTOR_YET))) {
+                                        (tutorId == null || tutorId.isEmpty()
+                                                || tutorId.equals(Session.NO_TUTOR_YET))) {
 
                                     Session session =
                                             new Session((String) documentSnapshot.get(Session.KEY_STUDENT_UID)

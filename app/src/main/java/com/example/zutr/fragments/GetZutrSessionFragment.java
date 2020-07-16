@@ -84,12 +84,12 @@ public class GetZutrSessionFragment extends Fragment {
 
 
         // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> type_session_adapter;
-        type_session_adapter = ArrayAdapter.createFromResource(getContext(), R.array.type_of_session, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> typeSessionAdapter;
+        typeSessionAdapter = ArrayAdapter.createFromResource(getContext(), R.array.type_of_session, android.R.layout.simple_spinner_item);
         // Specify the layout to use when the list of choices appears
-        type_session_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeSessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
-        spnTypeSession.setAdapter(type_session_adapter);
+        spnTypeSession.setAdapter(typeSessionAdapter);
 
         sbPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -112,23 +112,23 @@ public class GetZutrSessionFragment extends Fragment {
             public void onClick(View view) {
                 Double price = getPrice(etPrice.getText().toString());
                 String question = etQuestion.getText().toString();
-                String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                int typesession = 0;
+                int typeSession = 0;
                 switch (spnTypeSession.getSelectedItem().toString()) {
                     case VIDEO:
-                        typesession = Session.SESSION_VIDEO;
+                        typeSession = Session.SESSION_VIDEO;
                         break;
                     case CALL:
-                        typesession = Session.SESSION_CALL;
+                        typeSession = Session.SESSION_CALL;
                         break;
                     case TEXT:
-                        typesession = Session.SESSION_TEXT;
+                        typeSession = Session.SESSION_TEXT;
                         break;
 
                 }
-                if (price != null && !question.isEmpty() && !user_id.isEmpty() && typesession != 0) {
-                    saveSession(user_id, price, question, typesession);
+                if (price != null && !question.isEmpty() && !userId.isEmpty() && typeSession != 0) {
+                    saveSession(userId, price, question, typeSession);
                     //TODO: Insert Payment/Charging Method.
                 }
 
@@ -159,13 +159,13 @@ public class GetZutrSessionFragment extends Fragment {
 
     }
 
-    private void saveSession(String currentUser, Double price, final String question, int type_of_session) {
+    private void saveSession(String currentUser, Double price, final String question, int typeOfSession) {
 
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
 
-        Session session = new Session(currentUser, price, question, type_of_session);
+        Session session = new Session(currentUser, price, question, typeOfSession);
 
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
