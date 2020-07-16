@@ -78,6 +78,7 @@ public class OpenSessionsFragment extends Fragment {
         rvSessions = view.findViewById(R.id.rvSessions);
         adapter = new SessionsAdapter(getContext(), sessions);
 
+
         rvSessions.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
@@ -93,7 +94,7 @@ public class OpenSessionsFragment extends Fragment {
 
         final List<Session> newSessions = new ArrayList<>();
 
-        dataBase.collection(Session.PATH).whereEqualTo(Session.KEY_TUTOR_UID, null).whereEqualTo(Session.KEY_TUTOR_UID, null).get()
+        dataBase.collection(Session.PATH).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -101,7 +102,9 @@ public class OpenSessionsFragment extends Fragment {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
                                 //if no question associated with the session then don't show it
-                                if (documentSnapshot.get(Session.KEY_QUESTION) != null) {
+                                if (documentSnapshot.get(Session.KEY_QUESTION) != null &&
+                                        documentSnapshot.get(Session.KEY_TUTOR_UID) == null) {
+
                                     Session session =
                                             new Session((String) documentSnapshot.get(Session.KEY_STUDENT_UID)
                                                     , (Double) documentSnapshot.get(Session.KEY_WAGE)
@@ -113,11 +116,13 @@ public class OpenSessionsFragment extends Fragment {
                                     newSessions.add(session);
                                 }
                             }
+
+                            sessions.addAll(newSessions);
+                            adapter.notifyDataSetChanged();
                         } else {
                             Log.i(TAG, "onComplete: querying task failed" + task.getResult() + task.getException());
                         }
-                        sessions.addAll(newSessions);
-                        adapter.notifyDataSetChanged();
+
                     }
                 });
 

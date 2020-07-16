@@ -112,7 +112,7 @@ public class GetZutrSessionFragment extends Fragment {
             public void onClick(View view) {
                 Double price = getPrice(etPrice.getText().toString());
                 String question = etQuestion.getText().toString();
-                String user_email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
                 int typesession = 0;
                 switch (spnTypeSession.getSelectedItem().toString()) {
@@ -129,8 +129,8 @@ public class GetZutrSessionFragment extends Fragment {
                         typesession = Session.SESSION_INPERSON;
                         break;
                 }
-                if (price != null && !question.isEmpty() && !user_email.isEmpty() && typesession != 0) {
-                    saveSession(user_email, price, question, typesession);
+                if (price != null && !question.isEmpty() && !user_id.isEmpty() && typesession != 0) {
+                    saveSession(user_id, price, question, typesession);
                     //TODO: Insert Payment/Charging Method.
                 }
 

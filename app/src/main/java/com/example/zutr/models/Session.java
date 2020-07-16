@@ -38,12 +38,13 @@ public class Session {
 
     public Session(String student_id, Double wage, String subject, int sessiontype) {
         this.student_id = student_id;
-        this.tutor_id = NO_TUTOR_YET;
-        this.time_ended = time_ended;
-        this.time_started = time_started;
         this.wage = wage;
         this.subject = subject;
         this.session_type = sessiontype;
+
+        this.tutor_id = NO_TUTOR_YET;
+        this.time_ended = QUESTION_TIME;
+        this.time_started = QUESTION_TIME;
     }
 
     public Session(String student_id, Double wage, String subject, String question) {

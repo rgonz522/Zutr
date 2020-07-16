@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -44,18 +45,12 @@ public class ProfileFragment extends Fragment {
     private TextView tvSubjects;
     private Button btnSignUp;
 
-    private boolean tutor;
-
 
     private FirebaseFirestore database;
     private FirebaseStorage storage;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
 
-    public ProfileFragment(boolean tutor) {
-
-        this.tutor = tutor;
-    }
 
 
     public ProfileFragment() {
@@ -83,7 +78,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        final String path = (tutor ? Tutor.PATH : Student.PATH);
+        final String path = (MainActivity.IS_TUTOR ? Tutor.PATH : Student.PATH);
 
         Log.i(TAG, "onViewCreated: " + path);
         database = FirebaseFirestore.getInstance();
@@ -107,6 +102,9 @@ public class ProfileFragment extends Fragment {
                     DocumentSnapshot documentSnapshot = task.getResult();
 
                     Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_FIRSTNAME));
+                    Log.i(TAG, "onComplete: " + documentSnapshot.getId());
+                    Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_EMAIL));
+                    Log.i(TAG, "onComplete: " + documentSnapshot.get(User.KEY_USERNAME));
                     tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
                     Log.i(TAG, "onComplete: " + tvUsername.getText().toString());
 

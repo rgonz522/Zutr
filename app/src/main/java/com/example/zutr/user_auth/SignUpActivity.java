@@ -138,7 +138,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                         if (task.isSuccessful()) {
 
-                            Log.i(TAG, "onComplete: created autho successfully");
+                            Log.i(TAG, "onComplete: created autho successfully" + task.getResult().getUser().getUid());
                             createNewUser(new Student(username, first_name, last_name, email, address), path, task.getResult().getUser().getUid());
                             startLoginActivity();
 

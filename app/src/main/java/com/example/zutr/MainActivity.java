@@ -13,9 +13,11 @@ import android.view.MenuItem;
 import com.example.zutr.fragments.GetZutrFragment;
 import com.example.zutr.fragments.HistoryFragment;
 import com.example.zutr.fragments.HomeFragment;
+import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
 
 import com.example.zutr.models.Tutor;
+import com.example.zutr.models.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,13 +74,14 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
                     case R.id.action_profile:
 
-                        fragment = new ProfileFragment(true);
+                        fragment = new ProfileFragment();
                         break;
                     case R.id.action_compose:
 
-                        fragment = new GetZutrFragment();
+                        fragment = IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
 
                         Log.i(TAG, "onNavigationItemSelected: " + IS_TUTOR);
+                        Log.i(TAG, "onNavigationItemSelected: " + fragment.getClass());
 
                         break;
                     case R.id.action_home:
@@ -107,7 +110,16 @@ public class MainActivity extends AppCompatActivity {
         dataBase.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                IS_TUTOR = true;
+
+                if (documentSnapshot.get(User.KEY_EMAIL) != null) {
+                    IS_TUTOR = true;
+                    Log.i(TAG, "onSuccess: " + documentSnapshot.get(User.KEY_EMAIL));
+                    Log.i(TAG, "onSuccess: " + currentUser.getUid());
+                } else {
+                    IS_TUTOR = false;
+                    Log.i(TAG, "onFailure: " + documentSnapshot.get(User.KEY_FIRSTNAME));
+                }
+
             }
         });
         return IS_TUTOR;

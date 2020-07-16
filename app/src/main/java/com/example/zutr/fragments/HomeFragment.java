@@ -94,37 +94,55 @@ public class HomeFragment extends Fragment {
 
     protected void querySessions() {
 
-        String session_user_id = MainActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
+        final String session_user_id = MainActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
 
         Log.i(TAG, "querySessions: session user id : " + session_user_id);
 
         final List<Session> newSessions = new ArrayList<>();
 
-        dataBase.collection(Session.PATH).whereEqualTo(session_user_id, currentUser.getUid()).get()
+        Log.i(TAG, "querySessions: session user id : " + currentUser.getUid());
+
+
+        dataBase.collection(Session.PATH)
+                .whereEqualTo(session_user_id, currentUser.getUid())
+                .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-
-                                //if no question associated with the session then don't show it
-                                if (documentSnapshot.get(Session.KEY_QUESTION) != null) {
-                                    Session session =
-                                            new Session((String) documentSnapshot.get(Session.KEY_STUDENT_UID)
-                                                    , (Double) documentSnapshot.get(Session.KEY_WAGE)
-                                                    , (String) documentSnapshot.get(Session.KEY_SUBJECT)
-                                                    , (String) documentSnapshot.get(Session.KEY_QUESTION));
+                            for (QueryDocumentSnapshot document : task.getResult()) {
 
 
-                                    Log.i(TAG, "onComplete: querying " + session.getQuestion());
+                                String question = document.getString(Session.KEY_QUESTION);
+
+                                if (question != null) {
+                                    Log.d(TAG, "Document data\t" + document.getId() + " => " + document.getData());
+
+
+                                    String subject = "subject";     //TODO Subject Implementation
+                                    Double wage = document.getDouble(Session.KEY_WAGE);
+
+
+                                    Log.i(TAG, "onComplete: new session : " + question + subject + wage);
+                                    Session session = new Session(currentUser.getUid(), wage, subject, question);
+
                                     newSessions.add(session);
                                 }
+
                             }
+
+                            sessions.addAll(newSessions);
+                            adapter.notifyDataSetChanged();
+
+
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                        sessions.addAll(newSessions);
-                        adapter.notifyDataSetChanged();
                     }
-        });
+                });
+
+        Log.i(TAG, "onComplete: " + newSessions.toString());
+
 
     }
 }

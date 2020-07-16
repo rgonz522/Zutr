@@ -1,6 +1,7 @@
 package com.example.zutr;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHolder> {
 
-
+    public static final String TAG = "SessionsAdapter";
     public static final String NO_TUTOR = "Not answered yet";
 
     private Context context;
@@ -38,7 +39,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull SessionsAdapter.ViewHolder holder, int position) {
         Session session = sessions.get(position);
-
 
         holder.bind(session);
 
@@ -77,22 +77,26 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         public void bind(Session session) {
 
 
-                tvQuestion.setText(Session.KEY_QUESTION + ": " + session.getQuestion());
+            tvQuestion.setText(Session.KEY_QUESTION + ": " + session.getQuestion());
+            Log.d(TAG, "bind: Question: " + tvQuestion.getText().toString());
 
-            if (session.getTutor_id() == null || session.getTutor_id().isEmpty()) {
+            if (session.getTutor_id() == Session.NO_TUTOR_YET) {
                 tvTutor.setText(NO_TUTOR);
             } else {
                 //TODO better tutor information
                 tvTutor.setText(String.format("@%s", session.getTutor_id()));
             }
 
-                tvSubject.setText(Session.KEY_SUBJECT + ": " + session.getSubject());
+            Log.d(TAG, "bind: tutor: " + tvTutor.getText().toString());
 
-                if (session.isSessionQuestion()) {
-                    tvDate.setVisibility(View.GONE);
-                } else {
-                    tvDate.setText(session.getTime_started());
-                }
+            tvSubject.setText(Session.KEY_SUBJECT + ": " + session.getSubject());
+
+            Log.d(TAG, "bind:  subject:" + tvSubject.getText());
+            if (session.isSessionQuestion()) {
+                tvDate.setVisibility(View.GONE);
+            } else {
+                tvDate.setText(session.getTime_started());
+            }
 
 
         }
