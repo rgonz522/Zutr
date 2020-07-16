@@ -13,10 +13,8 @@ import android.view.MenuItem;
 import com.example.zutr.fragments.GetZutrFragment;
 import com.example.zutr.fragments.HistoryFragment;
 import com.example.zutr.fragments.HomeFragment;
-import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
 
-import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -39,15 +37,15 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fragmentManager;
 
 
-    private FirebaseUser CurrentUser;
+    private FirebaseUser currentUser;
 
     private FirebaseAuth mAuth;
-    private FirebaseFirestore DataBase;
+    private FirebaseFirestore dataBase;
 
     public MainActivity() {
-        DataBase = FirebaseFirestore.getInstance();
+        dataBase = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        CurrentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
         isTutor();
 
     }
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean isTutor() {
 
-        DataBase.collection(Tutor.PATH).document(CurrentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        dataBase.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 IS_TUTOR = true;

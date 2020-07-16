@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private TextView tvFullName;
     private TextView tvSubjects;
-    private Button btnSignut;
+    private Button btnSignUp;
 
     private boolean tutor;
 
@@ -96,7 +96,7 @@ public class ProfileFragment extends Fragment {
         tvFullName = view.findViewById(R.id.tvFullName);
         tvSubjects = view.findViewById(R.id.tvSubjects);
         tvUsername = view.findViewById(R.id.tvUsername);
-        btnSignut = view.findViewById(R.id.btnSignOut);
+        btnSignUp = view.findViewById(R.id.btnSignOut);
 
 
         database.collection(path).document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -132,7 +132,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        btnSignut.setOnClickListener(new View.OnClickListener() {
+        btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mAuth.signOut();

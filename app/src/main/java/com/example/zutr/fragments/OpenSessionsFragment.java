@@ -17,7 +17,6 @@ import com.example.zutr.R;
 import com.example.zutr.SessionsAdapter;
 import com.example.zutr.models.Session;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,7 +39,7 @@ public class OpenSessionsFragment extends Fragment {
     private List<Session> sessions;
 
     private FirebaseFirestore dataBase;
-    private FirebaseUser current_user;
+    private FirebaseUser currentUser;
 
 
     public OpenSessionsFragment() {
@@ -73,7 +72,7 @@ public class OpenSessionsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        current_user = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dataBase = FirebaseFirestore.getInstance();
         sessions = new ArrayList<>();
         rvSessions = view.findViewById(R.id.rvSessions);

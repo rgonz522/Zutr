@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment {
     private List<Session> sessions;
 
     private FirebaseFirestore dataBase;
-    private FirebaseUser current_user;
+    private FirebaseUser currentUser;
 
 
     public HomeFragment() {
@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        current_user = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dataBase = FirebaseFirestore.getInstance();
         sessions = new ArrayList<>();
         rvSessions = view.findViewById(R.id.rvSessions);
@@ -100,7 +100,7 @@ public class HomeFragment extends Fragment {
 
         final List<Session> newSessions = new ArrayList<>();
 
-        dataBase.collection(Session.PATH).whereEqualTo(session_user_id, current_user.getUid()).get()
+        dataBase.collection(Session.PATH).whereEqualTo(session_user_id, currentUser.getUid()).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {

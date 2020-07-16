@@ -23,11 +23,11 @@ public class LogInActivity extends AppCompatActivity {
 
     public static final String TAG = " LoginActivty";
 
-    private EditText et_email;
-    private EditText et_password;
-    private Button btn_login;
-    private Button btn_signup;
-    private Button btn_sign_zutr;
+    private EditText etEmail;
+    private EditText etPassword;
+    private Button btnLogin;
+    private Button btnSignup;
+    private Button btnSignZutr;
 
 
     private FirebaseAuth mAuth;
@@ -63,27 +63,27 @@ public class LogInActivity extends AppCompatActivity {
             startMainActivity();
 
         }
-        et_email = findViewById(R.id.etEmail);
-        et_password = findViewById(R.id.etPassword);
-        btn_login = findViewById(R.id.btnLogin);
-        btn_signup = findViewById(R.id.btnSignUp);
-        btn_sign_zutr = findViewById(R.id.btnZutrSignUp);
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnSignup = findViewById(R.id.btnSignUp);
+        btnSignZutr = findViewById(R.id.btnZutrSignUp);
 
 
-        btn_login.setOnClickListener(new View.OnClickListener() {
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 //TODO do a better filtering of user input with UI
-                String email = et_email.getText().toString();
-                String password = et_password.getText().toString();
+                String email = etEmail.getText().toString();
+                String password = etPassword.getText().toString();
 
                 authorizingUser(email, password);
 
             }
         });
 
-        btn_sign_zutr.setOnClickListener(new View.OnClickListener() {
+        btnSignZutr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
@@ -91,7 +91,7 @@ public class LogInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        btn_signup.setOnClickListener(new View.OnClickListener() {
+        btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
