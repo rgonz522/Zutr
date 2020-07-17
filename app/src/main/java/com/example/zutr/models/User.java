@@ -3,8 +3,8 @@ package com.example.zutr.models;
 public abstract class User {
 
     public static final String KEY_USERNAME = "username";
-    public static final String KEY_FIRSTNAME = "first_name";
-    public static final String KEY_LASTNAME = "last_name";
+    public static final String KEY_FIRSTNAME = "firstName";
+    public static final String KEY_LASTNAME = "lastName";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_ADDRESS = "address";
 

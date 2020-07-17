@@ -73,6 +73,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
             });
         } else {
             btnZutrStart.setVisibility(View.GONE);
+            etAnswer.setVisibility(View.GONE);
         }
 
 

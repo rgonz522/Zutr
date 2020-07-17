@@ -1,18 +1,21 @@
 package com.example.zutr.models;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class Session implements Serializable {
 
     public static final String QUESTION_TIME = "000";
     public static final String NO_TUTOR_YET = "404";
+    public static final String KEY_CREATED_AT = "createdAt";
+
 
     public static final String KEY_SUBJECT = "subject";
     public static final String KEY_QUESTION = "question";
     public static final String KEY_ANSWER = "answer";
 
-    public static final String KEY_TUTOR_UID = "tutor_id";
-    public static final String KEY_STUDENT_UID = "student_id";
+    public static final String KEY_TUTOR_UID = "tutorId";
+    public static final String KEY_STUDENT_UID = "studentId";
     public static final String KEY_WAGE = "wage";
 
     public static final String PATH = "session";
@@ -30,6 +33,8 @@ public class Session implements Serializable {
     private String timeEnded;
     private String timeStart;
     private Double wage;
+
+    private Date createdAt;
     private int sessionType;
 
 
@@ -54,6 +59,7 @@ public class Session implements Serializable {
         this.question = question;
         this.sessionType = sessiontype;
 
+        this.createdAt = new Date();
         this.tutorId = NO_TUTOR_YET;
         this.timeEnded = QUESTION_TIME;
         this.timeStart = QUESTION_TIME;
@@ -65,11 +71,19 @@ public class Session implements Serializable {
         this.subject = subject;
         this.question = question;
 
-
+        this.createdAt = new Date();
         this.tutorId = NO_TUTOR_YET;
         this.timeEnded = QUESTION_TIME;
         this.timeStart = QUESTION_TIME;
 
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getStudentId() {

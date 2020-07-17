@@ -28,15 +28,6 @@
         android:layout_marginBottom="50dp"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
-        android:id="@+id/btnSubmit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnCaptureImage"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:text="Submit" />
-
     <ProgressBar
         android:id="@+id/pbLoading"
         style="?android:attr/progressBarStyle"

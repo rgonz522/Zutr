@@ -20,6 +20,7 @@
             android:layout_centerInParent="true"
             android:backgroundTint="@color/colorWhite"
             android:text="Start a Session"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="24sp" />
 
         <Button
@@ -31,6 +32,7 @@
             android:layout_marginTop="117dp"
             android:layout_marginEnd="0dp"
             android:backgroundTint="@color/colorWhite"
+            android:textColor="@color/colorPrimaryDark"
             android:text="Ask a question"
             android:textSize="24sp" />
 

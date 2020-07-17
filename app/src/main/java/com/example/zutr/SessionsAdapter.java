@@ -164,6 +164,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
             FirebaseFirestore database = FirebaseFirestore.getInstance();
 
+
             final StringBuilder userRealName = new StringBuilder("");
             //has to be an array in order to be changed within
             //inner CompleteListener Class
@@ -182,7 +183,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                     }
                 }
             });
-
 
             return userRealName.toString();
 

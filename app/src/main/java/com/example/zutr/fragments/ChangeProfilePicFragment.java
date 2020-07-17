@@ -109,10 +109,13 @@ public class ChangeProfilePicFragment extends Fragment {
         ivPostImage = view.findViewById(R.id.ivProfilePicture);
         pbLoading = view.findViewById(R.id.pbLoading);
 
+        pbLoading.setVisibility(View.INVISIBLE);
+
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 launchCamera();
             }
         });
@@ -132,6 +135,8 @@ public class ChangeProfilePicFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        pbLoading.setVisibility(View.VISIBLE);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
@@ -200,6 +205,8 @@ public class ChangeProfilePicFragment extends Fragment {
                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                         database.collection(collectionPath).document(user.getUid()).update("profileUrl", user.getPhotoUrl().toString());
+
+                        pbLoading.setVisibility(View.INVISIBLE);
                         startUserProfileFragment();
                     }
                 })

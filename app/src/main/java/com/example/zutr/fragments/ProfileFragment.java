@@ -86,7 +86,7 @@ public class ProfileFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-
+        Log.i(TAG, "onViewCreated: user " + mAuth.getCurrentUser());
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvFullName = view.findViewById(R.id.tvFullName);
         tvSubjects = view.findViewById(R.id.tvSubjects);

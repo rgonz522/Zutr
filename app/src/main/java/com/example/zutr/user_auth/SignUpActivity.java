@@ -21,6 +21,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.quickblox.users.QBUsers;
+import com.quickblox.users.model.QBUser;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -142,6 +144,8 @@ public class SignUpActivity extends AppCompatActivity {
                             createNewUser(new Student(username, first_name, last_name, email, address), path, task.getResult().getUser().getUid());
                             startLoginActivity();
 
+                            createVideoChatProfile(email, password);
+
 
                         } else {
                             Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG);
@@ -167,6 +171,19 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.i(TAG, "onSuccess: " + task.getResult());
                     }
                 });
+
+
+    }
+
+    private void createVideoChatProfile(String email, String password) {
+
+        QBUser qbUser = new QBUser();
+        qbUser.setEmail(email);
+        qbUser.setPassword(password);
+
+        QBUsers.signIn(qbUser);
+
+        Log.i(TAG, "createVideoChatProfile: " + qbUser.getCreatedAt());
 
 
     }

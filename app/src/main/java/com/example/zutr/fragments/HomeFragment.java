@@ -24,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -97,6 +98,8 @@ public class HomeFragment extends Fragment {
 
         final String sessionUserId = LogInActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
 
+
+        Log.i(TAG, "querySessions: is tutor?" + LogInActivity.IS_TUTOR);
         Log.i(TAG, "querySessions: session user id : " + sessionUserId);
 
         final List<Session> newSessions = new ArrayList<>();
@@ -104,8 +107,10 @@ public class HomeFragment extends Fragment {
         Log.i(TAG, "querySessions: session user id : " + currentUser.getUid());
 
 
+        Log.i(TAG, "querySessions: ");
+
         dataBase.collection(Session.PATH)
-                .whereEqualTo(sessionUserId, currentUser.getUid())
+                .orderBy(Session.KEY_CREATED_AT, Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -113,37 +118,21 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                String subject = "subject";     //TODO Subject Implementation
-
-                                String question = document.getString(Session.KEY_QUESTION);
-                                Double wage = document.getDouble(Session.KEY_WAGE);
-
-                                String answer = document.getString(Session.KEY_ANSWER);
-
-
-                                Session session = new Session(null, wage, subject, question);
-
-
-                                session.setStudentId(document.getString(Session.KEY_STUDENT_UID));
-                                session.setTutorId(document.getString(Session.KEY_TUTOR_UID));
-                                session.setAnswer(answer);
-
-                                Log.i(TAG, "onComplete: " + document.getString(Session.KEY_TUTOR_UID));
-                                newSessions.add(session);
+                                if (document.getString(sessionUserId).equals(currentUser.getUid())) {
+                                    Session session = document.toObject(Session.class);
+                                    newSessions.add(session);
+                                }
 
                             }
-
-                            sessions.addAll(newSessions);
-                            adapter.notifyDataSetChanged();
-
-
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+
                         }
+                        sessions.addAll(newSessions);
+                        adapter.notifyDataSetChanged();
+
                     }
                 });
-
-        Log.i(TAG, "onComplete: " + newSessions.toString());
 
 
     }

@@ -23,6 +23,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.quickblox.core.QBEntityCallback;
+import com.quickblox.core.exception.QBResponseException;
+import com.quickblox.users.QBUsers;
+import com.quickblox.users.model.QBUser;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -72,10 +76,7 @@ public class LogInActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
 
             isTutor();
-            while (!tutorChecked) {
-                // do not start activity till tutor status has been checked.
-            }
-            startMainActivity();
+
 
         }
         etEmail = findViewById(R.id.etEmail);
@@ -126,12 +127,9 @@ public class LogInActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            isTutor();
 
-                            while (!tutorChecked) {
-                                // do not start activity till tutor status has been checked.
-                            }
-                            startMainActivity();
+                            loginVideoChatProfile(email, password);
+                            isTutor();
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -143,6 +141,27 @@ public class LogInActivity extends AppCompatActivity {
 
                     }
                 });
+
+    }
+
+    private void loginVideoChatProfile(String email, String password) {
+
+
+        QBUser qbUser = new QBUser();
+        qbUser.setEmail(email);
+        qbUser.setPassword(password);
+
+        QBUsers.signIn(qbUser).performAsync(new QBEntityCallback<QBUser>() {
+            @Override
+            public void onSuccess(QBUser user, Bundle args) {
+                Log.i(TAG, "onSuccess: " + user.getEmail() + user.getLogin());
+            }
+
+            @Override
+            public void onError(QBResponseException error) {
+                Log.e(TAG, "onError: ", error);
+            }
+        });
 
     }
 
@@ -158,6 +177,7 @@ public class LogInActivity extends AppCompatActivity {
 
         final FirebaseUser currentUser = mAuth.getCurrentUser();
 
+
         database.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -167,10 +187,14 @@ public class LogInActivity extends AppCompatActivity {
                 } else {
                     IS_TUTOR = false;
                 }
+                startMainActivity();
 
             }
         });
+
         tutorChecked = true;
+
+
         return IS_TUTOR;
     }
 }

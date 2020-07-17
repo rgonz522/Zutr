@@ -21,10 +21,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -97,7 +99,9 @@ public class OpenSessionsFragment extends Fragment {
 
         final List<Session> newSessions = new ArrayList<>();
 
-        dataBase.collection(Session.PATH).get()
+        dataBase.collection(Session.PATH)
+                .orderBy(Session.KEY_CREATED_AT, Query.Direction.DESCENDING)
+                .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -117,16 +121,19 @@ public class OpenSessionsFragment extends Fragment {
                                                     , (String) documentSnapshot.get(Session.KEY_SUBJECT)
                                                     , (String) documentSnapshot.get(Session.KEY_QUESTION));
 
+
+                                    Date date = documentSnapshot.getTimestamp(Session.KEY_CREATED_AT).toDate();
+
                                     newSessions.add(session);
                                 }
                             }
-                            sessions.clear();
-                            sessions.addAll(newSessions);
-                            adapter.notifyDataSetChanged();
+
                         } else {
                             Log.i(TAG, "onComplete: querying task failed" + task.getResult() + task.getException());
                         }
-
+                        sessions.clear();
+                        sessions.addAll(newSessions);
+                        adapter.notifyDataSetChanged();
                     }
                 });
 
