@@ -173,6 +173,7 @@ public class GetZutrSessionFragment extends Fragment {
                     public void onComplete(@NonNull Task<Void> task) {
                         startMainActivity();
 
+
                     }
                 });
     }

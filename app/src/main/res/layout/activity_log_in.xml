@@ -12,9 +12,9 @@
         android:id="@+id/etPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etEmail"
+        android:layout_above="@+id/btnLogin"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
+        android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword" />
@@ -23,8 +23,9 @@
         android:id="@+id/etEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="false"
-        android:layout_centerInParent="true"
+        android:layout_above="@+id/etPassword"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
         android:ems="10"
         android:hint="Email"
         android:inputType="textPersonName" />
@@ -33,9 +34,8 @@
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etPassword"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
+        android:layout_centerInParent="true"
+        android:backgroundTint="@color/colorPrimaryDark"
         android:text="Log In" />
 
     <TextView
@@ -44,8 +44,11 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/etEmail"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="50dp"
-        android:text="Log In" />
+        android:layout_marginBottom="20dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Log In"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp" />
 
     <Button
         android:id="@+id/btnSignUp"
@@ -53,15 +56,18 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnLogin"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:text="SignUp" />
+        android:layout_marginTop="80dp"
+        android:text="Become a Student" />
 
     <Button
         android:id="@+id/btnZutrSignUp"
-        android:layout_width="wrap_content"
+        android:layout_width="169dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnSignUp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
+        android:layout_alignStart="@+id/btnSignUp"
+        android:layout_alignEnd="@+id/btnSignUp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="0dp"
         android:text="Become a Zutr" />
 </RelativeLayout>

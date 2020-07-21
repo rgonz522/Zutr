@@ -254,5 +254,7 @@
     <string name="appinfo_chat_domain">Chat domain:</string>
     <string name="appinfo_title">App Info</string>
     <string name="appinfo_qa_verion">QA version:</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

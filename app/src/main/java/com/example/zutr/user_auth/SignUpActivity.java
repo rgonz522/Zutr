@@ -15,14 +15,13 @@ import android.widget.Toast;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.User;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.quickblox.users.QBUsers;
-import com.quickblox.users.model.QBUser;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -66,10 +65,13 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
 
+
         btnSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 registerUser(tutor);
+
             }
         });
 
@@ -118,7 +120,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if (password.length() < 6) {
+        if (password.length() < 8) {
             etPassword.setError(getString(R.string.input_error_password_length));
             etPassword.requestFocus();
             return;
@@ -143,8 +145,6 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.i(TAG, "onComplete: created autho successfully" + task.getResult().getUser().getUid());
                             createNewUser(new Student(username, first_name, last_name, email, address), path, task.getResult().getUser().getUid());
                             startLoginActivity();
-
-                            createVideoChatProfile(email, password);
 
 
                         } else {
@@ -175,18 +175,10 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    private void createVideoChatProfile(String email, String password) {
-
-        QBUser qbUser = new QBUser();
-        qbUser.setEmail(email);
-        qbUser.setPassword(password);
-
-        QBUsers.signIn(qbUser);
-
-        Log.i(TAG, "createVideoChatProfile: " + qbUser.getCreatedAt());
 
 
-    }
+
+
 
     public void startLoginActivity() {
 

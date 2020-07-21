@@ -18,8 +18,9 @@
             android:id="@+id/tvSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:text="Sign Up"
-            android:textColor="#000000"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="24sp" />
 
         <EditText

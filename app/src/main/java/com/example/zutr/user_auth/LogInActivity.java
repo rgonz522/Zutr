@@ -15,6 +15,8 @@ import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
+
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -23,10 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.quickblox.core.QBEntityCallback;
-import com.quickblox.core.exception.QBResponseException;
-import com.quickblox.users.QBUsers;
-import com.quickblox.users.model.QBUser;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -41,6 +39,7 @@ public class LogInActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore database;
+
 
 
     public static boolean IS_TUTOR;
@@ -72,6 +71,9 @@ public class LogInActivity extends AppCompatActivity {
         //using Firebase's email and pw auth.
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
+
+        Log.i(TAG, "onCreate: login right befoe mVidAuth instance");
+
 
         if (mAuth.getCurrentUser() != null) {
 
@@ -128,7 +130,6 @@ public class LogInActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            loginVideoChatProfile(email, password);
                             isTutor();
 
                         } else {
@@ -141,27 +142,6 @@ public class LogInActivity extends AppCompatActivity {
 
                     }
                 });
-
-    }
-
-    private void loginVideoChatProfile(String email, String password) {
-
-
-        QBUser qbUser = new QBUser();
-        qbUser.setEmail(email);
-        qbUser.setPassword(password);
-
-        QBUsers.signIn(qbUser).performAsync(new QBEntityCallback<QBUser>() {
-            @Override
-            public void onSuccess(QBUser user, Bundle args) {
-                Log.i(TAG, "onSuccess: " + user.getEmail() + user.getLogin());
-            }
-
-            @Override
-            public void onError(QBResponseException error) {
-                Log.e(TAG, "onError: ", error);
-            }
-        });
 
     }
 

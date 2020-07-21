@@ -7,14 +7,14 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 
-import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.zutr.fragments.MessagesFragment;
 import com.example.zutr.fragments.GetZutrFragment;
-import com.example.zutr.fragments.HistoryFragment;
 import com.example.zutr.fragments.HomeFragment;
 import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
+
 
 
 import com.example.zutr.user_auth.LogInActivity;
@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.action_history:
 
-                        fragment = new HistoryFragment();
+                        // fragment = new HistoryFragment();
+                        fragment = new MessagesFragment("t0MFkUt7mThWuRDYUcbsrxLcjUm2");
                         break;
                     default:
                         fragment = null;

@@ -66,6 +66,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-messaging'
 
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
@@ -86,5 +87,8 @@ dependencies {
 
 
     implementation "com.github.johnkil.android-robototextview:robototextview:$robotoTextViewVersion"
+
+    implementation "com.quickblox:quickblox-android-sdk-videochat-webrtc:3.7.0"
+
 }
 
