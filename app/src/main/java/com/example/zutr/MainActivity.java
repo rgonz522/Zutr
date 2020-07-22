@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import android.view.MenuItem;
 
+import com.example.zutr.fragments.ChatsFragment;
 import com.example.zutr.fragments.MessagesFragment;
 import com.example.zutr.fragments.GetZutrFragment;
 import com.example.zutr.fragments.HomeFragment;
@@ -86,8 +87,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.action_history:
 
-                        // fragment = new HistoryFragment();
-                        fragment = new MessagesFragment("t0MFkUt7mThWuRDYUcbsrxLcjUm2");
+                        fragment = new ChatsFragment();
                         break;
                     default:
                         fragment = null;

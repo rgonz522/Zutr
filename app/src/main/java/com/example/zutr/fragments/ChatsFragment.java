@@ -14,9 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.example.zutr.MessagesAdapter;
+import com.example.zutr.adapters.ChatsAdapter;
+import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.R;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
@@ -24,6 +24,7 @@ import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -36,28 +37,27 @@ public class ChatsFragment extends Fragment {
 
 
     public static final String MESSAGE_PATH = "messages";
+    public static final String CHAT_PATH = "chats";
     public static final String TUTOR_ID_PATH = "tutorID";
     public static final String STUDENT_ID_PATH = "studentID";
     public static final String TAG = "ChatFragment";
 
 
-    private RecyclerView rvMessage;
-    private EditText etNewMsg;
-    private Button btnSendMsg;
+    private RecyclerView rvChats;
 
-    private MessagesAdapter adapter;
+
+    private ChatsAdapter adapter;
     private List<Message> messages;
 
     private FirebaseFirestore dataBase;
 
 
     private String localID;
-    private String remoteID;
-    private String chatDocName;
 
 
     public ChatsFragment() {
         // Required empty public constructor
+        localID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
     public static ChatsFragment newInstance(String param1, String param2) {
@@ -80,33 +80,19 @@ public class ChatsFragment extends Fragment {
 
         dataBase = FirebaseFirestore.getInstance();
         messages = new ArrayList<>();
-        rvMessage = view.findViewById(R.id.rvMessages);
-        etNewMsg = view.findViewById(R.id.etNewMessage);
-        btnSendMsg = view.findViewById(R.id.btnSendMsg);
-        adapter = new MessagesAdapter(getContext(), messages);
+        rvChats = view.findViewById(R.id.rvChats);
+        adapter = new ChatsAdapter(getContext(), messages);
 
-        rvMessage.setAdapter(adapter);
+        rvChats.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
 
-        rvMessage.setLayoutManager(linearLayoutManager);
+        rvChats.setLayoutManager(linearLayoutManager);
 
 
         queryMessages();
 
 
-        btnSendMsg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (etNewMsg.getText().toString().isEmpty()) {
-                    Toast.makeText(getContext(), "Message is Empty", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    queryMessages();
-                    etNewMsg.setText("");
-                }
-            }
-        });
 
 
     }
@@ -133,11 +119,11 @@ public class ChatsFragment extends Fragment {
 
         Log.i(TAG, "querySessions: session user id : " + localID);
 
-
+        CollectionReference collectionReference = dataBase.collection(CHAT_PATH);
         Log.i(TAG, "querySessions: ");
 
-        dataBase.collectionGroup(MESSAGE_PATH)
-                .whereEqualTo(field, localID)
+
+        collectionReference
                 .orderBy(Session.KEY_CREATED_AT)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -145,13 +131,36 @@ public class ChatsFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            Message message = documentSnapshot.toObject(Message.class);
-                            newMessages.add(message);
-                        }
+                            if (documentSnapshot.get(field).equals(localID)) {
 
-                        messages.clear();
-                        messages.addAll(newMessages);
-                        adapter.notifyDataSetChanged();
+
+                                //get messages for each Chat object
+                                collectionReference.document(documentSnapshot.getId())
+                                        .collection(ChatsFragment.MESSAGE_PATH)
+                                        .orderBy(Session.KEY_CREATED_AT)
+                                        .limit(1)
+                                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            Message message = document.toObject(Message.class);
+                                            Log.i(TAG, "onComplete: THEY MATCH: " + document.get(Message.KEY_MSG_BODY));
+                                            newMessages.add(message);
+                                            Log.i(TAG, "onComplete: message " + message.getAuthorID());
+                                            Log.i(TAG, "onComplete: message was " + message.getRelativeTimeAgo());
+                                        }
+                                        messages.clear();
+                                        messages.addAll(newMessages);
+                                        Log.i(TAG, "onComplete: messages" + messages);
+                                        adapter.notifyDataSetChanged();
+                                    }
+                                });
+
+
+                            }
+
+
+                        }
                     }
                 });
 

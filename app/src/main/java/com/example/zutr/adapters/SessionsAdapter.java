@@ -1,9 +1,8 @@
-package com.example.zutr;
+package com.example.zutr.adapters;
 
 import android.content.Context;
 import android.content.Intent;
 
-import android.text.LoginFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.R;
+import com.example.zutr.SessionDetailsActivity;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;

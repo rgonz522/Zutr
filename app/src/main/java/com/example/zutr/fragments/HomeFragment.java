@@ -14,9 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.zutr.MainActivity;
 import com.example.zutr.R;
-import com.example.zutr.SessionsAdapter;
+import com.example.zutr.adapters.SessionsAdapter;
 import com.example.zutr.models.Session;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;

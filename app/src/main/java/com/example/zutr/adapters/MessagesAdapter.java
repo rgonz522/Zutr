@@ -1,21 +1,19 @@
-package com.example.zutr;
+package com.example.zutr.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.R;
 import com.example.zutr.models.Message;
-import com.example.zutr.models.Session;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
-import java.util.Map;
 
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
 

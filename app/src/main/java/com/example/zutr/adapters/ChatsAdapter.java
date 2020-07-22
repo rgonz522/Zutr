@@ -1,4 +1,4 @@
-package com.example.zutr;
+package com.example.zutr.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.R;
 import com.example.zutr.models.Message;
-import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;

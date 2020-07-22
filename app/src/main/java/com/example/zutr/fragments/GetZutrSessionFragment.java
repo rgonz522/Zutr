@@ -25,6 +25,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.jivesoftware.smack.chat.Chat;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class GetZutrSessionFragment extends Fragment {
 
     public static final String TAG = "GetZutrSessionFrag";
@@ -171,8 +177,8 @@ public class GetZutrSessionFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        startMainActivity();
 
+                        createMessageChatSession();
 
                     }
                 });
@@ -181,5 +187,31 @@ public class GetZutrSessionFragment extends Fragment {
     private void startMainActivity() {
         Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
+    }
+
+
+    private void createMessageChatSession() {
+
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+
+        Map<String, Object> chat = new HashMap<>();
+        chat.put(ChatsFragment.STUDENT_ID_PATH, userId);
+        chat.put(ChatsFragment.TUTOR_ID_PATH, Session.NO_TUTOR_YET);
+        chat.put(Session.KEY_CREATED_AT, new Date());
+
+
+        FirebaseFirestore.getInstance()
+                .collection(ChatsFragment.CHAT_PATH)
+                .document().set(chat)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        startMainActivity();
+
+                    }
+                });
+
+
     }
 }

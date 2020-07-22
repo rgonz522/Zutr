@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.zutr.MessagesAdapter;
+import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.R;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
@@ -61,7 +61,7 @@ public class MessagesFragment extends Fragment {
         this.remoteID = remoteID;
         localID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        chatDocName = LogInActivity.IS_TUTOR ? (remoteID + localID) : (localID + remoteID);
+        chatDocName = LogInActivity.IS_TUTOR ? remoteID : localID;
 
         Log.i(TAG, "ChatFragment: " + chatDocName);
         Log.i(TAG, "ChatFragment: " + localID);

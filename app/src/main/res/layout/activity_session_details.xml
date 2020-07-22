@@ -3,22 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="20dp"
     tools:context=".SessionDetailsActivity">
 
     <LinearLayout
         android:id="@+id/LinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:layout_marginTop="200dp"
         android:gravity="center"
         android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            tools:text="August 15, 2019" />
 
         <TextView
             android:id="@+id/tvSubject"
@@ -33,7 +28,16 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:textColor="#000000"
+            android:textSize="18sp"
             tools:text="Does benzene happen in mitosis?" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:textColor="#000000"
+            tools:text="August 15, 2019" />
 
         <TextView
             android:id="@+id/tvType"
@@ -57,6 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/LinearLayout"
+        android:layout_margin="20dp"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="50dp"
         android:ems="10"

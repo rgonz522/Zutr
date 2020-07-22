@@ -53,7 +53,7 @@ public class VideoChatActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_chat);
+        setContentView(R.layout.activity_session_details);
 
 
         mVidAuth = VideoAuth.getInstance(this);
@@ -89,8 +89,6 @@ public class VideoChatActivity extends AppCompatActivity {
         configureMediaSettings();
         startCall();
 
-        localView = (QBRTCSurfaceView) findViewById(R.id.local_video_view);
-        remoteView = (QBRTCSurfaceView) findViewById(R.id.remote_video_view);
 
         // Set how the video will fill the allowed layout area
         remoteView.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT);
