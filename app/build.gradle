@@ -15,6 +15,9 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    buildFeatures {
+        viewBinding true
+    }
 
     buildTypes {
            debug {
@@ -88,7 +91,13 @@ dependencies {
 
     implementation "com.github.johnkil.android-robototextview:robototextview:$robotoTextViewVersion"
 
-    implementation "com.quickblox:quickblox-android-sdk-videochat-webrtc:3.7.0"
+    implementation "com.stripe:stripe-java:15.0.0"
+    // Stripe Android SDK
+    implementation 'com.stripe:stripe-android:14.5.0'
 
+    // AndroidX Browser library
+    implementation 'androidx.browser:browser:1.2.0'
+    implementation 'io.github.cdimascio:java-dotenv:5.2.1'
+    implementation "com.sparkjava:spark-core:2.9.1"
 }
 

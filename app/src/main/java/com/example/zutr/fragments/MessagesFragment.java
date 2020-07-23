@@ -1,5 +1,6 @@
 package com.example.zutr.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,15 +21,19 @@ import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.R;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
+import com.example.zutr.payment.ConnectWithStripeActivity;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -55,15 +60,24 @@ public class MessagesFragment extends Fragment {
 
     private String localID;
     private String remoteID;
-    private String chatDocName;
+    private String remoteField;
+    private String localField;
+
+    public MessagesFragment() {
+
+    }
 
     public MessagesFragment(String remoteID) {
         this.remoteID = remoteID;
         localID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        chatDocName = LogInActivity.IS_TUTOR ? remoteID : localID;
-
-        Log.i(TAG, "ChatFragment: " + chatDocName);
+        if (LogInActivity.IS_TUTOR) {
+            remoteField = STUDENT_ID_PATH;
+            localField = TUTOR_ID_PATH;
+        } else {
+            remoteField = TUTOR_ID_PATH;
+            localField = STUDENT_ID_PATH;
+        }
         Log.i(TAG, "ChatFragment: " + localID);
         Log.i(TAG, "ChatFragment: " + remoteID);
         // Required empty public constructor
@@ -95,7 +109,9 @@ public class MessagesFragment extends Fragment {
         rvMessage.setLayoutManager(linearLayoutManager);
 
 
-        queryMessages();
+        if (localField != null && remoteField != null) {
+            queryMessages();
+        }
 
 
         btnSendMsg.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +123,7 @@ public class MessagesFragment extends Fragment {
                     sendMessage(etNewMsg.getText().toString());
                     queryMessages();
                     etNewMsg.setText("");
+
                 }
             }
         });
@@ -139,51 +156,88 @@ public class MessagesFragment extends Fragment {
         Log.i(TAG, "querySessions: ");
 
         dataBase.collection(CHAT_PATH)
-                .document(chatDocName)
-                .collection(MESSAGE_PATH)
-                .orderBy(Session.KEY_CREATED_AT)
+                .whereEqualTo(remoteField, remoteID)
+                .whereEqualTo(localField, localID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            Message message = documentSnapshot.toObject(Message.class);
-                            newMessages.add(message);
+
+                            dataBase.collection(CHAT_PATH)
+                                    .document(documentSnapshot.getId())
+                                    .collection(MESSAGE_PATH)
+                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Message message = document.toObject(Message.class);
+
+                                        newMessages.add(message);
+                                        Log.i(TAG, "onComplete: MessageL " + message.getBody());
+                                    }
+
+                                    updateMessages(newMessages);
+
+                                }
+                            });
+
+
                         }
 
-                        messages.clear();
-                        messages.addAll(newMessages);
-                        adapter.notifyDataSetChanged();
+
                     }
                 });
 
 
     }
 
+    private void updateMessages(List<Message> newMessages) {
 
-    private void sendMessage(String messagebody) {
+        messages.clear();
+        messages.addAll(newMessages);
+        adapter.notifyDataSetChanged();
+
+
+        Collections.sort(messages, new Comparator<Message>() {
+            public int compare(Message message1, Message message2) {
+                return message1.getCreatedAt().compareTo(message2.getCreatedAt());
+            }
+        });
+    }
+
+    private void sendMessage(String messageBody) {
 
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
-        Message message = new Message(messagebody, localID, new Date());
+        Message message = new Message(messageBody, localID, new Date());
 
         //Chats -> user/remote chat-> Messages
         FirebaseFirestore.getInstance().collection(CHAT_PATH)
-                .document(chatDocName)
-                .collection(MESSAGE_PATH)
-                .document(new Date().toString())
-                .set(message)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                .whereEqualTo(remoteField, remoteID)
+                .whereEqualTo(localField, localID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                        Log.i(TAG, "onComplete: created message");
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                            FirebaseFirestore.getInstance()
+                                    .collection(CHAT_PATH)
+                                    .document(documentSnapshot.getId())
+                                    .collection(MESSAGE_PATH)
+                                    .document(new Date().toString())
+                                    .set(message);
+                            messages.add(message);
+                        }
+
                     }
                 });
 
-
     }
+
 
 }

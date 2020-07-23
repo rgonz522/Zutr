@@ -23,12 +23,15 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.stripe.*;
+
 public class SignUpActivity extends AppCompatActivity {
 
     public static final String TUTOR_PATH = "zutr";
     public static final String STUDENT_PATH = "student";
     private static final String TAG = "SignUpActivity";
 
+    private String secretStripeKey;
 
     private Button btnSignUp;
     private EditText etUserName;
@@ -44,6 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    private Stripe stripe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,8 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         final boolean tutor = getIntent().getBooleanExtra("Tutor", false);
+
+        secretStripeKey = getResources().getString(R.string.stipesecretkey);
 
 
         btnSignUp = findViewById(R.id.btnSignUp);

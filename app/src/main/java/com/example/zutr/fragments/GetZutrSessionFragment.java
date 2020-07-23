@@ -177,8 +177,10 @@ public class GetZutrSessionFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+                        if (typeOfSession == Session.SESSION_TEXT) {
+                            createMessageChatSession();
+                        }
 
-                        createMessageChatSession();
 
                     }
                 });

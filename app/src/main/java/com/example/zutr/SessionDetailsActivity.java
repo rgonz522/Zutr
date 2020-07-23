@@ -39,7 +39,9 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private TextView tvTutor;
     private TextView tvQuestion;
     private TextView tvType;
+    private TextView tvAnswered;
     private EditText etAnswer;
+
 
     private Button btnZutrStart;
 
@@ -54,6 +56,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         tvSubject = findViewById(R.id.tvSubject);
         tvQuestion = findViewById(R.id.tvQuestion);
         tvType = findViewById(R.id.tvType);
+        tvAnswered = findViewById(R.id.tvAnswered);
         btnZutrStart = findViewById(R.id.btnZutrStart);
         etAnswer = findViewById(R.id.etAnswer);
 
@@ -66,13 +69,14 @@ public class SessionDetailsActivity extends AppCompatActivity {
         tvSubject.setText(session.getSubject());
         tvQuestion.setText(session.getQuestion());
         tvType.setText(getTypeSession(session.getSessionType()));
-
+        tvAnswered.setText("Answer: \n\n" + session.getAnswer());
 
         Log.i(TAG, "onCreate: " + session.getSessionType());
 
 
         if (LogInActivity.IS_TUTOR && hasNoTutor(session.getTutorId())) {
 
+            tvAnswered.setVisibility(View.GONE);
             btnZutrStart.setVisibility(View.VISIBLE);
             btnZutrStart.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -101,6 +105,9 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 break;
             case Session.SESSION_VIDEO:
                 type = "Video Session";
+                break;
+            case Session.SESSION_QUESTION:
+                type = "Question";
                 break;
         }
         Log.i(TAG, "getTypeSession: " + type + "code:" + typecode);

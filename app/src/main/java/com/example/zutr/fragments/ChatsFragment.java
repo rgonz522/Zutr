@@ -93,8 +93,6 @@ public class ChatsFragment extends Fragment {
         queryMessages();
 
 
-
-
     }
 
     @Override
@@ -114,6 +112,7 @@ public class ChatsFragment extends Fragment {
     private void queryMessages() {
 
         String field = LogInActivity.IS_TUTOR ? TUTOR_ID_PATH : STUDENT_ID_PATH;
+        String remoteField = LogInActivity.IS_TUTOR ? STUDENT_ID_PATH : TUTOR_ID_PATH;
 
         final List<Message> newMessages = new ArrayList<>();
 
@@ -133,6 +132,7 @@ public class ChatsFragment extends Fragment {
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                             if (documentSnapshot.get(field).equals(localID)) {
 
+                                String remoteID = documentSnapshot.getString(remoteField);
 
                                 //get messages for each Chat object
                                 collectionReference.document(documentSnapshot.getId())
@@ -143,7 +143,10 @@ public class ChatsFragment extends Fragment {
                                     @Override
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         for (QueryDocumentSnapshot document : task.getResult()) {
-                                            Message message = document.toObject(Message.class);
+                                            Message message = new Message();
+                                            message.setAuthorID(remoteID);
+                                            message.setCreatedAt(document.getDate(Message.KEY_CREATEDAT));
+                                            message.setBody(document.getString(Message.KEY_MSG_BODY));
                                             Log.i(TAG, "onComplete: THEY MATCH: " + document.get(Message.KEY_MSG_BODY));
                                             newMessages.add(message);
                                             Log.i(TAG, "onComplete: message " + message.getAuthorID());

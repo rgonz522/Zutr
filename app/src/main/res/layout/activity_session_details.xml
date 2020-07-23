@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_margin="20dp"
     tools:context=".SessionDetailsActivity">
 
@@ -77,5 +77,18 @@
         android:layout_marginTop="30dp"
         android:backgroundTint="@color/colorLilac"
         android:text="Accept Session" />
+
+    <TextView
+        android:id="@+id/tvAnswered"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/etAnswer"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimary"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorWhite"
+        android:textSize="18sp"
+        tools:text="Well it  happened" />
 
 </RelativeLayout>

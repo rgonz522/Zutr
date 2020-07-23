@@ -1,6 +1,9 @@
 package com.example.zutr.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,7 @@ import java.util.List;
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
 
 
+    public static final String TAG = "MessagesAdapter";
     List<Message> messages;
 
     Context context;
@@ -76,12 +80,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         public void bind(Message message) {
 
             if (message.getAuthorID().equals(currentUserID)) {
-                tvMsgBody.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-                tvMsgTime.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+                Log.i(TAG, "bind: " + true);
+                tvMsgBody.setGravity(Gravity.RIGHT);
+                tvMsgTime.setGravity(Gravity.RIGHT);
             }
             tvMsgTime.setText(message.getRelativeTimeAgo());
             tvMsgBody.setText(message.getBody());
 
+
         }
+
+
     }
 }

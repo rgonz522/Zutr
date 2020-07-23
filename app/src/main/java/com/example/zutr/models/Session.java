@@ -12,6 +12,7 @@ public class Session implements Serializable {
 
     public static final String QUESTION_TIME = "000";
     public static final String NO_TUTOR_YET = "404";
+
     public static final String KEY_CREATED_AT = "createdAt";
 
 
@@ -29,6 +30,7 @@ public class Session implements Serializable {
     public static final int SESSION_VIDEO = 100023;
     public static final int SESSION_CALL = 102345;
     public static final int SESSION_TEXT = 102875;
+    public static final int SESSION_QUESTION = 0;
 
 
     private String question;

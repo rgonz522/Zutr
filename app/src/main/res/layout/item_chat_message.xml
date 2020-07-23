@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvChatMsg"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:layout_height="match_parent"
+        android:layout_margin="20dp">
 
-    <TextView
-        android:id="@+id/tvMsgTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView" />
+
+        <TextView
+            android:id="@+id/tvChatMsg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="0dp"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            tools:text="MESSAGE" />
+
+        <TextView
+            android:id="@+id/tvMsgTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tvChatMsg"
+            android:layout_marginTop="20dp"
+            tools:text="3 hours ago" />
+
+    </RelativeLayout>
 </LinearLayout>

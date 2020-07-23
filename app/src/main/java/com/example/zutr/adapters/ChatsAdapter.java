@@ -8,9 +8,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.MainActivity;
 import com.example.zutr.R;
+import com.example.zutr.fragments.ChangeProfilePicFragment;
+import com.example.zutr.fragments.GetZutrSessionFragment;
+import com.example.zutr.fragments.MessagesFragment;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -86,13 +93,25 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
         public void bind(Message message) {
 
 
-            tvAuthor.setText(getContactFullName(message.getAuthorID()));
+            updateContactFullName(message.getAuthorID());
             tvLastMessage.setText(message.getBody());
+
+            Log.i(TAG, "bind: " + message.getAuthorID());
+            Log.i(TAG, "bind: " + message.getBody());
+
+            tvAuthor.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int index = getAdapterPosition();
+
+                    openChatWith(messages.get(index).getAuthorID());
+                }
+            });
 
         }
 
 
-        public String getContactFullName(String remotedID) {
+        public String updateContactFullName(String remotedID) {
 
             String collectionPath = "";
             if (LogInActivity.IS_TUTOR) {
@@ -117,13 +136,26 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
                     if (task.isSuccessful()) {
                         userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME) + task.getResult().getString(User.KEY_LASTNAME));
                         Log.i(TAG, "getUserRealName: " + userRealName);
-
+                        tvAuthor.setText(userRealName);
 
                     }
                 }
             });
 
             return userRealName.toString();
+
+
+        }
+
+
+        public void openChatWith(String tutorID) {
+
+            Log.i(TAG, "openChatWith: " + tutorID);
+            MessagesFragment messagesFragment = new MessagesFragment(tutorID);
+            FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.flContainer, messagesFragment);
+            fragmentTransaction.commit();
 
 
         }
