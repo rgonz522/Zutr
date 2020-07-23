@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 
@@ -93,7 +94,12 @@ public class MainActivity extends AppCompatActivity {
                         fragment = null;
                 }
 
-                fragmentManager.beginTransaction().replace(R.id.flContainer, fragment).commit();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
+                transaction.replace(R.id.flContainer, fragment);
+                transaction.commit();
+
+
                 return true;
             }
         });

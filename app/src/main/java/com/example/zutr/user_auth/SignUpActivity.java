@@ -149,6 +149,12 @@ public class SignUpActivity extends AppCompatActivity {
                             createNewUser(new Student(username, first_name, last_name, email, address), path, task.getResult().getUser().getUid());
                             startLoginActivity();
 
+                            etEmail.setText("");
+                            etPassword.setText("");
+                            etAddress.setText("");
+                            etFirstName.setText("");
+                            etLastName.setText("");
+                            etUserName.setText("");
 
                         } else {
                             Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG).show();
