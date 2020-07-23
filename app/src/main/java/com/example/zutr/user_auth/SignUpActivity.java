@@ -17,13 +17,13 @@ import com.example.zutr.models.Student;
 import com.example.zutr.models.User;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import com.stripe.*;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -31,7 +31,7 @@ public class SignUpActivity extends AppCompatActivity {
     public static final String STUDENT_PATH = "student";
     private static final String TAG = "SignUpActivity";
 
-    private String secretStripeKey;
+
 
     private Button btnSignUp;
     private EditText etUserName;
@@ -47,7 +47,6 @@ public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
-    private Stripe stripe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +54,6 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         final boolean tutor = getIntent().getBooleanExtra("Tutor", false);
-
-        secretStripeKey = getResources().getString(R.string.stipesecretkey);
 
 
         btnSignUp = findViewById(R.id.btnSignUp);
@@ -154,13 +151,21 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                         } else {
-                            Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG);
+                            Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG).show();
+                            etEmail.setError(getString(R.string.input_error_email_invalid));
+                            etEmail.requestFocus();
                             Log.e(TAG, "onComplete: task failed ", task.getException());
                         }
 
 
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG);
+                Log.e(TAG, "onComplete: task failed ", e);
+            }
+        });
 
 
     }
@@ -175,6 +180,7 @@ public class SignUpActivity extends AppCompatActivity {
 
 
                         Log.i(TAG, "onSuccess: " + task.getResult());
+
                     }
                 });
 

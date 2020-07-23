@@ -28,7 +28,6 @@ import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
 
 
-import com.example.zutr.qbChatVideo.VideoChatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -97,15 +96,7 @@ public class ProfileFragment extends Fragment {
         btnSignUp = view.findViewById(R.id.btnSignOut);
 
 
-        tvUsername.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Intent intent = new Intent(getContext(), VideoChatActivity.class);
-                intent.putExtra(VideoChatActivity.RECEIVER_KEY, 116348644);
-                startActivity(intent);
-            }
-        });
 
         database.collection(path).document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

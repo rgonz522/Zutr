@@ -20,13 +20,12 @@ import android.widget.Toast;
 import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.R;
 import com.example.zutr.models.Message;
-import com.example.zutr.models.Session;
-import com.example.zutr.payment.ConnectWithStripeActivity;
+
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
