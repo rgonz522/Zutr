@@ -80,8 +80,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
             btnZutrStart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString());
+                    startCheckoutActivity();
+                    updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType());
 
                 }
             });
@@ -120,7 +120,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void updateSessionTutor(String studentId, String question, final String answer) {
+    private void updateSessionTutor(String studentId, String question, final String answer, int sessionType) {
 
         final FirebaseFirestore dataBase = FirebaseFirestore.getInstance();
 
@@ -137,7 +137,11 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
                                 dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_TUTOR_UID, currentUserID);
                                 dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, answer);
-                                updateChat(studentId, currentUserID, document.getDate(Session.KEY_CREATED_AT), answer);
+
+
+                                if (sessionType == Session.SESSION_TEXT) {
+                                    updateChat(studentId, currentUserID, document.getDate(Session.KEY_CREATED_AT), answer);
+                                }
                                 Log.i(TAG, "onComplete: ");
 
                             }
@@ -198,5 +202,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
     }
 
+
+    public void startCheckoutActivity() {
+
+        Intent paymentMethod = new Intent(this, CheckoutActivity.class);
+        startActivity(paymentMethod);
+
+
+    }
 
 }
