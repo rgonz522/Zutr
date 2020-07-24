@@ -2,6 +2,8 @@ package com.example.zutr;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.zutr.fragments.ChangeProfilePicFragment;
 import com.example.zutr.fragments.ChatsFragment;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
@@ -80,7 +83,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
             btnZutrStart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startCheckoutActivity();
+                    startCheckoutFragment();
                     updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType());
 
                 }
@@ -203,12 +206,14 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    public void startCheckoutActivity() {
+    public void startCheckoutFragment() {
 
-        Intent paymentMethod = new Intent(this, CheckoutActivity.class);
-        startActivity(paymentMethod);
+        CheckoutFragment checkoutFragment = new CheckoutFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frameLayout, checkoutFragment);
+        fragmentTransaction.commit();
 
 
     }
-
 }

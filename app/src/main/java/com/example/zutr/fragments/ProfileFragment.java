@@ -105,8 +105,12 @@ public class ProfileFragment extends Fragment {
                 if (task.isSuccessful()) {
                     DocumentSnapshot documentSnapshot = task.getResult();
 
+                    Log.i(TAG, "onComplete: userID" + user.getUid());
+
                     tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
+                    Log.i(TAG, "onComplete: " + tvUsername.getText());
                     tvFullName.setText(String.format("%s  %s", documentSnapshot.get(User.KEY_FIRSTNAME), documentSnapshot.get(User.KEY_LASTNAME)));
+
 
                     Log.i(TAG, "onComplete: name: " + tvUsername.getText() + tvFullName.getText());
                 }

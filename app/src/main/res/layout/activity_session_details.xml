@@ -1,94 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="20dp"
-    tools:context=".SessionDetailsActivity">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/LinearLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:layout_marginTop="200dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        tools:context=".SessionDetailsActivity">
 
-        <TextView
-            android:id="@+id/tvSubject"
+
+        <LinearLayout
+            android:id="@+id/LinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            tools:text="Math " />
+            android:layout_margin="20dp"
+            android:layout_marginTop="200dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvQuestion"
+            <TextView
+                android:id="@+id/tvSubject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                tools:text="Math " />
+
+            <TextView
+                android:id="@+id/tvQuestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                tools:text="Does benzene happen in mitosis?" />
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textColor="#000000"
+                tools:text="August 15, 2019" />
+
+            <TextView
+                android:id="@+id/tvType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                tools:text="Video 30 mins" />
+
+            <TextView
+                android:id="@+id/tvWage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textSize="18sp"
+                tools:text="$8.79" />
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/etAnswer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:textColor="#000000"
-            android:textSize="18sp"
-            tools:text="Does benzene happen in mitosis?" />
+            android:layout_below="@+id/LinearLayout"
+            android:layout_margin="20dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginBottom="50dp"
+            android:ems="10"
+            android:hint="Be as descriptive as possible "
+            android:inputType="textMultiLine" />
 
-        <TextView
-            android:id="@+id/tvDate"
+        <Button
+            android:id="@+id/btnZutrStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:textColor="#000000"
-            tools:text="August 15, 2019" />
+            android:layout_below="@+id/etAnswer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/colorLilac"
+            android:text="Accept Session" />
 
         <TextView
-            android:id="@+id/tvType"
+            android:id="@+id/tvAnswered"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            tools:text="Video 30 mins" />
-
-        <TextView
-            android:id="@+id/tvWage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/etAnswer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimary"
             android:gravity="center_horizontal"
+            android:textColor="@color/colorWhite"
             android:textSize="18sp"
-            tools:text="$8.79" />
+            tools:text="Well it  happened" />
 
-    </LinearLayout>
 
-    <EditText
-        android:id="@+id/etAnswer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/LinearLayout"
-        android:layout_margin="20dp"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="50dp"
-        android:ems="10"
-        android:hint="Be as descriptive as possible "
-        android:inputType="textMultiLine" />
-
-    <Button
-        android:id="@+id/btnZutrStart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/etAnswer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="@color/colorLilac"
-        android:text="Accept Session" />
-
-    <TextView
-        android:id="@+id/tvAnswered"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/etAnswer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@color/colorPrimary"
-        android:gravity="center_horizontal"
-        android:textColor="@color/colorWhite"
-        android:textSize="18sp"
-        tools:text="Well it  happened" />
-
-</RelativeLayout>
+    </RelativeLayout>
+</FrameLayout>
