@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.zutr.fragments.ChangeProfilePicFragment;
@@ -43,6 +44,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private TextView tvType;
     private TextView tvAnswered;
     private EditText etAnswer;
+    private RelativeLayout relativeLayout;
 
 
     private Button btnZutrStart;
@@ -61,6 +63,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
         tvAnswered = findViewById(R.id.tvAnswered);
         btnZutrStart = findViewById(R.id.btnZutrStart);
         etAnswer = findViewById(R.id.etAnswer);
+        relativeLayout = findViewById(R.id.rlDetails);
+
 
         Intent intent = getIntent();
         final Session session = (Session) intent.getSerializableExtra(Session.PATH);
@@ -212,6 +216,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frameLayout, checkoutFragment);
+        relativeLayout.setVisibility(View.GONE);
         fragmentTransaction.commit();
 
 

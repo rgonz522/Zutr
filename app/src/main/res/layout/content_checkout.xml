@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_checkout"
-    tools:context=".CheckoutActivityJava">
+    tools:showIn="@layout/activity_checkout">
 
     <com.stripe.android.view.CardInputWidget
         android:id="@+id/cardInputWidget"

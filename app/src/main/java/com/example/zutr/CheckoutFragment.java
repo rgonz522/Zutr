@@ -13,37 +13,33 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.fragment.app.Fragment;
 
-import com.example.zutr.fragments.ChatsFragment;
-import com.example.zutr.models.Session;
+
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.stripe.android.ApiResultCallback;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.Card;
+
+import com.stripe.android.model.Customer;
+import com.stripe.android.model.PaymentMethod;
+import com.stripe.android.model.PaymentMethodCreateParams;
+import com.stripe.android.model.Source;
+import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
 import com.stripe.android.view.CardInputWidget;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +50,7 @@ public class CheckoutFragment extends Fragment {
     public static final String TAG = "CheckoutActivity";
     public static final String STRIPE_CUSTOMER_PATH = "stripe_customers";
     public static final String CARD_TOKEN = "tokens";
+    public static final String CUSTOMER_ID = "customer_id";
 
 
     private Stripe stripe;
@@ -107,43 +104,48 @@ public class CheckoutFragment extends Fragment {
                 Log.i(TAG, "onClick: ");
                 Card card = cardInputWidget.getCard();
 
+
                 if (card != null) {
-                    // Create a Stripe Token from the card details
 
-                    stripe.createToken(card, new ApiResultCallback<Token>() {
+                    SourceParams params = SourceParams.createCardParams(card);
 
+                    Log.i(TAG, "onClick: " + params.getReturnUrl());
+
+                    stripe.createSource(params, new ApiResultCallback<Source>() {
                         @Override
-                        public void onSuccess(@NonNull Token result) {
+                        public void onSuccess(Source source) {
 
-                            // stripe.c(result);
-                            resetApp();
-                            Log.i(TAG, "onSuccess: token created");
+                            Log.i(TAG, "onSuccess: " + source.getId());
+                            source.getId();
+                            updateSourceStripe(source);
+
                         }
 
                         @Override
                         public void onError(@NotNull Exception e) {
-                            Log.e(TAG, "onError: ", e);
+
                         }
-
-
                     });
+
+
+                    // Create a Stripe Token from the card details
+                    getCustomer();
+
                 }
 
             }
-
-
         });
     }
 
-    private void updateSourceStripe(Token result) {
+    private void updateSourceStripe(Source result) {
+
 
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-
         Map<String, Object> source = new HashMap<>();
-        source.put("id", result.getId());
-        source.put("object", result.component1());
+        source.put("source", result);
+
 
         Log.i(TAG, "updateSourceStripe: " + source.toString());
 
@@ -161,6 +163,31 @@ public class CheckoutFragment extends Fragment {
                 });
 
 
+    }
+
+    public void getCustomer() {
+
+
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+
+        database.collection(STRIPE_CUSTOMER_PATH).document(uid).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                        if (task.isSuccessful()) {
+                            String id = task.getResult().getString(CUSTOMER_ID);
+
+                            Customer customer = Customer.fromString(id);
+
+
+                        }
+
+
+                    }
+                });
     }
 
 
