@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/etNewMessage"
-            android:background="@color/colorLilac"
+            android:background="#D1C4E9"
             android:layout_marginBottom="32dp">
 
         </androidx.recyclerview.widget.RecyclerView>

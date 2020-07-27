@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.zutr.fragments.ChangeProfilePicFragment;
 import com.example.zutr.fragments.ChatsFragment;
@@ -21,15 +22,27 @@ import com.example.zutr.models.Session;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.reflect.TypeToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import com.stripe.android.PaymentIntentResult;
+import com.stripe.android.Stripe;
 
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 
 public class SessionDetailsActivity extends AppCompatActivity {
 
@@ -212,13 +225,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
     public void startCheckoutFragment() {
 
-        CheckoutFragment checkoutFragment = new CheckoutFragment();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frameLayout, checkoutFragment);
-        relativeLayout.setVisibility(View.GONE);
-        fragmentTransaction.commit();
+        Intent intent = new Intent(this, CheckoutActivity.class);
+        startActivity(intent);
 
 
     }
+
+
+
+
 }

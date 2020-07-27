@@ -3,10 +3,13 @@ package com.example.zutr.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -76,6 +79,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             super(itemView);
 
 
+
             tvMsgBody = itemView.findViewById(R.id.tvChatMsg);
             tvMsgTime = itemView.findViewById(R.id.tvMsgTime);
             mathView = itemView.findViewById(R.id.mathview);
@@ -87,15 +91,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
             if (message.getAuthorID().equals(currentUserID)) {
                 Log.i(TAG, "bind: " + true);
-                tvMsgBody.setGravity(Gravity.RIGHT);
+
                 tvMsgTime.setGravity(Gravity.RIGHT);
                 rlMessage.setGravity(Gravity.RIGHT);
-            }
-            tvMsgTime.setText(message.getRelativeTimeAgo());
-            tvMsgBody.setText(message.getBody());
-            mathView.setLatex(message.getBody());
+                mathView.setTextAlignment(MTMathView.MTTextAlignment.KMTTextAlignmentRight);
 
-            mathView.setTextAlignment(MTMathView.MTTextAlignment.KMTTextAlignmentRight);
+
+            } else {
+                mathView.setTextAlignment(MTMathView.MTTextAlignment.KMTTextAlignmentLeft);
+            }
+
+            tvMsgTime.setText(message.getRelativeTimeAgo());
+
+            mathView.setLatex(message.getBody());
+            mathView.setFontSize(40);
 
 
         }

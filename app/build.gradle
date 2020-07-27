@@ -26,12 +26,10 @@ android {
                 shrinkResources false
                 proguardFile 'proguard-rules.pro'
                 zipAlignEnabled false
-                resValue "string", "versionName", "QuickBlox Video Chat Java\nBuild version " + defaultConfig.getVersionName()
-            }
+           }
 
             release {
                 signingConfig signingConfigs.debug
-                resValue "string", "versionName", "QuickBlox Video Chat Java\nBuild version " + defaultConfig.getVersionName()
             }
         }
 
