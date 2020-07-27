@@ -16,7 +16,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.example.zutr.CheckoutActivity;
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Session;
@@ -26,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,11 +85,15 @@ public class GetZutrSessionFragment extends Fragment {
 
 
         spnTypeSession = view.findViewById(R.id.spnTypeSession);
+        spnSubject = view.findViewById(R.id.spnSubject);
         sbPrice = view.findViewById(R.id.sbPrice);
         etPrice = view.findViewById(R.id.etHourlyPrice);
         etQuestion = view.findViewById(R.id.etQuestion);
         btnSubmit = view.findViewById(R.id.btnSubmitSession);
 
+        etPrice.setClickable(false);
+        etPrice.setText("$10");
+        //price is 10$ for the time being
 
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> typeSessionAdapter;
@@ -96,11 +103,24 @@ public class GetZutrSessionFragment extends Fragment {
         // Apply the adapter to the spinner
         spnTypeSession.setAdapter(typeSessionAdapter);
 
+        typeSessionAdapter = ArrayAdapter.createFromResource(getContext(), R.array.subjects, android.R.layout.simple_spinner_item);
+
+        typeSessionAdapter.sort(new Comparator<CharSequence>() {
+            @Override
+            public int compare(CharSequence charSequence, CharSequence t1) {
+                return charSequence.toString().compareTo(t1.toString());
+            }
+        });
+        // Specify the layout to use when the list of choices appears
+        typeSessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnSubject.setAdapter(typeSessionAdapter);
+
         sbPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                etPrice.setText("$" + i / CONVERT_SEEK_2_DOLLARS);
-                Log.i(TAG, "onProgressChanged: :" + spnTypeSession.getSelectedItem());
+                //etPrice.setText("$" + i / CONVERT_SEEK_2_DOLLARS);
+                Toast.makeText(getContext(), "Price is 10$", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -118,6 +138,7 @@ public class GetZutrSessionFragment extends Fragment {
                 Double price = getPrice(etPrice.getText().toString());
                 String question = etQuestion.getText().toString();
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                String subject = spnSubject.getSelectedItem().toString();
 
                 int typeSession = 0;
                 switch (spnTypeSession.getSelectedItem().toString()) {
@@ -132,9 +153,11 @@ public class GetZutrSessionFragment extends Fragment {
                         break;
 
                 }
-                if (price != null && !question.isEmpty() && !userId.isEmpty() && typeSession != 0) {
-                    saveSession(userId, price, question, typeSession);
-                    //TODO: Insert Payment/Charging Method.
+
+                if (price != null && !subject.isEmpty()
+                        && !question.isEmpty() && !userId.isEmpty() && typeSession != 0) {
+                    saveSession(userId, subject, price, question, typeSession);
+
                 }
 
             }
@@ -164,13 +187,14 @@ public class GetZutrSessionFragment extends Fragment {
 
     }
 
-    private void saveSession(String currentUser, Double price, final String question, int typeOfSession) {
+    private void saveSession(String currentUser, String subject, Double price, final String question, int typeOfSession) {
 
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
 
         Session session = new Session(currentUser, price, question, typeOfSession);
+        session.setSubject(subject);
 
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -183,11 +207,6 @@ public class GetZutrSessionFragment extends Fragment {
 
                     }
                 });
-    }
-
-    private void startMainActivity() {
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        startActivity(intent);
     }
 
 
@@ -208,11 +227,23 @@ public class GetZutrSessionFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        startMainActivity();
-
+                        startCheckOut();
                     }
                 });
 
+
+    }
+
+
+    private void startCheckOut() {
+        Intent intent = new Intent(getContext(), CheckoutActivity.class);
+        startActivity(intent);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
     }
 }

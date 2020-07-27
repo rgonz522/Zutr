@@ -161,7 +161,7 @@ public class CheckoutActivity extends AppCompatActivity {
         );
     }
 
-    private static final class PayCallback implements Callback {
+    private final class PayCallback implements Callback {
         @NonNull
         private final WeakReference<CheckoutActivity> activityRef;
 
@@ -205,7 +205,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
     }
 
-    private static final class PaymentResultCallback
+    private final class PaymentResultCallback
             implements ApiResultCallback<PaymentIntentResult> {
         @NonNull
         private final WeakReference<CheckoutActivity> activityRef;
@@ -226,11 +226,7 @@ public class CheckoutActivity extends AppCompatActivity {
             if (status == PaymentIntent.Status.Succeeded) {
                 // Payment completed successfully
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                activity.displayAlert(
-                        "Payment completed",
-                        gson.toJson(paymentIntent),
-                        true
-                );
+                resetApp();
             } else if (status == PaymentIntent.Status.RequiresPaymentMethod) {
                 // Payment failed – allow retrying using a different payment method
                 activity.displayAlert(
@@ -250,6 +246,12 @@ public class CheckoutActivity extends AppCompatActivity {
 
             // Payment request failed – allow retrying using the same payment method
             activity.displayAlert("Error", e.toString(), false);
+        }
+
+
+        private void resetApp() {
+            Intent intent = new Intent(CheckoutActivity.this, MainActivity.class);
+            startActivity(intent);
         }
     }
 }

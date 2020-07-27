@@ -100,7 +100,6 @@ public class SessionDetailsActivity extends AppCompatActivity {
             btnZutrStart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    startCheckoutFragment();
                     updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType());
 
                 }
@@ -223,13 +222,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    public void startCheckoutFragment() {
 
-        Intent intent = new Intent(this, CheckoutActivity.class);
-        startActivity(intent);
-
-
-    }
 
 
 

@@ -16,7 +16,9 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.zutr.CheckoutActivity;
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Session;
@@ -72,11 +74,16 @@ public class GetZutrQuestionFragment extends Fragment {
         etPrice = view.findViewById(R.id.tvWage);
         etQuestion = view.findViewById(R.id.multetQuestion);
 
+        etPrice.setText("$10");
+        etPrice.setClickable(false);
+        //price is set at 10$ for the time being
+
+
         sbPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
 
-                etPrice.setText("$" + i / 4.0);
+                Toast.makeText(getContext(), "Price is 10$", Toast.LENGTH_SHORT).show();
 
             }
 
@@ -103,7 +110,6 @@ public class GetZutrQuestionFragment extends Fragment {
                 if (price != null && !question.isEmpty() && !userEmail.isEmpty()) {
                     saveSession(userEmail, price, question);
 
-                    //TODO: Insert Payment/Charging Method.
 
                 }
 
@@ -149,15 +155,23 @@ public class GetZutrQuestionFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        startMainActivity();
+                        startCheckOut();
                     }
                 });
 
 
     }
 
-    private void startMainActivity() {
-        Intent intent = new Intent(getContext(), MainActivity.class);
+    private void startCheckOut() {
+        Intent intent = new Intent(getContext(), CheckoutActivity.class);
         startActivity(intent);
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
 }
