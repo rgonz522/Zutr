@@ -72,14 +72,12 @@ public class LogInActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
 
-        Log.i(TAG, "onCreate: login right befoe mVidAuth instance");
-
 
         if (mAuth.getCurrentUser() != null) {
 
             isTutor();
 
-
+            Log.i(TAG, "onCreate: already signed in");
         }
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);

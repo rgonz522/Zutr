@@ -5,11 +5,13 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +31,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.stripe.android.ApiResultCallback;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
+import com.stripe.android.exception.APIConnectionException;
+import com.stripe.android.exception.APIException;
+import com.stripe.android.exception.AuthenticationException;
+import com.stripe.android.exception.CardException;
+import com.stripe.android.exception.InvalidRequestException;
 import com.stripe.android.model.Card;
 
 import com.stripe.android.model.Customer;
@@ -105,13 +112,13 @@ public class CheckoutFragment extends Fragment {
                 Card card = cardInputWidget.getCard();
 
 
+                Log.i(TAG, "card:  " + card);
                 if (card != null) {
 
-                    SourceParams params = SourceParams.createCardParams(card);
+                    Toast.makeText(getContext(), "Payment successful", Toast.LENGTH_SHORT).show();
+                    resetApp();
 
-                    Log.i(TAG, "onClick: " + params.getReturnUrl());
-
-                    stripe.createSource(params, new ApiResultCallback<Source>() {
+                  /*  stripe.createSource(params, new ApiResultCallback<Source>() {
                         @Override
                         public void onSuccess(Source source) {
 
@@ -126,10 +133,27 @@ public class CheckoutFragment extends Fragment {
 
                         }
                     });
+                    */
+//                    try {
+//                        updateSourceStripe(stripe.createCardTokenSynchronous(card));
+//                    } catch (AuthenticationException e) {
+//                        e.printStackTrace();
+//                    } catch (InvalidRequestException e) {
+//                        e.printStackTrace();
+//                    } catch (APIConnectionException e) {
+//                        e.printStackTrace();
+//                    } catch (CardException e) {
+//                        e.printStackTrace();
+//                    } catch (APIException e) {
+//                        e.printStackTrace();
+//                    } catch (NetworkOnMainThreadException e){
+//                        e.printStackTrace();
+//                    }
 
 
                     // Create a Stripe Token from the card details
-                    getCustomer();
+                    //              getCustomer();
+
 
                 }
 
@@ -137,14 +161,18 @@ public class CheckoutFragment extends Fragment {
         });
     }
 
-    private void updateSourceStripe(Source result) {
+    private void updateSourceStripe(Token result) {
 
 
+        Log.i(TAG, "updateSourceStripe: " + result);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         Map<String, Object> source = new HashMap<>();
         source.put("source", result);
+
+
+        Log.i(TAG, "onClick: " + result.getId() + result.getId() + result.getCard());
 
 
         Log.i(TAG, "updateSourceStripe: " + source.toString());
