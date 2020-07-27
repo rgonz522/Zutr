@@ -26,34 +26,121 @@
         <item>Introduction to Business</item>
         <item>Marketing</item>
         <item>Personal finance</item>
-
-        <item>Entrepreneurial skills</item>
-        <item>Accounting</item>
-        <item>Business Law</item>
-        <item>Business Management</item>
-        <item>Consumer Education</item>
-        <item>Entrepreneurial skills</item>
-        <item>Accounting</item>
-        <item>Business Law</item>
-        <item>Business Management</item>
-        <item>Consumer Education</item>
-        <item>Entrepreneurial skills</item>
-        <item>Accounting</item>
-        <item>Business Law</item>
-        <item>Business Management</item>
-        <item>Consumer Education</item>
-        <item>Entrepreneurial skills</item>
-        <item>Accounting</item>
-        <item>Business Law</item>
-        <item>Business Management</item>
-        <item>Consumer Education</item>
-        <item>Entrepreneurial skills</item>
-        <item>Accounting</item>
-        <item>Business Law</item>
-        <item>Business Management</item>
-        <item>Consumer Education</item>
-        <item>Entrepreneurial skills</item>
-
+        <item>Animation</item>
+        <item>App development</item>
+        <item>Audio production</item>
+        <item>Computer programming</item>
+        <item>Computer repair</item>
+        <item>Film production</item>
+        <item>Graphic design</item>
+        <item>Media technology</item>
+        <item>Music production</item>
+        <item>Typing</item>
+        <item>Video game development</item>
+        <item>Web design</item>
+        <item>Web programming</item>
+        <item>Word processing</item>
+        <item>American literature</item>
+        <item>British literature</item>
+        <item>Contemporary literature</item>
+        <item>Creative writing</item>
+        <item>Communication skills</item>
+        <item>Debate</item>
+        <item>English language and composition</item>
+        <item>English literature and composition</item>
+        <item>Humanities</item>
+        <item>Journalism</item>
+        <item>Literary analysis</item>
+        <item>Modern literature</item>
+        <item>Poetry</item>
+        <item>Popular literature</item>
+        <item>Rhetoric</item>
+        <item>Technical writing</item>
+        <item>Works of Shakespeare</item>
+        <item>World literature</item>
+        <item>Written and oral communication</item>
+        <item>American Sign Language</item>
+        <item>Ancient Greek</item>
+        <item>Arabic</item>
+        <item>Chinese</item>
+        <item>French</item>
+        <item>German</item>
+        <item>Hebrew</item>
+        <item>Italian</item>
+        <item>Japanese</item>
+        <item>Korean</item>
+        <item>Latin</item>
+        <item>Portuguese</item>
+        <item>Russian</item>
+        <item>Spanish</item>
+        <item>Algebra 1</item>
+        <item>Algebra 2</item>
+        <item>Calculus</item>
+        <item>Computer math</item>
+        <item>Consumer math</item>
+        <item>Fundamentals of math</item>
+        <item>Geometry</item>
+        <item>Integrated math</item>
+        <item>Math applications</item>
+        <item>Multivariable calculus</item>
+        <item>Practical math</item>
+        <item>Pre-algebra</item>
+        <item>Pre-calculus</item>
+        <item>Probability</item>
+        <item>Quantitative literacy</item>
+        <item>Statistics</item>
+        <item>Trigonometry</item>
+        <item>Music theory</item>
+        <item>Concert band</item>
+        <item>Theater technology</item>
+        <item>World music</item>
+        <item>Fine arts</item>
+        <item>Lifeguard training</item>
+        <item>Agriculture</item>
+        <item>Astronomy</item>
+        <item>Biology</item>
+        <item>Botany</item>
+        <item>Chemistry</item>
+        <item>Earth science</item>
+        <item>Electronics</item>
+        <item>Environmental science</item>
+        <item>Environmental studies</item>
+        <item>Forensic science</item>
+        <item>Geology</item>
+        <item>Marine biology</item>
+        <item>Oceanography</item>
+        <item>Physical science</item>
+        <item>Physics</item>
+        <item>Zoology</item>
+        <item>Cultural anthropology</item>
+        <item>Current events</item>
+        <item>European history</item>
+        <item>Geography</item>
+        <item>Global studies</item>
+        <item>Human geography</item>
+        <item>International relations</item>
+        <item>Law</item>
+        <item>Macroeconomics</item>
+        <item>Microeconomics</item>
+        <item>Modern world studies</item>
+        <item>Physical anthropology</item>
+        <item>Political studies</item>
+        <item>Psychology</item>
+        <item>Religious studies</item>
+        <item>Sociology</item>
+        <item>US government</item>
+        <item>US history</item>
+        <item>Women's studies</item>
+        <item>World history</item>
+        <item>World politics</item>
+        <item>World religions</item>
+        <item>Art history</item>
+        <item>Digital media</item>
+        <item>Film production</item>
+        <item>Photography</item>
+        <item>3-D art</item>
+        <item>Ceramics</item>
+        <item>Drawing</item>
 
     </string-array>
 </resources>
