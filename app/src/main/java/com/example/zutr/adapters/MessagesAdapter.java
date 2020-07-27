@@ -7,11 +7,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.agog.mathdisplay.MTMathView;
 import com.example.zutr.R;
 import com.example.zutr.models.Message;
 import com.google.firebase.auth.FirebaseAuth;
@@ -66,6 +68,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         TextView tvMsgBody;
         TextView tvMsgTime;
+        MTMathView mathView;
+        RelativeLayout rlMessage;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -74,18 +78,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
             tvMsgBody = itemView.findViewById(R.id.tvChatMsg);
             tvMsgTime = itemView.findViewById(R.id.tvMsgTime);
-
+            mathView = itemView.findViewById(R.id.mathview);
+            rlMessage = itemView.findViewById(R.id.rlMessage);
         }
 
         public void bind(Message message) {
+
 
             if (message.getAuthorID().equals(currentUserID)) {
                 Log.i(TAG, "bind: " + true);
                 tvMsgBody.setGravity(Gravity.RIGHT);
                 tvMsgTime.setGravity(Gravity.RIGHT);
+                rlMessage.setGravity(Gravity.RIGHT);
             }
             tvMsgTime.setText(message.getRelativeTimeAgo());
             tvMsgBody.setText(message.getBody());
+            mathView.setLatex(message.getBody());
+
+            mathView.setTextAlignment(MTMathView.MTTextAlignment.KMTTextAlignmentRight);
 
 
         }

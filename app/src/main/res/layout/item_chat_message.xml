@@ -4,17 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/rlMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="20dp">
 
 
         <TextView
             android:id="@+id/tvChatMsg"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_marginTop="0dp"
@@ -22,11 +24,18 @@
             android:textSize="18sp"
             tools:text="MESSAGE" />
 
+        <com.agog.mathdisplay.MTMathView
+            android:id="@+id/mathview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvChatMsg"
+            android:layout_marginTop="20dp" />
+
         <TextView
             android:id="@+id/tvMsgTime"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tvChatMsg"
+            android:layout_alignTop="@id/mathview"
             android:layout_marginTop="20dp"
             tools:text="3 hours ago" />
 

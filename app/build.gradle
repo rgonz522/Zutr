@@ -86,7 +86,7 @@ dependencies {
 
     implementation "com.github.johnkil.android-robototextview:robototextview:$robotoTextViewVersion"
 
-
+    implementation 'com.github.gregcockroft:AndroidMath:ALPHA'
 
 }
 
