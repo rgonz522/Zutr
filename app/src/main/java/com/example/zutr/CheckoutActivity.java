@@ -105,7 +105,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
         PaymentMethodCreateParams params = cardInputWidget.getPaymentMethodCreateParams();
         ConfirmPaymentIntentParams confirmParams =
-                ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams(params, "pi_1H9bcVGxy48jgmpTMKEuhsIA_secret_oXtxQxr9pvHD4aOsTsHyqQ8bb");
+                ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams
+                        (params, "pi_1H8WeIGxy48jgmpTTtZP3pbo_secret_uy0ko44A5Mf8W5qowSyPNFjlw");
 
         stripe.confirmPayment(CheckoutActivity.this, confirmParams);
     }
@@ -128,8 +129,16 @@ public class CheckoutActivity extends AppCompatActivity {
             builder.setPositiveButton("Ok", null);
         }
         builder.create().show();
+
+
+        resetApp();
     }
 
+
+    private void resetApp() {
+        Intent intent = new Intent(CheckoutActivity.this, MainActivity.class);
+        startActivity(intent);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -138,6 +147,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         stripe.onPaymentResult(requestCode, data, new PaymentResultCallback(CheckoutActivity.this));
     }
+
 
     private void onPaymentSuccess(@NonNull final Response response) throws IOException {
         Gson gson = new Gson();
@@ -243,16 +253,12 @@ public class CheckoutActivity extends AppCompatActivity {
             if (activity == null) {
                 return;
             }
-
+            Log.i(TAG, "onError: " + e);
             // Payment request failed – allow retrying using the same payment method
             activity.displayAlert("Error", e.toString(), false);
         }
 
 
-        private void resetApp() {
-            Intent intent = new Intent(CheckoutActivity.this, MainActivity.class);
-            startActivity(intent);
-        }
     }
 }
 
