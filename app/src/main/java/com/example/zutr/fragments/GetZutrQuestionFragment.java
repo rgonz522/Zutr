@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -27,6 +28,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Comparator;
 
 public class GetZutrQuestionFragment extends Fragment {
 
@@ -68,7 +71,7 @@ public class GetZutrQuestionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        spnSubject = view.findViewById(R.id.spnSubject);
         sbPrice = view.findViewById(R.id.sbWage);
         btnQuestion = view.findViewById(R.id.btnSmtQues);
         etPrice = view.findViewById(R.id.tvWage);
@@ -76,7 +79,21 @@ public class GetZutrQuestionFragment extends Fragment {
 
         etPrice.setText("$10");
         etPrice.setClickable(false);
+        etPrice.setFocusable(false);
         //price is set at 10$ for the time being
+
+
+        ArrayAdapter<CharSequence> typeSessionAdapter = ArrayAdapter.createFromResource(getContext(), R.array.subjects, android.R.layout.simple_spinner_item);
+
+        typeSessionAdapter.sort(new Comparator<CharSequence>() {
+            @Override
+            public int compare(CharSequence charSequence, CharSequence t1) {
+                return charSequence.toString().compareTo(t1.toString());
+            }
+        });
+        // Specify the layout to use when the list of choices appears
+        typeSessionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnSubject.setAdapter(typeSessionAdapter);
 
 
         sbPrice.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
