@@ -26,10 +26,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -137,7 +139,7 @@ public class ChatsFragment extends Fragment {
                                 //get messages for each Chat object
                                 collectionReference.document(documentSnapshot.getId())
                                         .collection(ChatsFragment.MESSAGE_PATH)
-                                        .orderBy(Session.KEY_CREATED_AT)
+                                        .orderBy(Session.KEY_CREATED_AT, Query.Direction.ASCENDING)
                                         .limit(1)
                                         .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
@@ -154,6 +156,8 @@ public class ChatsFragment extends Fragment {
                                         }
                                         messages.clear();
                                         messages.addAll(newMessages);
+
+
                                         Log.i(TAG, "onComplete: messages" + messages);
                                         adapter.notifyDataSetChanged();
                                     }

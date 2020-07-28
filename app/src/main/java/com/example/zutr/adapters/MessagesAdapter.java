@@ -1,19 +1,17 @@
 package com.example.zutr.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
+
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.agog.mathdisplay.MTMathView;
@@ -92,23 +90,28 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             if (message.getAuthorID().equals(currentUserID)) {
                 Log.i(TAG, "bind: " + true);
 
-                tvMsgTime.setGravity(Gravity.RIGHT);
                 rlMessage.setGravity(Gravity.RIGHT);
-                mathView.setTextAlignment(MTMathView.MTTextAlignment.KMTTextAlignmentRight);
-
 
             } else {
-                mathView.setTextAlignment(MTMathView.MTTextAlignment.KMTTextAlignmentLeft);
+                rlMessage.setGravity(Gravity.LEFT);
             }
+            if (message.getBody().contains("\\")) {
+                mathView.setVisibility(View.VISIBLE);
+                mathView.setLatex(message.getBody());
+                mathView.setFontSize(70);
 
+                tvMsgBody.setVisibility(View.GONE);
+            } else {
+                mathView.setVisibility(View.GONE);
+
+                tvMsgBody.setVisibility(View.VISIBLE);
+                tvMsgBody.setText(message.getBody());
+            }
             tvMsgTime.setText(message.getRelativeTimeAgo());
-
-            mathView.setLatex(message.getBody());
-            mathView.setFontSize(40);
 
 
         }
-
-
     }
+
+
 }

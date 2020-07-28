@@ -1,11 +1,14 @@
 package com.example.zutr.fragments;
 
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,6 +29,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -44,8 +48,8 @@ public class MessagesFragment extends Fragment {
     public static final String CHAT_PATH = "chats";
     public static final String TUTOR_ID_PATH = "tutorID";
     public static final String STUDENT_ID_PATH = "studentID";
-    public static final String TAG = "ChatFragment";
-
+    public static final String TAG = "MessageFragment";
+    public static final String HIDDEN_BY = "hiddenBy";
 
     private RecyclerView rvMessage;
     private EditText etNewMsg;
@@ -61,6 +65,8 @@ public class MessagesFragment extends Fragment {
     private String remoteID;
     private String remoteField;
     private String localField;
+
+    private String chatDocID;
 
     public MessagesFragment() {
 
@@ -128,6 +134,55 @@ public class MessagesFragment extends Fragment {
         });
 
 
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT |
+                ItemTouchHelper.LEFT) {
+
+            private final ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.colorPrimaryDark));
+
+
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+
+                return false;
+
+            }
+
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int swipedPosition = viewHolder.getAdapterPosition();
+
+                Message removedMsg = messages.remove(swipedPosition);
+                adapter.notifyDataSetChanged();
+
+                eraseMessage(removedMsg.getAuthorID(), removedMsg.getBody());
+
+
+                Log.i(TAG, "onSwiped: ");
+            }
+
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                View itemView = viewHolder.itemView;
+                if (dX > 0) {
+                    background.setBounds(itemView.getLeft(), itemView.getTop(), itemView.getLeft() + ((int) dX), itemView.getBottom());
+                } else if (dX < 0) {
+                    background.setBounds(itemView.getRight() + ((int) dX), itemView.getTop(), itemView.getRight(), itemView.getBottom());
+                } else {
+                    background.setBounds(0, 0, 0, 0);
+                }
+
+
+                background.draw(c);
+            }
+        };
+
+        ItemTouchHelper mIth = new ItemTouchHelper(callback);
+        mIth.attachToRecyclerView(rvMessage);
     }
 
     @Override
@@ -164,6 +219,7 @@ public class MessagesFragment extends Fragment {
 
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
+                            chatDocID = documentSnapshot.getId();
                             dataBase.collection(CHAT_PATH)
                                     .document(documentSnapshot.getId())
                                     .collection(MESSAGE_PATH)
@@ -172,10 +228,15 @@ public class MessagesFragment extends Fragment {
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
                                     for (QueryDocumentSnapshot document : task.getResult()) {
-                                        Message message = document.toObject(Message.class);
+                                        String hiddenBy = document.getString(HIDDEN_BY);
 
-                                        newMessages.add(message);
-                                        Log.i(TAG, "onComplete: MessageL " + message.getBody());
+                                        if (hiddenBy == null || !hiddenBy.equals(localID)) {
+                                            Message message = document.toObject(Message.class);
+
+
+                                            newMessages.add(message);
+                                            Log.i(TAG, "onComplete: MessageL " + message.getBody());
+                                        }
                                     }
 
                                     updateMessages(newMessages);
@@ -239,4 +300,37 @@ public class MessagesFragment extends Fragment {
     }
 
 
+    private void eraseMessage(String authorID, String messagebody) {
+
+        Log.i(TAG, "eraseMessage: " + chatDocID);
+
+        dataBase.collection(CHAT_PATH)
+                .document(chatDocID)
+                .collection(MESSAGE_PATH)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+
+                            String author = documentSnapshot.getString(Message.KEY_AUTHOR_ID);
+                            String message = documentSnapshot.getString(Message.KEY_MSG_BODY);
+
+                            if (author != null && message != null) {
+
+                                if (author.equals(authorID) &&
+                                        message.equals(messagebody)) {
+
+                                    dataBase.collection(CHAT_PATH)
+                                            .document(chatDocID)
+                                            .collection(MESSAGE_PATH)
+                                            .document(documentSnapshot.getId())
+                                            .update(HIDDEN_BY, localID);
+                                }
+                            }
+                        }
+
+                    }
+                });
+    }
 }

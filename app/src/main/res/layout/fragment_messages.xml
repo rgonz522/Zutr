@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/colorAccent"
     tools:context=".fragments.MessagesFragment">
 
     <RelativeLayout
@@ -15,8 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/etNewMessage"
-            android:background="#D1C4E9"
-            android:layout_marginBottom="32dp">
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="34dp"
+            android:backgroundTint="@color/colorLilac">
 
         </androidx.recyclerview.widget.RecyclerView>
 
