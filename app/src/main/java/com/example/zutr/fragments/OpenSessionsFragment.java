@@ -17,19 +17,14 @@ import android.widget.SearchView;
 import com.example.zutr.R;
 import com.example.zutr.adapters.SessionsAdapter;
 import com.example.zutr.models.Session;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 public class OpenSessionsFragment extends Fragment {
@@ -38,25 +33,18 @@ public class OpenSessionsFragment extends Fragment {
     public static final String TAG = "OpenSessionsFragment";
 
 
-    private RecyclerView rvSessions;
-    private SearchView svSearch;
     private SessionsAdapter adapter;
     private List<Session> sessions;
 
     private FirebaseFirestore dataBase;
-    private FirebaseUser currentUser;
+
 
 
     public OpenSessionsFragment() {
         // Required empty public constructor
     }
 
-    public static OpenSessionsFragment newInstance() {
-        OpenSessionsFragment fragment = new OpenSessionsFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,14 +66,13 @@ public class OpenSessionsFragment extends Fragment {
 
 
         Log.i(TAG, "onViewCreated: " + "HEllo".substring(0, 1));
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         dataBase = FirebaseFirestore.getInstance();
         sessions = new ArrayList<>();
 
         querySessions();
 
-        rvSessions = view.findViewById(R.id.rvSessions);
-        svSearch = view.findViewById(R.id.svSearch);
+        RecyclerView rvSessions = view.findViewById(R.id.rvSessions);
+        SearchView svSearch = view.findViewById(R.id.svSearch);
         adapter = new SessionsAdapter(getContext(), sessions);
 
 
@@ -120,39 +107,34 @@ public class OpenSessionsFragment extends Fragment {
         dataBase.collection(Session.PATH)
                 .orderBy(Session.KEY_CREATED_AT, Query.Direction.DESCENDING)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot documentSnapshot : Objects.requireNonNull(task.getResult())) {
 
-                                String tutorId = documentSnapshot.getString(Session.KEY_TUTOR_UID);
+                            String tutorId = documentSnapshot.getString(Session.KEY_TUTOR_UID);
 
-                                //if no question associated with the session then don't show it
-                                if (documentSnapshot.get(Session.KEY_QUESTION) != null &&
-                                        (tutorId == null || tutorId.isEmpty()
-                                                || tutorId.equals(Session.NO_TUTOR_YET))) {
+                            //if no question associated with the session then don't show it
+                            if ((documentSnapshot.get(Session.KEY_QUESTION) != null) &&
+                                    ((tutorId == null) || tutorId.isEmpty()
+                                            || tutorId.equals(Session.NO_TUTOR_YET))) {
 
-                                    Session session =
-                                            new Session((String) documentSnapshot.get(Session.KEY_STUDENT_UID)
-                                                    , (Double) documentSnapshot.get(Session.KEY_WAGE)
-                                                    , (String) documentSnapshot.get(Session.KEY_SUBJECT)
-                                                    , (String) documentSnapshot.get(Session.KEY_QUESTION));
+                                Session session =
+                                        new Session((String) documentSnapshot.get(Session.KEY_STUDENT_UID)
+                                                , (Double) documentSnapshot.get(Session.KEY_WAGE)
+                                                , (String) documentSnapshot.get(Session.KEY_SUBJECT)
+                                                , (String) documentSnapshot.get(Session.KEY_QUESTION));
 
 
-                                    Date date = documentSnapshot.getTimestamp(Session.KEY_CREATED_AT).toDate();
-
-                                    newSessions.add(session);
-                                }
+                                newSessions.add(session);
                             }
-
-                        } else {
-                            Log.i(TAG, "onComplete: querying task failed" + task.getResult() + task.getException());
                         }
-                        sessions.clear();
-                        sessions.addAll(newSessions);
-                        adapter.notifyDataSetChanged();
+
+                    } else {
+                        Log.i(TAG, "onComplete: querying task failed" + task.getResult() + task.getException());
                     }
+                    sessions.clear();
+                    sessions.addAll(newSessions);
+                    adapter.notifyDataSetChanged();
                 });
 
     }
@@ -164,7 +146,7 @@ public class OpenSessionsFragment extends Fragment {
      * <p>
      * uses Comparator.
      *
-     * @param search
+     * @param search From searchview
      */
 
     private void search(String search) {
