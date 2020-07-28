@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorLilac">#AD94E3</color>
-    <color name="colorPrimary">#C87B3FD1</color>
-    <color name="colorPrimaryDark">#31117A</color>
-    <color name="colorAccent">#E1BEE7</color>
+    <color name="colorLilac">#EF5350</color>
+    <color name="colorPrimary">#E53935</color>
+    <color name="colorPrimaryDark">#B71C1C</color>
+    <color name="colorAccent">#FFCDD2</color>
 
 
     <color name="white">#FFFFFF</color>

@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:layout_margin="20dp"
         android:animateLayoutChanges="false"
-        android:background="@color/colorLilac"
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView

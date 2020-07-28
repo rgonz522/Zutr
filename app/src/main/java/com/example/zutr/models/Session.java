@@ -19,7 +19,7 @@ public class Session implements Serializable {
     public static final String KEY_SUBJECT = "subject";
     public static final String KEY_QUESTION = "question";
     public static final String KEY_ANSWER = "answer";
-
+    public static final String KEY_TYPE = "sessionType";
     public static final String KEY_TUTOR_UID = "tutorId";
     public static final String KEY_STUDENT_UID = "studentId";
     public static final String KEY_WAGE = "wage";
@@ -45,7 +45,7 @@ public class Session implements Serializable {
     private int sessionType;
 
 
-    private String subject; //future implementation
+    private String subject;
 
 
     public Session() {
@@ -60,11 +60,11 @@ public class Session implements Serializable {
         this.sessionType = sessionType;
     }
 
-    public Session(String studentId, Double wage, String question, int sessiontype) {
+    public Session(String studentId, Double wage, String question, int sessionType) {
         this.studentId = studentId;
         this.wage = wage;
         this.question = question;
-        this.sessionType = sessiontype;
+        this.sessionType = sessionType;
 
         this.createdAt = new Date();
         this.tutorId = NO_TUTOR_YET;
@@ -142,11 +142,6 @@ public class Session implements Serializable {
     }
 
 
-    public String getDuration() {
-
-        //TODO Parse time create minus time ended to get time engaged
-        return null;
-    }
 
     public String getQuestion() {
         return question;

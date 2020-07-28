@@ -82,6 +82,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Session session = (Session) intent.getSerializableExtra(Session.PATH);
 
+        Log.i(TAG, "onCreate: sessiontype:" + session.getSessionType());
+
         //Set the view values with the session values
 
         tvDate.setText(session.getRelativeTimeAgo());
@@ -113,6 +115,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private String getTypeSession(int typecode) {
+
         String type = "";
         switch (typecode) {
             case Session.SESSION_CALL:
@@ -160,6 +163,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
                                 if (sessionType == Session.SESSION_TEXT) {
                                     updateChat(studentId, currentUserID, document.getDate(Session.KEY_CREATED_AT), answer);
+                                } else {
+                                    startMainActivity();
                                 }
                                 Log.i(TAG, "onComplete: ");
 
@@ -214,7 +219,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         }
 
 
-                        finish();
+                        startMainActivity();
 
                     }
                 });
@@ -222,9 +227,11 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
+    private void startMainActivity() {
 
-
-
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
 
 
 }

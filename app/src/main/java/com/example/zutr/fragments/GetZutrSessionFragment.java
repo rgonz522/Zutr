@@ -154,6 +154,7 @@ public class GetZutrSessionFragment extends Fragment {
 
                 }
 
+
                 if (price != null && !subject.isEmpty()
                         && !question.isEmpty() && !userId.isEmpty() && typeSession != 0) {
                     saveSession(userId, subject, price, question, typeSession);

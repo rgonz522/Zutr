@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="16dp"
+    android:layout_margin="8dp"
     android:background="@color/colorWhite"
     android:orientation="vertical">
 
@@ -11,12 +11,16 @@
         android:id="@+id/tvContact"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
         tools:text="Beyonce Ruiz" />
 
     <TextView
         android:id="@+id/tvLastMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="16sp"
         tools:text="Hello, Math" />
 
 

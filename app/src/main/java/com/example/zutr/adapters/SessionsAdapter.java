@@ -152,6 +152,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                         // create intent for the new activity
                         Intent intent = new Intent(context, SessionDetailsActivity.class);
 
+                        Log.i(TAG, "onClick: " + session.getSessionType());
                         // pass the Session[already serializable] , use its already declared path as a key
                         intent.putExtra(Session.PATH, (Serializable) session);
                         context.startActivity(intent);

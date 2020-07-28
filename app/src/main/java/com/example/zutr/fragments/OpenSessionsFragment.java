@@ -118,13 +118,7 @@ public class OpenSessionsFragment extends Fragment {
                                     ((tutorId == null) || tutorId.isEmpty()
                                             || tutorId.equals(Session.NO_TUTOR_YET))) {
 
-                                Session session =
-                                        new Session((String) documentSnapshot.get(Session.KEY_STUDENT_UID)
-                                                , (Double) documentSnapshot.get(Session.KEY_WAGE)
-                                                , (String) documentSnapshot.get(Session.KEY_SUBJECT)
-                                                , (String) documentSnapshot.get(Session.KEY_QUESTION));
-
-
+                                Session session = documentSnapshot.toObject(Session.class);
                                 newSessions.add(session);
                             }
                         }
