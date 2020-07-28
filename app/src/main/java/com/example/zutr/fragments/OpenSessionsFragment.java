@@ -1,9 +1,11 @@
 package com.example.zutr.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,14 +23,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class OpenSessionsFragment extends Fragment {
@@ -94,6 +104,19 @@ public class OpenSessionsFragment extends Fragment {
         rvSessions.setLayoutManager(linearLayoutManager);
 
 
+        svSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                search(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
     }
 
     protected void querySessions() {
@@ -144,9 +167,32 @@ public class OpenSessionsFragment extends Fragment {
     }
 
 
+    private void search(String search) {
+        Log.i(TAG, "search: word " + search);
+        for (Session session : sessions) {
+            Log.i(TAG, "search: " + session.getQuestion());
+        }
+
+        Collections.sort(sessions, (session, t1) -> {
+            int session1 = levenshteinDistance(search, session.getSubject());
+
+
+            int session2 = levenshteinDistance(search, t1.getSubject());
+
+            Log.i(TAG, "compare: " + (session2 - session1));
+            return session2 - session1;
+        });
+        for (Session session : sessions) {
+            Log.i(TAG, "search: " + session.getQuestion());
+        }
+
+        adapter.notifyDataSetChanged();
+
+    }
+
     /**
      * The Levenshtein distance is a string metric for measuring the difference between two sequences.
-     * Informally, the Levenshtein distance between two words is the minimum number of single-character edits
+     * The Levenshtein distance between two words is the minimum number of single-character edits
      * (i.e. insertions, deletions or substitutions) required to change one word into the other. The phrase
      * 'edit distance' is often used to refer specifically to Levenshtein distance.
      *
@@ -162,7 +208,7 @@ public class OpenSessionsFragment extends Fragment {
             return s.length();
         }
 
-        // create two work vectors of integer distances
+        // create two  arrays of integer distances
         int[] v0 = new int[t.length() + 1];
         int[] v1 = new int[t.length() + 1];
 
@@ -187,7 +233,6 @@ public class OpenSessionsFragment extends Fragment {
                 int cost = (s.charAt(i) == t.charAt(j)) ? 0 : 1;
                 v1[j + 1] = (int) Math.min(Math.min(v1[j] + 1, v0[j + 1] + 1), v0[j] + cost);
             }
-
             // copy v1 (current row) to v0 (previous row) for next iteration
             System.arraycopy(v1, 0, v0, 0, v0.length);
         }
