@@ -1,11 +1,9 @@
 package com.example.zutr.fragments;
 
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,22 +21,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 
 public class OpenSessionsFragment extends Fragment {
@@ -167,6 +158,15 @@ public class OpenSessionsFragment extends Fragment {
     }
 
 
+    /**
+     * Orders sessions by their edit
+     * distance to the search string
+     * <p>
+     * uses Comparator.
+     *
+     * @param search
+     */
+
     private void search(String search) {
         Log.i(TAG, "search: word " + search);
         for (Session session : sessions) {
@@ -174,10 +174,11 @@ public class OpenSessionsFragment extends Fragment {
         }
 
         Collections.sort(sessions, (session, t1) -> {
-            int session1 = levenshteinDistance(search, session.getSubject());
+
+            int session1 = calculateLCS(search, session.getQuestion());
 
 
-            int session2 = levenshteinDistance(search, t1.getSubject());
+            int session2 = calculateLCS(search, t1.getQuestion());
 
             Log.i(TAG, "compare: " + (session2 - session1));
             return session2 - session1;
@@ -190,53 +191,67 @@ public class OpenSessionsFragment extends Fragment {
 
     }
 
-    /**
-     * The Levenshtein distance is a string metric for measuring the difference between two sequences.
-     * The Levenshtein distance between two words is the minimum number of single-character edits
-     * (i.e. insertions, deletions or substitutions) required to change one word into the other. The phrase
-     * 'edit distance' is often used to refer specifically to Levenshtein distance.
-     *
-     * @param s String one
-     * @param t String two
-     * @return the 'edit distance' (Levenshtein distance) between the two strings.
-     */
-    public static int levenshteinDistance(CharSequence s, CharSequence t) {
-        // degenerate cases          s
-        if (s == null || "".equals(s)) {
-            return t == null || "".equals(t) ? 0 : t.length();
-        } else if (t == null || "".equals(t)) {
-            return s.length();
+
+    public int findLongestCommonSequence(String string1, String string2, Integer[][] lcsValues) {
+
+        int length1 = string1.length() - 1;     //string and array index , not length
+        int length2 = string2.length() - 1;
+
+
+        String new1;
+        String new2;
+
+        //empty strings
+        if (length1 == 0 || length2 == 0) {
+            Log.i(TAG, "findLongestCommonSequence: " + " emptystrings");
+            return 0;
+        } else if (lcsValues[length1][length2] != null) {
+            return lcsValues[length1][length2];
         }
 
-        // create two  arrays of integer distances
-        int[] v0 = new int[t.length() + 1];
-        int[] v1 = new int[t.length() + 1];
 
-        // initialize v0 (the previous row of distances)
-        // this row is A[0][i]: edit distance for an empty s
-        // the distance is just the number of characters to delete from t
-        for (int i = 0; i < v0.length; i++) {
-            v0[i] = i;
+        Log.i(TAG, "findLongestCommonSequence: " + length1);
+        Log.i(TAG, "findLongestCommonSequence: " + length2);
+
+        char char1 = string1.charAt(length1 - 1);
+        char char2 = string2.charAt(length2 - 1);
+
+        Log.i(TAG, "findLongestCommonSequence: " + " char1: " + char1 + "char2 " + char2);
+
+
+        if (char1 == char2) {
+            new1 = (string1.substring(0, length1));
+            new2 = string2.substring(0, length2);
+
+            Log.i(TAG, "findLongestCommonSequence: " + " equal char");
+
+            return 1 + findLongestCommonSequence(new1, new2, lcsValues);
+
+        } else {
+
+            Log.i(TAG, "findLongestCommonSequence: " + " not equal char");
+            new1 = (string1.substring(0, length1));
+            new2 = string2.substring(0, length2);
+
+            int lcs1 = findLongestCommonSequence(new1, string2, lcsValues);
+
+            int lcs2 = findLongestCommonSequence(string1, new2, lcsValues);
+
+            lcsValues[length1][length2] = Math.max(lcs1, lcs2);
+
+            return lcsValues[length1][length2];
         }
 
-        int sLen = s.length();
-        int tLen = t.length();
-        for (int i = 0; i < sLen; i++) {
-            // calculate v1 (current row distances) from the previous row v0
 
-            // first element of v1 is A[i+1][0]
-            //   edit distance is delete (i+1) chars from s to match empty t
-            v1[0] = i + 1;
-
-            // use formula to fill in the rest of the row
-            for (int j = 0; j < tLen; j++) {
-                int cost = (s.charAt(i) == t.charAt(j)) ? 0 : 1;
-                v1[j + 1] = (int) Math.min(Math.min(v1[j] + 1, v0[j + 1] + 1), v0[j] + cost);
-            }
-            // copy v1 (current row) to v0 (previous row) for next iteration
-            System.arraycopy(v1, 0, v0, 0, v0.length);
-        }
-
-        return v1[t.length()];
     }
+
+    public int calculateLCS(String string1, String string2) {
+
+        Integer[][] lcsvalues = new Integer[string1.length()][string2.length()];
+
+        return findLongestCommonSequence(string1, string2, lcsvalues);
+
+    }
+
+
 }
