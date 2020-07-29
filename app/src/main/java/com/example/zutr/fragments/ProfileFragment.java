@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -80,6 +81,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setUpPosts();
 
         final String path = (LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH);
 
@@ -155,6 +157,20 @@ public class ProfileFragment extends Fragment {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.flContainer, changeUserPicFragment);
         fragmentTransaction.commit();
+
+    }
+
+
+    private void setUpPosts() {
+
+
+        HomeFragment homeFragment = new HomeFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.add(R.id.flprevious, homeFragment);
+        fragmentTransaction.commit();
+
 
     }
 }
