@@ -86,10 +86,6 @@ public class MainActivity extends AppCompatActivity {
 
                         fragment = new HomeFragment();
                         break;
-                    case R.id.action_history:
-
-                        fragment = new ChatsFragment();
-                        break;
                     default:
                         fragment = null;
                 }

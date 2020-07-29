@@ -8,11 +8,6 @@
         android:title="Home"
         app:showAsAction="always" />
     <item
-        android:id="@+id/action_history"
-        android:icon="@drawable/chats"
-        android:title="Home"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/action_compose"
         android:icon="@drawable/open"
         android:title="Compose"

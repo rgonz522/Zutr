@@ -118,10 +118,8 @@ public class ChatsFragment extends Fragment {
 
         final List<Message> newMessages = new ArrayList<>();
 
-        Log.i(TAG, "querySessions: session user id : " + localID);
 
         CollectionReference collectionReference = dataBase.collection(CHAT_PATH);
-        Log.i(TAG, "querySessions: ");
 
 
         collectionReference
@@ -149,16 +147,12 @@ public class ChatsFragment extends Fragment {
                                             message.setAuthorID(remoteID);
                                             message.setCreatedAt(document.getDate(Message.KEY_CREATEDAT));
                                             message.setBody(document.getString(Message.KEY_MSG_BODY));
-                                            Log.i(TAG, "onComplete: THEY MATCH: " + document.get(Message.KEY_MSG_BODY));
                                             newMessages.add(message);
-                                            Log.i(TAG, "onComplete: message " + message.getAuthorID());
-                                            Log.i(TAG, "onComplete: message was " + message.getRelativeTimeAgo());
+
                                         }
                                         messages.clear();
                                         messages.addAll(newMessages);
 
-
-                                        Log.i(TAG, "onComplete: messages" + messages);
                                         adapter.notifyDataSetChanged();
                                     }
                                 });

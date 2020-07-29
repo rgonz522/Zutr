@@ -12,10 +12,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
+import com.example.zutr.fragments.ChatsFragment;
+import com.example.zutr.fragments.MessagesFragment;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -23,6 +28,7 @@ import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -146,21 +152,52 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
-                    // make sure the position is valid, i.e. actually exists in the view
-                    if (position != RecyclerView.NO_POSITION) {
 
+                    if (position != RecyclerView.NO_POSITION) {
+                        // make sure the position is valid, i.e. actually exists in the view
                         // get the Session at the position
                         Session session = sessions.get(position);
-                        // create intent for the new activity
-                        Intent intent = new Intent(context, SessionDetailsActivity.class);
 
-                        Log.i(TAG, "onClick: " + session.getSessionType());
-                        // pass the Session[already serializable] , use its already declared path as a key
-                        intent.putExtra(Session.PATH, (Serializable) session);
-                        context.startActivity(intent);
+                        String remoteID = LogInActivity.IS_TUTOR ? session.getStudentId() : session.getTutorId();
+
+                        //if the session is text and the user is involved
+                        if (session.getSessionType() == Session.SESSION_TEXT
+                                && !session.getTutorId().equals(Session.NO_TUTOR_YET)
+                                && session.getTutorId() != null) {
+
+                            startChat(remoteID);
+                        } else {
+                            startDetails(session);
+                        }
                     }
+
                 }
             });
+        }
+
+        private void startDetails(Session session) {
+
+
+            // create intent for the new activity
+            Intent intent = new Intent(context, SessionDetailsActivity.class);
+
+            Log.i(TAG, "onClick: " + session.getSessionType());
+            // pass the Session[already serializable] , use its already declared path as a key
+            intent.putExtra(Session.PATH, (Serializable) session);
+            context.startActivity(intent);
+
+        }
+
+        private void startChat(String tutorID) {
+
+            Log.i(TAG, "openChatWith: " + tutorID);
+            MessagesFragment messagesFragment = new MessagesFragment(tutorID);
+            FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.flContainer, messagesFragment);
+            fragmentTransaction.commit();
+
+
         }
 
         public String getUserRealName(String collectionPath, final String userID) {
@@ -194,8 +231,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         }
 
     }
-
-
 
 
 }
