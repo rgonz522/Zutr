@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -122,7 +123,8 @@ public class ProfileFragment extends Fragment {
         //Load ivProfilePic with user's image uri
 
         if (user.getPhotoUrl() != null) {
-            Glide.with(getContext()).load(user.getPhotoUrl()).into(ivProfilePic);
+
+            Glide.with(getContext()).load(user.getPhotoUrl()).circleCrop().into(ivProfilePic);
         }
 
 
