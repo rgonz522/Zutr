@@ -85,6 +85,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         private TextView tvType;
         private ImageView ivUserPic;
+        private ImageView ivChat;
 
         private LinearLayout linearLayout;
 
@@ -99,6 +100,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             tvType = view.findViewById(R.id.tvType);
             tvTutor = view.findViewById(R.id.tvTutor);
             tvAnswer = view.findViewById(R.id.tvAnswer);
+            ivChat = view.findViewById(R.id.ivChat);
 
             linearLayout = view.findViewById(R.id.llSessionItem);
 
@@ -107,6 +109,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
 
         public void bind(Session session) {
+
 
 
             tvQuestion.setText("Question" + ": " + session.getQuestion());
@@ -147,6 +150,13 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             }
 
 
+            if (isChatAvailible(session)) {
+
+            } else {
+                ivChat.setVisibility(View.GONE);
+            }
+
+
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -160,9 +170,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                         String remoteID = LogInActivity.IS_TUTOR ? session.getStudentId() : session.getTutorId();
 
                         //if the session is text and the user is involved
-                        if (session.getSessionType() == Session.SESSION_TEXT
-                                && !session.getTutorId().equals(Session.NO_TUTOR_YET)
-                                && session.getTutorId() != null) {
+                        if (isChatAvailible(session)) {
 
                             startChat(remoteID);
                         } else {
@@ -172,6 +180,12 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
                 }
             });
+        }
+
+        private boolean isChatAvailible(Session session) {
+            return session.getSessionType() == Session.SESSION_TEXT
+                    && !session.getTutorId().equals(Session.NO_TUTOR_YET)
+                    && session.getTutorId() != null;
         }
 
         private void startDetails(Session session) {
