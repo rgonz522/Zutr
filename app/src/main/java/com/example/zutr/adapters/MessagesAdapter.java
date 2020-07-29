@@ -55,7 +55,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
         Message message = messages.get(position);
 
-        holder.bind(message);
+        String hiddenBy = message.getHiddenBy();
+        if (hiddenBy == null || !hiddenBy.equals(currentUserID)) {
+            holder.bind(message);
+            Log.i(TAG, "onBindViewHolder: " + hiddenBy);
+        } else {
+            Log.i(TAG, "onBindViewHolder: HIDDEN " + hiddenBy);
+        }
     }
 
 
@@ -77,7 +83,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             super(itemView);
 
 
-
             tvMsgBody = itemView.findViewById(R.id.tvChatMsg);
             tvMsgTime = itemView.findViewById(R.id.tvMsgTime);
             mathView = itemView.findViewById(R.id.mathview);
@@ -88,7 +93,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
 
             if (message.getAuthorID().equals(currentUserID)) {
-                Log.i(TAG, "bind: " + true);
 
                 rlMessage.setGravity(Gravity.RIGHT);
 

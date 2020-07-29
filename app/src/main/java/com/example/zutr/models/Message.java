@@ -15,9 +15,17 @@ public class Message {
     public static final String KEY_CREATEDAT = "createdAt";
 
     private String body;
+    private String hiddenBy;
     private String authorID;
     private Date createdAt;
 
+
+    public Message(String body, String hiddenBy, String authorID, Date createdAt) {
+        this.body = body;
+        this.hiddenBy = hiddenBy;
+        this.authorID = authorID;
+        this.createdAt = createdAt;
+    }
 
     public Message() {
 
@@ -71,5 +79,13 @@ public class Message {
         }
 
         return relativeDate;
+    }
+
+    public String getHiddenBy() {
+        return hiddenBy;
+    }
+
+    public void setHiddenBy(String hiddenBy) {
+        this.hiddenBy = hiddenBy;
     }
 }

@@ -156,7 +156,7 @@ public class MessagesFragment extends Fragment {
                 Message removedMsg = messages.remove(swipedPosition);
                 adapter.notifyDataSetChanged();
 
-                eraseMessage(removedMsg.getAuthorID(), removedMsg.getBody());
+                eraseMessage(removedMsg.getCreatedAt().toString());
 
 
                 Log.i(TAG, "onSwiped: ");
@@ -235,7 +235,7 @@ public class MessagesFragment extends Fragment {
 
 
                                             newMessages.add(message);
-                                            Log.i(TAG, "onComplete: MessageL " + message.getBody());
+                                            Log.i(TAG, "hiddenby " + message.getHiddenBy());
                                         }
                                     }
 
@@ -300,37 +300,21 @@ public class MessagesFragment extends Fragment {
     }
 
 
-    private void eraseMessage(String authorID, String messagebody) {
+    private void eraseMessage(String createdAt) {
 
         Log.i(TAG, "eraseMessage: " + chatDocID);
 
         dataBase.collection(CHAT_PATH)
                 .document(chatDocID)
                 .collection(MESSAGE_PATH)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                .document(createdAt)
+                .update(HIDDEN_BY, localID).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
 
-                            String author = documentSnapshot.getString(Message.KEY_AUTHOR_ID);
-                            String message = documentSnapshot.getString(Message.KEY_MSG_BODY);
-
-                            if (author != null && message != null) {
-
-                                if (author.equals(authorID) &&
-                                        message.equals(messagebody)) {
-
-                                    dataBase.collection(CHAT_PATH)
-                                            .document(chatDocID)
-                                            .collection(MESSAGE_PATH)
-                                            .document(documentSnapshot.getId())
-                                            .update(HIDDEN_BY, localID);
-                                }
-                            }
-                        }
-
-                    }
-                });
+                }
+            }
+        });
     }
 }
