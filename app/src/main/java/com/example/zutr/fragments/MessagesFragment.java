@@ -29,7 +29,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -156,7 +158,7 @@ public class MessagesFragment extends Fragment {
                 Message removedMsg = messages.remove(swipedPosition);
                 adapter.notifyDataSetChanged();
 
-                eraseMessage(removedMsg.getCreatedAt().toString());
+                eraseMessage(removedMsg.getCreatedAt().toString(), removedMsg.getHiddenBy());
 
 
                 Log.i(TAG, "onSwiped: ");
@@ -232,10 +234,7 @@ public class MessagesFragment extends Fragment {
 
                                         if (hiddenBy == null || !hiddenBy.equals(localID)) {
                                             Message message = document.toObject(Message.class);
-
-
                                             newMessages.add(message);
-                                            Log.i(TAG, "hiddenby " + message.getHiddenBy());
                                         }
                                     }
 
@@ -300,21 +299,36 @@ public class MessagesFragment extends Fragment {
     }
 
 
-    private void eraseMessage(String createdAt) {
+    private void eraseMessage(String createdAt, String hiddenBy) {
 
         Log.i(TAG, "eraseMessage: " + chatDocID);
 
-        dataBase.collection(CHAT_PATH)
+        DocumentReference documentReference = dataBase.collection(CHAT_PATH)
                 .document(chatDocID)
                 .collection(MESSAGE_PATH)
-                .document(createdAt)
-                .update(HIDDEN_BY, localID).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
+                .document(createdAt);
 
+
+        if (hiddenBy == null) {
+            documentReference.update(HIDDEN_BY, localID).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "onComplete: " + "message hidden");
+                    }
                 }
-            }
-        });
+            });
+
+        } else if (hiddenBy.equals(remoteID)) {
+            documentReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "onComplete: " + task.getResult().toString());
+                        Log.i(TAG, "onComplete: " + "message deleted");
+                    }
+                }
+            });
+        }
     }
 }
