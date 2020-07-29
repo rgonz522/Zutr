@@ -104,11 +104,13 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         public void bind(Session session) {
 
 
-            tvQuestion.setText(Session.KEY_QUESTION + ": " + session.getQuestion());
+            tvQuestion.setText("Question" + ": " + session.getQuestion());
 
 
-            if (session.getTutorId() == Session.NO_TUTOR_YET) {
-                tvTutor.setText(Session.NO_TUTOR_YET);
+            Log.i(TAG, "bind: " + session.getTutorId());
+            if (session.getTutorId() == Session.NO_TUTOR_YET || session.getTutorId() == null) {
+                tvTutor.setVisibility(View.GONE);
+
             } else {
 
 

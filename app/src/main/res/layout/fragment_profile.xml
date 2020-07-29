@@ -9,13 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="25dp"
         android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btnSignOut"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Sign Out" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -67,6 +62,14 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             tools:text="Math, Science, COT 3100, Environmental Science" />
+
+        <Button
+            android:id="@+id/btnSignOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_margin="25dp"
+            android:text="Sign Out" />
 
     </LinearLayout>
 
