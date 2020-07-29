@@ -10,8 +10,6 @@ import android.os.Bundle;
 
 import android.view.MenuItem;
 
-import com.example.zutr.fragments.ChatsFragment;
-import com.example.zutr.fragments.MessagesFragment;
 import com.example.zutr.fragments.GetZutrFragment;
 import com.example.zutr.fragments.HomeFragment;
 import com.example.zutr.fragments.OpenSessionsFragment;

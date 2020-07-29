@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.zutr.CheckoutActivity;
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
+import com.example.zutr.SessionDetailsActivity;
 import com.example.zutr.models.Session;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -217,13 +218,13 @@ public class GetZutrSessionFragment extends Fragment {
 
 
         Map<String, Object> chat = new HashMap<>();
-        chat.put(ChatsFragment.STUDENT_ID_PATH, userId);
-        chat.put(ChatsFragment.TUTOR_ID_PATH, Session.NO_TUTOR_YET);
+        chat.put(SessionDetailsActivity.STUDENT_ID_PATH, userId);
+        chat.put(SessionDetailsActivity.TUTOR_ID_PATH, Session.NO_TUTOR_YET);
         chat.put(Session.KEY_CREATED_AT, new Date());
 
 
         FirebaseFirestore.getInstance()
-                .collection(ChatsFragment.CHAT_PATH)
+                .collection(SessionDetailsActivity.CHAT_PATH)
                 .document().set(chat)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

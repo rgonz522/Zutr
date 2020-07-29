@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
-import com.example.zutr.fragments.ChatsFragment;
+
 import com.example.zutr.fragments.MessagesFragment;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
@@ -28,7 +28,6 @@ import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -194,6 +193,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             MessagesFragment messagesFragment = new MessagesFragment(tutorID);
             FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.addToBackStack(null);
             fragmentTransaction.replace(R.id.flContainer, messagesFragment);
             fragmentTransaction.commit();
 

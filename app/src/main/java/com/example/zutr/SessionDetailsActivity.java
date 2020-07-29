@@ -2,8 +2,6 @@ package com.example.zutr;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,36 +11,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.example.zutr.fragments.ChangeProfilePicFragment;
-import com.example.zutr.fragments.ChatsFragment;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.reflect.TypeToken;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.gson.Gson;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.stripe.android.PaymentIntentResult;
-import com.stripe.android.Stripe;
 
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+
 
 public class SessionDetailsActivity extends AppCompatActivity {
 
@@ -50,8 +31,12 @@ public class SessionDetailsActivity extends AppCompatActivity {
     public static final long DATE_MIN_EQUAL = 900000L;
     private boolean isTutor;
 
-    private TextView tvDate;
-    private TextView tvSubject;
+
+    public static final String MESSAGE_PATH = "";
+    public static final String TUTOR_ID_PATH = "";
+    public static final String STUDENT_ID_PATH = "";
+    public static final String CHAT_PATH = "";
+
     private TextView tvTutor;
     private TextView tvQuestion;
     private TextView tvType;
@@ -69,8 +54,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         //TODO Fix session details UI
         //initialize textviews and button
-        tvDate = findViewById(R.id.tvDate);
-        tvSubject = findViewById(R.id.tvSubject);
+        TextView tvDate = findViewById(R.id.tvDate);
+        TextView tvSubject = findViewById(R.id.tvSubject);
         tvQuestion = findViewById(R.id.tvQuestion);
         tvType = findViewById(R.id.tvType);
         tvAnswered = findViewById(R.id.tvAnswered);
@@ -180,13 +165,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private void updateChat(String studentID, String currentUserID, Date sessionCreatedAt, String answer) {
 
 
-        CollectionReference colRef = FirebaseFirestore.getInstance().collection(ChatsFragment.CHAT_PATH);
+        CollectionReference colRef = FirebaseFirestore.getInstance().collection(CHAT_PATH);
         //Chats -> where equal to solicited question -> Messages -> add response from tutor
 
         Log.i(TAG, "onComplete: document time" + sessionCreatedAt.getTime());
 
 
-        colRef.whereEqualTo(ChatsFragment.STUDENT_ID_PATH, studentID)
+        colRef.whereEqualTo(STUDENT_ID_PATH, studentID)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -204,11 +189,11 @@ public class SessionDetailsActivity extends AppCompatActivity {
                             if (Math.abs(chatTime - sessionCreatedAt.getTime()) < DATE_MIN_EQUAL) {
 
                                 Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
-                                colRef.document(documentSnapshot.getId()).update(ChatsFragment.TUTOR_ID_PATH, currentUserID);
+                                colRef.document(documentSnapshot.getId()).update(TUTOR_ID_PATH, currentUserID);
 
                                 //send reply message
                                 colRef.document(documentSnapshot.getId())
-                                        .collection(ChatsFragment.MESSAGE_PATH)
+                                        .collection(MESSAGE_PATH)
                                         .document()
                                         .set(message);
                             } else {
