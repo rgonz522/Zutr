@@ -21,6 +21,7 @@ import org.json.JSONObject;
 
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.example.zutr.models.Resource;
 
 
 public class SuggestionFragment extends Fragment {
@@ -52,14 +53,14 @@ public class SuggestionFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        queryLOC("baseballcaps");
+        queryLOC("war");
 
 
     }
 
 
     public void queryLOC(String search) {
-        String url = "https://www.loc.gov/search/?q=" + search + "&fo=json";
+        String url = "https://www.loc.gov/websites/?q=" + search + "&fo=json";
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new JsonHttpResponseHandler() {
@@ -72,6 +73,11 @@ public class SuggestionFragment extends Fragment {
                     JSONArray results = jsonObject.getJSONArray("results");
                     Log.d(TAG, results.toString());
 
+                    Log.i(TAG, "onSuccess: title" + results.getJSONObject(0).getString(Resource.KEY_TITLE));
+                    Log.i(TAG, "onSuccess: title" + results.getJSONObject(0).getJSONArray(Resource.KEY_DESCRIPTION).get(0));
+                    Log.i(TAG, "onSuccess: title" + results.getJSONObject(0).getJSONArray(Resource.KEY_IMAGE).get(0));
+
+
                 } catch (JSONException e) {
                     Log.d(TAG, "Hit JSON Exception");
                     e.printStackTrace();
@@ -81,7 +87,7 @@ public class SuggestionFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                Log.d(TAG, "OnFailure");
+                Log.e(TAG, "OnFailure", throwable);
             }
 
         });

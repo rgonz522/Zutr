@@ -39,11 +39,9 @@ public class OpenSessionsFragment extends Fragment {
     private FirebaseFirestore dataBase;
 
 
-
     public OpenSessionsFragment() {
         // Required empty public constructor
     }
-
 
 
     @Override
@@ -152,7 +150,6 @@ public class OpenSessionsFragment extends Fragment {
         Collections.sort(sessions, (session, t1) -> {
 
             int session1 = calculateLCS(search, session.getQuestion());
-
 
             int session2 = calculateLCS(search, t1.getQuestion());
 
