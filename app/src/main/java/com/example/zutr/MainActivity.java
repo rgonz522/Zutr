@@ -16,7 +16,7 @@ import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
 
 
-
+import com.example.zutr.fragments.SuggestionFragment;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -72,6 +72,10 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 final Fragment fragment;
                 switch (menuItem.getItemId()) {
+                    case R.id.action_suggestion:
+                        fragment = new SuggestionFragment();
+                        break;
+
                     case R.id.action_profile:
 
                         fragment = new ProfileFragment();

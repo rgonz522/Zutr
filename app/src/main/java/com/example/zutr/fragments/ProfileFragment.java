@@ -94,7 +94,6 @@ public class ProfileFragment extends Fragment {
         Log.i(TAG, "onViewCreated: user " + mAuth.getCurrentUser());
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvFullName = view.findViewById(R.id.tvFullName);
-        tvSubjects = view.findViewById(R.id.tvSubjects);
         tvUsername = view.findViewById(R.id.tvUsername);
         btnSignUp = view.findViewById(R.id.btnSignOut);
 
