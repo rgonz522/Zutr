@@ -84,6 +84,8 @@ dependencies {
 
     implementation "com.github.johnkil.android-robototextview:robototextview:$robotoTextViewVersion"
 
+
+    //MathView with LATEX
     implementation 'com.github.gregcockroft:AndroidMath:ALPHA'
     implementation 'com.google.android.material:material:<version>'
 

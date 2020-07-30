@@ -24,6 +24,7 @@ import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.R;
 import com.example.zutr.models.Message;
 
+import com.example.zutr.models.Session;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -52,6 +53,7 @@ public class MessagesFragment extends Fragment {
     public static final String STUDENT_ID_PATH = "studentID";
     public static final String TAG = "MessageFragment";
     public static final String HIDDEN_BY = "hiddenBy";
+    private static final long DATE_MIN_EQUAL = 900000L;
 
     private RecyclerView rvMessage;
     private EditText etNewMsg;
@@ -69,14 +71,17 @@ public class MessagesFragment extends Fragment {
     private String localField;
 
     private String chatDocID;
+    private long createdAt;
 
     public MessagesFragment() {
 
     }
 
-    public MessagesFragment(String remoteID) {
+    public MessagesFragment(String remoteID, long createdAt) {
         this.remoteID = remoteID;
         localID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        this.createdAt = createdAt;
 
         if (LogInActivity.IS_TUTOR) {
             remoteField = STUDENT_ID_PATH;
@@ -135,6 +140,12 @@ public class MessagesFragment extends Fragment {
             }
         });
 
+        rvMessage.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                queryMessages();
+            }
+        });
 
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT |
                 ItemTouchHelper.LEFT) {
@@ -221,27 +232,37 @@ public class MessagesFragment extends Fragment {
 
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
-                            chatDocID = documentSnapshot.getId();
-                            dataBase.collection(CHAT_PATH)
-                                    .document(documentSnapshot.getId())
-                                    .collection(MESSAGE_PATH)
-                                    .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            long chatTime = documentSnapshot.getDate(Session.KEY_CREATED_AT).getTime();
 
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String hiddenBy = document.getString(HIDDEN_BY);
+                            if (Math.abs(chatTime - createdAt) < DATE_MIN_EQUAL) {
 
-                                        if (hiddenBy == null || !hiddenBy.equals(localID)) {
-                                            Message message = document.toObject(Message.class);
-                                            newMessages.add(message);
+                                Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
+
+                                chatDocID = documentSnapshot.getId();
+                                dataBase.collection(CHAT_PATH)
+                                        .document(documentSnapshot.getId())
+                                        .collection(MESSAGE_PATH)
+                                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                        for (QueryDocumentSnapshot document : task.getResult()) {
+                                            String hiddenBy = document.getString(HIDDEN_BY);
+
+                                            if (hiddenBy == null || !hiddenBy.equals(localID)) {
+                                                Message message = document.toObject(Message.class);
+                                                newMessages.add(message);
+                                            }
                                         }
+
+                                        updateMessages(newMessages);
+
                                     }
 
-                                    updateMessages(newMessages);
+                                });
 
-                                }
-                            });
+
+                            }
 
 
                         }

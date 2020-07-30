@@ -172,7 +172,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                         //if the session is text and the user is involved
                         if (isChatAvailible(session)) {
 
-                            startChat(remoteID);
+                            startChat(remoteID, session.getCreatedAt().getTime());
                         } else {
                             startDetails(session);
                         }
@@ -201,10 +201,10 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         }
 
-        private void startChat(String tutorID) {
+        private void startChat(String tutorID, long createdAt) {
 
             Log.i(TAG, "openChatWith: " + tutorID);
-            MessagesFragment messagesFragment = new MessagesFragment(tutorID);
+            MessagesFragment messagesFragment = new MessagesFragment(tutorID, createdAt);
             FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.addToBackStack(null);
