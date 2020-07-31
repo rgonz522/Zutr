@@ -4,11 +4,11 @@ public class Resource {
 
 
     public static final String KEY_TITLE = "title";
-    public static final String KEY_CREATED = "timestamp";
-    public static final String KEY_URL = "id";
+    public static final String KEY_CREATED = "year";
+    public static final String KEY_URL = "link";
     public static final String KEY_SUBJECT = "subject";
     public static final String KEY_IMAGE = "image_url";
-    public static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_DESCRIPTION = "abstract";
 
     private String title;
     private String subject;

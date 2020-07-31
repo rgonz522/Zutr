@@ -6,13 +6,11 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.zutr.R;
 import com.example.zutr.models.Resource;
 
@@ -22,6 +20,7 @@ public class ResourceAdapter extends RecyclerView.Adapter<ResourceAdapter.ViewHo
 
 
     public static final String TAG = "ResourceAdapter";
+  
 
     List<Resource> resources;
     Context context;
@@ -61,7 +60,6 @@ public class ResourceAdapter extends RecyclerView.Adapter<ResourceAdapter.ViewHo
         private TextView tvDescription;
         private TextView tvSubject;
 
-        private ImageView ivPoster;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -70,25 +68,20 @@ public class ResourceAdapter extends RecyclerView.Adapter<ResourceAdapter.ViewHo
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvSubject = itemView.findViewById(R.id.tvSubjects);
-            ivPoster = itemView.findViewById(R.id.ivPoster);
+
 
         }
 
         public void bind(Resource resource) {
 
             tvTitle.setText(resource.getTitle());
-            tvDescription.setText(resource.getSubject());
+            tvDescription.setText(resource.getDescription());
 
-            Glide.with(ivPoster).load(resource.getImageURL()).into(ivPoster);
+            //Glide.with(ivPoster).load(resource.getImageURL()).into(ivPoster);
 
-            tvSubject.setText(resource.getSubject());
+            tvSubject.setText(resource.getCreated());
 
-            ivPoster.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    goToUrl(resource.getResrcLink());
-                }
-            });
+            tvDescription.setOnClickListener(view -> goToUrl(resource.getResrcLink()));
 
 
         }

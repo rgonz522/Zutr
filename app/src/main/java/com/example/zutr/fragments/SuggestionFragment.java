@@ -1,5 +1,7 @@
 package com.example.zutr.fragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codepath.asynchttpclient.RequestParams;
+import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
 import com.example.zutr.R;
 
 import okhttp3.Headers;
@@ -48,7 +52,6 @@ public class SuggestionFragment extends Fragment {
     public static final String TAG = "Suggestion Fragments";
 
 
-    private RecyclerView rvResources;
     private ResourceAdapter adapter;
     private List<Resource> resources;
 
@@ -76,7 +79,8 @@ public class SuggestionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        rvResources = view.findViewById(R.id.rvResource);
+
+        RecyclerView rvResources = view.findViewById(R.id.rvResource);
         resources = new ArrayList<>();
         adapter = new ResourceAdapter(resources, getContext());
 
@@ -96,15 +100,9 @@ public class SuggestionFragment extends Fragment {
 
         final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        Log.i(TAG, "querySessions: is tutor?" + LogInActivity.IS_TUTOR);
-        Log.i(TAG, "querySessions: session user id : " + sessionUserId);
 
         final List<String> sessions = new ArrayList<>();
 
-        Log.i(TAG, "querySessions: session user id : " + userID);
-
-
-        Log.i(TAG, "querySessions: ");
 
         FirebaseFirestore.getInstance()
                 .collection(Session.PATH)
@@ -154,49 +152,46 @@ public class SuggestionFragment extends Fragment {
     public Resource queryLOC(String search) {
 
         Resource resource = new Resource();
-        String url = "https://www.loc.gov/websites/?q=" + search + "&fo=json";
+
+
+        RequestParams params = new RequestParams();
+        params.put("query", search);
+
+
+        String token = getContext().getResources().getString(R.string.MendeleySecret);
+
+        String url = "https://api.mendeley.com/search/catalog?access_token=" + token;
+
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, new JsonHttpResponseHandler() {
+        client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.d(TAG, "OnSuccess");
-                JSONObject jsonObject = json.jsonObject;
+                //JSONObject jsonObject = json.jsonObject;
+
+                Log.i(TAG, "onSuccess: " + json.toString());
+                JSONArray results = json.jsonArray;
+                Log.d(TAG, results.toString());
+
 
                 try {
-                    JSONArray results = jsonObject.getJSONArray("results");
-                    Log.d(TAG, results.toString());
+                    JSONObject jsonObject = results.getJSONObject(0);
+                    resource.setTitle(jsonObject.getString(Resource.KEY_TITLE));
 
-
-                    resource.setTitle(results.getJSONObject(0).getString(Resource.KEY_TITLE));
-                    resource.setDescription(results.getJSONObject(0).getJSONArray(Resource.KEY_DESCRIPTION).getString(0));
-
-                    resource.setResrcLink(results.getJSONObject(0).getString(Resource.KEY_URL));
-
-
-                    if (results.getJSONObject(0).getJSONArray(Resource.KEY_IMAGE).length() > 0) {
-                        resource.setImageURL(results.getJSONObject(0).getJSONArray(Resource.KEY_IMAGE).getString(0));
-                    }
-
-
-                    JSONArray subjects = results.getJSONObject(0).getJSONArray(Resource.KEY_SUBJECT);
-                    String subject = "";
-
-                    for (int i = 0; i < subjects.length(); i++) {
-                        subject += (subjects.get(i) + ",  ");
-                    }
-
-
-                    resource.setSubject(subject);
+                    Log.i(TAG, "onSuccess: title " + jsonObject.getString(Resource.KEY_TITLE));
+                    Log.i(TAG, "onSuccess: description" + jsonObject.getString(Resource.KEY_DESCRIPTION));
+                    resource.setDescription(jsonObject.getString(Resource.KEY_DESCRIPTION));
+                    Log.i(TAG, "onSuccess: link" + jsonObject.getString(Resource.KEY_URL));
+                    resource.setResrcLink(jsonObject.getString(Resource.KEY_URL));
+                    resource.setCreated(jsonObject.getString(Resource.KEY_CREATED));
 
 
                     resources.add(resource);
                     adapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
-                    Log.d(TAG, "Hit JSON Exception");
                     e.printStackTrace();
-
                 }
 
 
@@ -222,31 +217,32 @@ public class SuggestionFragment extends Fragment {
     private List<String> getSeparateWords(String wholeQuestion) {
 
 
-        List<String> ngrams = new ArrayList<>();
+        List<String> separateWords = new ArrayList<>();
 
 
         int index = 0;
         while (wholeQuestion.length() - 1 > index) {
 
 
-            int nextindex = wholeQuestion.substring(index).indexOf(" ");
+            int nextIndex = wholeQuestion.substring(index).indexOf(" ");
 
 
-            if (nextindex == -1) {
-                ngrams.add(wholeQuestion.substring(index));
+            if (nextIndex == -1) {
+                separateWords.add(wholeQuestion.substring(index));
                 break;
-            } else if (wholeQuestion.length() - 1 > nextindex) {
-                nextindex += index;
-                ngrams.add(wholeQuestion.substring(index, nextindex));
+            } else if (wholeQuestion.length() - 1 > nextIndex) {
+                nextIndex += index;
+                separateWords.add(wholeQuestion.substring(index, nextIndex));
 
-                index = nextindex + 1;
+                index = nextIndex + 1;
             }
 
 
         }
 
 
-        return ngrams;
+        return separateWords;
     }
+
 
 }
