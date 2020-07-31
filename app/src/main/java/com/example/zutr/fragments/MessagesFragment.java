@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.zutr.adapters.MessagesAdapter;
@@ -196,6 +197,9 @@ public class MessagesFragment extends Fragment {
 
         ItemTouchHelper mIth = new ItemTouchHelper(callback);
         mIth.attachToRecyclerView(rvMessage);
+
+
+        rvMessage.smoothScrollToPosition(0);
     }
 
     @Override

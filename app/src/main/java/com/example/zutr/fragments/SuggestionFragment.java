@@ -1,7 +1,6 @@
 package com.example.zutr.fragments;
 
-import android.content.Intent;
-import android.net.Uri;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,11 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.codepath.asynchttpclient.RequestHeaders;
 import com.codepath.asynchttpclient.RequestParams;
-import com.codepath.asynchttpclient.callback.TextHttpResponseHandler;
+
 import com.example.zutr.R;
 
-import okhttp3.Headers;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +42,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
+
+import okhttp3.Headers;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 
 public class SuggestionFragment extends Fragment {
@@ -113,10 +115,9 @@ public class SuggestionFragment extends Fragment {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                sessions.addAll(getSeparateWords(document.getString(Session.KEY_QUESTION)));
-                                Log.i(TAG, "onComplete: " + document.getString(Session.KEY_QUESTION));
+                                searchKeywords(document.getString(Session.KEY_QUESTION));
                             }
-                            updateResources(sessions);
+
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
 
@@ -129,25 +130,6 @@ public class SuggestionFragment extends Fragment {
 
     }
 
-
-    public void updateResources(List<String> searches) {
-
-        resources.clear();
-
-        Set<String> set = new HashSet<String>(searches);
-
-        for (String search : set) {
-
-            Log.i(TAG, "updateResources: " + search);
-            if (search.length() > 5) {
-                Log.i(TAG, "updateResources: " + queryLOC(search).getDescription());
-            }
-
-
-        }
-
-
-    }
 
     public Resource queryLOC(String search) {
 
@@ -179,10 +161,7 @@ public class SuggestionFragment extends Fragment {
                     JSONObject jsonObject = results.getJSONObject(0);
                     resource.setTitle(jsonObject.getString(Resource.KEY_TITLE));
 
-                    Log.i(TAG, "onSuccess: title " + jsonObject.getString(Resource.KEY_TITLE));
-                    Log.i(TAG, "onSuccess: description" + jsonObject.getString(Resource.KEY_DESCRIPTION));
                     resource.setDescription(jsonObject.getString(Resource.KEY_DESCRIPTION));
-                    Log.i(TAG, "onSuccess: link" + jsonObject.getString(Resource.KEY_URL));
                     resource.setResrcLink(jsonObject.getString(Resource.KEY_URL));
                     resource.setCreated(jsonObject.getString(Resource.KEY_CREATED));
 
@@ -209,39 +188,63 @@ public class SuggestionFragment extends Fragment {
     }
 
 
-    /**
-     * @param wholeQuestion
-     * @return List of separate words in question
-     */
-
-    private List<String> getSeparateWords(String wholeQuestion) {
+    public void searchKeywords(String text) {
 
 
-        List<String> separateWords = new ArrayList<>();
+        String api_key = getContext().getResources().getString(R.string.KeywordsAPIkey);
+        String host = "https://apis.paralleldots.com/v4/";
+
+        String url = host + "keywords";
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        RequestBody params = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("api_key", api_key)
+                .addFormDataPart("text", text)
+                .build();
 
 
-        int index = 0;
-        while (wholeQuestion.length() - 1 > index) {
+        RequestHeaders header = new RequestHeaders();
+        header.put("cache-control", "no-cache");
+
+        client.post(url, header, null, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
 
 
-            int nextIndex = wholeQuestion.substring(index).indexOf(" ");
+                try {
+
+                    if (!json.jsonObject.isNull("keywords") && json.jsonObject.get("keywords") instanceof JSONArray) {
+
+                        JSONArray objectKeywords = json.jsonObject.getJSONArray("keywords");
 
 
-            if (nextIndex == -1) {
-                separateWords.add(wholeQuestion.substring(index));
-                break;
-            } else if (wholeQuestion.length() - 1 > nextIndex) {
-                nextIndex += index;
-                separateWords.add(wholeQuestion.substring(index, nextIndex));
+                        JSONObject object = objectKeywords.getJSONObject(0);
+                        String keyword = object.getString("keyword");
 
-                index = nextIndex + 1;
+
+                        Log.i(TAG, "onSuccess: " + keyword);
+
+
+                        queryLOC(keyword);
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
 
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "onFailure: ", throwable);
+            }
+        });
 
-        }
 
-
-        return separateWords;
     }
 
 
