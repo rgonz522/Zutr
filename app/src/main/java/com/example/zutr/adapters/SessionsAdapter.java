@@ -101,7 +101,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             tvTutor = view.findViewById(R.id.tvTutor);
             tvAnswer = view.findViewById(R.id.tvAnswer);
             ivChat = view.findViewById(R.id.ivChat);
-
             linearLayout = view.findViewById(R.id.llSessionItem);
 
 
@@ -109,6 +108,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
 
         public void bind(Session session) {
+
 
 
 
@@ -133,6 +133,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
 
             }
+            tvType.setText(session.getSessionTypeString());
 
             tvSubject.setText(Session.KEY_SUBJECT + ": " + session.getSubject());
 
@@ -180,6 +181,8 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
                 }
             });
+
+
         }
 
         private boolean isChatAvailible(Session session) {

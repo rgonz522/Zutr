@@ -93,7 +93,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    protected void querySessions() {
+    private void querySessions() {
 
         final String sessionUserId = LogInActivity.IS_TUTOR ? Session.KEY_TUTOR_UID : Session.KEY_STUDENT_UID;
 

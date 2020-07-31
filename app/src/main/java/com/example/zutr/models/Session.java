@@ -189,4 +189,22 @@ public class Session implements Serializable {
 
         return relativeDate;
     }
+
+    public String getSessionTypeString() {
+
+        switch (sessionType) {
+            case SESSION_TEXT:
+                return "Text";
+            case SESSION_CALL:
+                return "Call";
+            case SESSION_QUESTION:
+                return "Question";
+            case SESSION_VIDEO:
+                return "Video";
+
+
+        }
+
+        return "No Question Found";
+    }
 }
