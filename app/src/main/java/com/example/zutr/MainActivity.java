@@ -84,10 +84,6 @@ public class MainActivity extends AppCompatActivity {
 
                         fragment = LogInActivity.IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
                         break;
-                    case R.id.action_home:
-
-                        fragment = new HomeFragment();
-                        break;
                     default:
                         fragment = null;
                 }
@@ -101,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        bottomNavigationView.setSelectedItemId(R.id.action_home);
+        bottomNavigationView.setSelectedItemId(R.id.action_compose);
 
 
     }
