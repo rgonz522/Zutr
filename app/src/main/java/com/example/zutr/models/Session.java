@@ -13,9 +13,10 @@ public class Session implements Serializable {
     public static final String QUESTION_TIME = "000";
     public static final String NO_TUTOR_YET = "404";
 
+    public static final String NO_ANSWER = "No Answer Yet";
+
     public static final String KEY_CREATED_AT = "createdAt";
-
-
+    public static final String KEY_RATED_ZUTR = "ratedByStudent";
     public static final String KEY_SUBJECT = "subject";
     public static final String KEY_QUESTION = "question";
     public static final String KEY_ANSWER = "answer";
@@ -33,6 +34,7 @@ public class Session implements Serializable {
     public static final int SESSION_QUESTION = 0;
 
 
+    private boolean ratedByStudent;
     private String question;
     private String answer;
     private String studentId;
@@ -43,6 +45,7 @@ public class Session implements Serializable {
     private Date beginTime;
     private Date createdAt;
     private int sessionType;
+
 
 
     private String subject;
@@ -82,6 +85,7 @@ public class Session implements Serializable {
         this.tutorId = NO_TUTOR_YET;
         this.timeEnded = QUESTION_TIME;
         this.timeStart = QUESTION_TIME;
+
 
     }
 
@@ -188,6 +192,14 @@ public class Session implements Serializable {
         }
 
         return relativeDate;
+    }
+
+    public boolean isRatedByStudent() {
+        return ratedByStudent;
+    }
+
+    public void setRatedByStudent(boolean ratedByStudent) {
+        this.ratedByStudent = ratedByStudent;
     }
 
     public String getSessionTypeString() {

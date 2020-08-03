@@ -16,13 +16,13 @@ import android.widget.TextView;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Tutor;
+import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -31,25 +31,25 @@ import com.google.firebase.firestore.SetOptions;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class SessionDetailsActivity extends AppCompatActivity {
 
     public static final String TAG = "SessionDetailsActivty";
     public static final long DATE_MIN_EQUAL = 900000L;
-    private boolean isTutor;
 
 
     public static final String MESSAGE_PATH = "";
     public static final String TUTOR_ID_PATH = "";
     public static final String STUDENT_ID_PATH = "";
     public static final String CHAT_PATH = "";
+    private static final int NO_USER_FOUND = -1;
 
-    private boolean ratedByStudent;
 
-    private TextView tvTutor;
     private EditText etAnswer;
-    RatingBar rbZutrRate;
+    private TextView tvAnswered;
+    private RatingBar rbZutrRate;
 
     private FirebaseFirestore dataBase;
 
@@ -66,26 +66,27 @@ public class SessionDetailsActivity extends AppCompatActivity {
         TextView tvSubject = findViewById(R.id.tvSubject);
         TextView tvQuestion = findViewById(R.id.tvQuestion);
         TextView tvType = findViewById(R.id.tvType);
-        TextView tvAnswered = findViewById(R.id.tvAnswered);
         Button btnZutrStart = findViewById(R.id.btnZutrStart);
+        tvAnswered = findViewById(R.id.tvAnswered);
         etAnswer = findViewById(R.id.etAnswer);
         rbZutrRate = findViewById(R.id.rbZutrRate);
-        RelativeLayout relativeLayout = findViewById(R.id.rlDetails);
 
 
         Intent intent = getIntent();
         final Session session = (Session) intent.getSerializableExtra(Session.PATH);
 
-        Log.i(TAG, "onCreate: sessiontype:" + session.getSessionType());
 
         //Set the view values with the session values
 
+        if (session == null) {
+            finish();
+        }
         tvDate.setText(session.getRelativeTimeAgo());
         tvSubject.setText(session.getSubject());
         tvQuestion.setText(session.getQuestion());
         tvType.setText(getTypeSession(session.getSessionType()));
-        tvAnswered.setText("Answer: \n\n" + session.getAnswer());
-        Log.i(TAG, "onCreate: " + session.getSessionType());
+
+        getUserRealName(session.getTutorId(), session.getAnswer());
 
 
         //if user is tutor and session has not been answered
@@ -94,24 +95,17 @@ public class SessionDetailsActivity extends AppCompatActivity {
             rbZutrRate.setVisibility(View.GONE);
             tvAnswered.setVisibility(View.GONE);
             btnZutrStart.setVisibility(View.VISIBLE);
-            btnZutrStart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType());
+            btnZutrStart.setOnClickListener(view -> updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType()));
 
-                }
-            });
             //if user is student and session has been answered
-        } else if (!LogInActivity.IS_TUTOR && !hasNoTutor(session.getTutorId())) {
+        } else if (!LogInActivity.IS_TUTOR
+                && !hasNoTutor(session.getTutorId())
+                && !session.isRatedByStudent()) {
 
             btnZutrStart.setVisibility(View.GONE);
             etAnswer.setVisibility(View.GONE);
-            rbZutrRate.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-                @Override
-                public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
-                    ratedByStudent(v, session.getTutorId());
-                }
-            });
+            rbZutrRate.setOnRatingBarChangeListener((ratingBar, v, b) -> rateByStudent(v, session));
+
             //if user is tutor and its been answered
         } else if (LogInActivity.IS_TUTOR) {
             etAnswer.setVisibility(View.GONE);
@@ -123,85 +117,85 @@ public class SessionDetailsActivity extends AppCompatActivity {
             btnZutrStart.setVisibility(View.GONE);
             rbZutrRate.setVisibility(View.GONE);
 
-            tvAnswered.setText("No Answer Yet");
+            tvAnswered.setText(Session.NO_ANSWER);
         }
 
 
     }
 
 
-    private void ratedByStudent(float rate, String tutorID) {
+    private void rateByStudent(float rate, Session session) {
 
+        String tutorID = session.getTutorId();
+
+        setRatedByStudent(tutorID, session.getStudentId(), session.getQuestion());
 
         dataBase.collection(Tutor.PATH)
                 .document(tutorID)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        if (task.isSuccessful()) {
+                    if (task.isSuccessful()) {
 
 
-                            Map<String, Object> updates = new HashMap<>();
-                            rbZutrRate.setClickable(false);
-                            //   Formula for new average rating given a new rate
-                            //-----------------------------------------------------------
-                            //
-                            //       (num_rates * rating)  + new_rate
-                            //   _______________________________________  = new average rating
-                            //                   rates + 1
-                            //
-                            //-----------------------------------------------------------
+                        Map<String, Object> updates = new HashMap<>();
+                        rbZutrRate.setClickable(false);
+                        //   Formula for new average rating given a new rate
+                        //-----------------------------------------------------------
+                        //
+                        //       (num_rates * rating)  + new_rate
+                        //   _______________________________________  = new average rating
+                        //                   rates + 1
+                        //
+                        //-----------------------------------------------------------
 
 
-                            // long and int cannot be null
-                            //need an object to test if null
+                        // long and int cannot be null
+                        //need an object to test if null
 
-                            Object numRates = task.getResult().get(Tutor.AMT_RATES);
+                        Object numRates = Objects.requireNonNull(task.getResult()).get(Tutor.AMT_RATES);
 
-                            Double average = task.getResult().getDouble(Tutor.RATING);
-                            int num_rates = 0;
+                        Double average = task.getResult().getDouble(Tutor.RATING);
+                        int num_rates = 0;
 
-                            Log.i(TAG, "onComplete: num_rates" + num_rates + numRates);
-                            Log.i(TAG, "onComplete: average " + average);
-
-
-                            if (numRates != null && average != null) {
-                                num_rates = task.getResult().getLong(Tutor.AMT_RATES).intValue();
-                                average *= num_rates;
-
-                                num_rates++;
-
-                                average += rate;
-
-                                average /= num_rates;
+                        Log.i(TAG, "onComplete: num_rates" + num_rates + numRates);
+                        Log.i(TAG, "onComplete: average " + average);
 
 
-                                updates.put(Tutor.RATING, average);
-                                updates.put(Tutor.AMT_RATES, num_rates);
+                        if (numRates != null && average != null) {
+                            num_rates = Objects.requireNonNull(task.getResult().getLong(Tutor.AMT_RATES)).intValue();
+                            average *= num_rates;
+
+                            num_rates++;
+
+                            average += rate;
+
+                            average /= num_rates;
 
 
-                                updateRate(updates, tutorID);
+                            updates.put(Tutor.RATING, average);
+                            updates.put(Tutor.AMT_RATES, num_rates);
 
-                            } else {
-                                //if no previous average
-                                //set the rate to be the average
-                                //set then num_rates to be 1
-                                average = new Double(rate);
-                                num_rates = 1;
 
-                                updates.put(Tutor.RATING, average);
-                                updates.put(Tutor.AMT_RATES, num_rates);
+                            updateRate(updates, tutorID);
 
-                                writeFirstRate(updates, tutorID);
+                        } else {
+                            //if no previous average
+                            //set the rate to be the average
+                            //set then num_rates to be 1
+                            average = (double) rate;
+                            num_rates = 1;
 
-                            }
+                            updates.put(Tutor.RATING, average);
+                            updates.put(Tutor.AMT_RATES, num_rates);
 
+                            writeFirstRate(updates, tutorID);
 
                         }
 
+
                     }
+
                 });
 
     }
@@ -210,15 +204,12 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
 
         dataBase.collection(Tutor.PATH).document(tutorID).set(first, SetOptions.merge())
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                .addOnCompleteListener(task -> {
 
 
-                        if (task.isSuccessful()) {
-                            Log.i(TAG, "onComplete: " + task.toString());
-                            rbZutrRate.setClickable(true);
-                        }
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "onComplete: " + task.toString());
+                        rbZutrRate.setClickable(true);
                     }
                 });
 
@@ -227,17 +218,44 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private void updateRate(Map<String, Object> updates, String tutorID) {
 
         dataBase.collection(Tutor.PATH).document(tutorID).update(updates)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
+                .addOnCompleteListener(task -> {
 
 
-                        if (task.isSuccessful()) {
-                            Log.i(TAG, "onComplete: " + task.toString());
-                            rbZutrRate.setClickable(true);
-                        }
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "onComplete: " + task.toString());
+                        rbZutrRate.setClickable(true);
                     }
                 });
+    }
+
+    private void setRatedByStudent(String tutorID, String studentID, String question) {
+
+
+        dataBase.collection(Session.PATH)
+                .whereEqualTo(Session.KEY_TUTOR_UID, tutorID)
+                .whereEqualTo(Session.KEY_STUDENT_UID, studentID)
+                .whereEqualTo(Session.KEY_QUESTION, question)
+                .get()
+                .addOnCompleteListener(task -> {
+
+                    for (QueryDocumentSnapshot documentSnapshot : Objects.requireNonNull(task.getResult())) {
+
+                        String id = documentSnapshot.getId();
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put(Session.KEY_RATED_ZUTR, true);
+
+                        dataBase.collection(Session.PATH).document(id).set(updates, SetOptions.merge())
+                                .addOnCompleteListener(task1 -> {
+
+                                    if (task1.isSuccessful()) {
+                                        Log.i(TAG, "onComplete: " + task1.toString());
+                                        rbZutrRate.setClickable(true);
+                                    }
+                                });
+
+                    }
+                });
+
     }
 
     private String getTypeSession(int typecode) {
@@ -274,29 +292,26 @@ public class SessionDetailsActivity extends AppCompatActivity {
         dataBase.collection(Session.PATH)
                 .whereEqualTo(Session.KEY_STUDENT_UID, studentId)
                 .whereEqualTo(Session.KEY_QUESTION, question).get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            for (QueryDocumentSnapshot document : task.getResult()) {
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
 
-                                dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_TUTOR_UID, currentUserID);
-                                dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, answer);
+                            dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_TUTOR_UID, currentUserID);
+                            dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, answer);
 
 
-                                if (sessionType == Session.SESSION_TEXT) {
-                                    updateChat(studentId, currentUserID, document.getDate(Session.KEY_CREATED_AT), answer);
-                                } else {
-                                    startMainActivity();
-                                }
-                                Log.i(TAG, "onComplete: ");
-
+                            if (sessionType == Session.SESSION_TEXT) {
+                                updateChat(studentId, currentUserID, Objects.requireNonNull(document.getDate(Session.KEY_CREATED_AT)), answer);
+                            } else {
+                                startMainActivity();
                             }
+                            Log.i(TAG, "onComplete: ");
 
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
+
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
                     }
                 });
     }
@@ -312,41 +327,72 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         colRef.whereEqualTo(STUDENT_ID_PATH, studentID)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        Message message = new Message(answer, currentUserID, new Date());
+                    Message message = new Message(answer, currentUserID, new Date());
 
-                        Long chatTime = 0L;
+                    long chatTime = 0L;
 
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            //set tutor to accepting tutor
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        //set tutor to accepting tutor
 
-                            chatTime = documentSnapshot.getDate(Session.KEY_CREATED_AT).getTime();
+                        chatTime = documentSnapshot.getDate(Session.KEY_CREATED_AT).getTime();
 
-                            if (Math.abs(chatTime - sessionCreatedAt.getTime()) < DATE_MIN_EQUAL) {
+                        if (Math.abs(chatTime - sessionCreatedAt.getTime()) < DATE_MIN_EQUAL) {
 
-                                Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
-                                colRef.document(documentSnapshot.getId()).update(TUTOR_ID_PATH, currentUserID);
+                            Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
+                            colRef.document(documentSnapshot.getId()).update(TUTOR_ID_PATH, currentUserID);
 
-                                //send reply message
-                                colRef.document(documentSnapshot.getId())
-                                        .collection(MESSAGE_PATH)
-                                        .document()
-                                        .set(message);
-                            } else {
-                                Log.i(TAG, "onComplete: they dont match");
-                            }
-                            Log.i(TAG, "onComplete: uodated chat and tutor" + chatTime);
-
+                            //send reply message
+                            colRef.document(documentSnapshot.getId())
+                                    .collection(MESSAGE_PATH)
+                                    .document()
+                                    .set(message);
+                        } else {
+                            Log.i(TAG, "onComplete: they dont match");
                         }
-
-
-                        startMainActivity();
+                        Log.i(TAG, "onComplete: uodated chat and tutor" + chatTime);
 
                     }
+
+
+                    startMainActivity();
+
                 });
+
+    }
+
+
+    public String getUserRealName(final String userID, String answer) {
+
+        Log.i(TAG, "getUserRealName: " + userID);
+
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+
+        final StringBuilder userRealName = new StringBuilder("");
+        //has to be an array in order to be changed within
+        //inner CompleteListener Class
+
+        database.collection(Tutor.PATH).document(userID).get().addOnCompleteListener(task -> {
+
+            if (task.isSuccessful()) {
+                userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
+                userRealName.append("  ");
+                userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
+
+                if (userRealName.indexOf("null") == NO_USER_FOUND) {
+                    Log.i(TAG, "getUserRealName: " + userRealName.indexOf("null"));
+                    Log.i(TAG, "getUserRealName: " + userRealName);
+
+                    tvAnswered.setText(String.format("%s: \n\n%s", userRealName, answer));
+                    Log.i(TAG, "onCreate: " + tvAnswered.getText());
+                }
+            }
+        });
+
+        return userRealName.toString();
+
 
     }
 

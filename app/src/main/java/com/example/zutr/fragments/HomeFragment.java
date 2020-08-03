@@ -119,6 +119,8 @@ public class HomeFragment extends Fragment {
 
                                 if (document.getString(sessionUserId).equals(currentUser.getUid())) {
                                     Session session = document.toObject(Session.class);
+
+                                    Log.i(TAG, "onComplete: " + session.isRatedByStudent());
                                     newSessions.add(session);
                                 }
 
