@@ -1,4 +1,4 @@
-package com.example.zutr.fragments;
+package com.example.zutr;
 
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -6,23 +6,18 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.zutr.adapters.MessagesAdapter;
-import com.example.zutr.R;
 import com.example.zutr.models.Message;
 
 import com.example.zutr.models.Session;
@@ -32,8 +27,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -45,7 +38,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class MessagesFragment extends Fragment {
+public class MessagesActivity extends AppCompatActivity {
 
 
     public static final String MESSAGE_PATH = "messages";
@@ -54,7 +47,7 @@ public class MessagesFragment extends Fragment {
     public static final String STUDENT_ID_PATH = "studentID";
     public static final String TAG = "MessageFragment";
     public static final String HIDDEN_BY = "hiddenBy";
-    private static final long DATE_MIN_EQUAL = 900000L;
+    private static final long DATE_MIN_EQUAL = 90000L;
 
     private RecyclerView rvMessage;
     private EditText etNewMsg;
@@ -74,56 +67,50 @@ public class MessagesFragment extends Fragment {
     private String chatDocID;
     private long createdAt;
 
-    public MessagesFragment() {
-
-    }
-
-    public MessagesFragment(String remoteID, long createdAt) {
-        this.remoteID = remoteID;
-        localID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        this.createdAt = createdAt;
-
-        if (LogInActivity.IS_TUTOR) {
-            remoteField = STUDENT_ID_PATH;
-            localField = TUTOR_ID_PATH;
-        } else {
-            remoteField = TUTOR_ID_PATH;
-            localField = STUDENT_ID_PATH;
-        }
-        Log.i(TAG, "ChatFragment: " + localID);
-        Log.i(TAG, "ChatFragment: " + remoteID);
-        // Required empty public constructor
-    }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_messages);
 
-    }
+
+        Intent intent = getIntent();
+        final Session session = (Session) intent.getSerializableExtra(Session.PATH);
 
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        if (LogInActivity.IS_TUTOR) {
+            remoteField = STUDENT_ID_PATH;
+            remoteID = session.getStudentId();
+            localField = TUTOR_ID_PATH;
+            localID = session.getTutorId();
+
+        } else {
+            remoteField = TUTOR_ID_PATH;
+            remoteID = session.getTutorId();
+            localField = STUDENT_ID_PATH;
+            localID = session.getStudentId();
+        }
+        Log.i(TAG, "ChatFragment: " + localID);
+        Log.i(TAG, "ChatFragment: " + remoteID);
+        // Required empty public constructor
+
 
         dataBase = FirebaseFirestore.getInstance();
         messages = new ArrayList<>();
-        rvMessage = view.findViewById(R.id.rvMessages);
-        etNewMsg = view.findViewById(R.id.etNewMessage);
-        btnSendMsg = view.findViewById(R.id.btnSendMsg);
-        adapter = new MessagesAdapter(getContext(), messages);
+        rvMessage = findViewById(R.id.rvMessages);
+        etNewMsg = findViewById(R.id.etNewMessage);
+        btnSendMsg = findViewById(R.id.btnSendMsg);
+        adapter = new MessagesAdapter(this, messages);
 
         rvMessage.setAdapter(adapter);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
 
         rvMessage.setLayoutManager(linearLayoutManager);
 
 
         if (localField != null && remoteField != null) {
-            queryMessages();
+            queryMessages(session.getQuestion());
         }
 
 
@@ -131,10 +118,9 @@ public class MessagesFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (etNewMsg.getText().toString().isEmpty()) {
-                    Toast.makeText(getContext(), "Message is Empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MessagesActivity.this, "Message is Empty", Toast.LENGTH_SHORT).show();
                 } else {
                     sendMessage(etNewMsg.getText().toString());
-                    queryMessages();
                     etNewMsg.setText("");
 
                 }
@@ -144,7 +130,7 @@ public class MessagesFragment extends Fragment {
         rvMessage.setOnScrollChangeListener(new View.OnScrollChangeListener() {
             @Override
             public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                queryMessages();
+                queryMessages(session.getQuestion());
             }
         });
 
@@ -202,21 +188,8 @@ public class MessagesFragment extends Fragment {
         rvMessage.smoothScrollToPosition(0);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_messages, container, false);
-
-
-        // Inflate the layout for this fragment
-        return view;
-
-
-    }
-
-
-    private void queryMessages() {
+    private void queryMessages(String question) {
 
 
         final List<Message> newMessages = new ArrayList<>();
@@ -229,6 +202,7 @@ public class MessagesFragment extends Fragment {
         dataBase.collection(CHAT_PATH)
                 .whereEqualTo(remoteField, remoteID)
                 .whereEqualTo(localField, localID)
+                .whereEqualTo(Session.KEY_QUESTION, question)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -278,11 +252,11 @@ public class MessagesFragment extends Fragment {
 
     }
 
+
     private void updateMessages(List<Message> newMessages) {
 
         messages.clear();
         messages.addAll(newMessages);
-        adapter.notifyDataSetChanged();
 
 
         Collections.sort(messages, new Comparator<Message>() {
@@ -290,6 +264,9 @@ public class MessagesFragment extends Fragment {
                 return message1.getCreatedAt().compareTo(message2.getCreatedAt());
             }
         });
+
+        adapter.notifyDataSetChanged();
+        rvMessage.smoothScrollToPosition(0);
     }
 
     private void sendMessage(String messageBody) {
@@ -315,7 +292,9 @@ public class MessagesFragment extends Fragment {
                                     .collection(MESSAGE_PATH)
                                     .document(new Date().toString())
                                     .set(message);
+
                             messages.add(message);
+                            adapter.notifyDataSetChanged();
                         }
 
                     }

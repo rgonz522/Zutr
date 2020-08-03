@@ -17,10 +17,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zutr.MainActivity;
+import com.example.zutr.MessagesActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
 
-import com.example.zutr.fragments.MessagesFragment;
+import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -110,9 +111,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         public void bind(Session session) {
 
 
-
-
-            tvQuestion.setText("Question" + ": " + session.getQuestion());
+            tvQuestion.setText(String.format("Question: %s", session.getQuestion()));
 
 
             Log.i(TAG, "bind: " + session.getTutorId());
@@ -135,7 +134,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             }
             tvType.setText(session.getSessionTypeString());
 
-            tvSubject.setText(Session.KEY_SUBJECT + ": " + session.getSubject());
+            tvSubject.setText(String.format("%s: %s", Session.KEY_SUBJECT, session.getSubject()));
 
 
             if (session.isSessionQuestion()) {
@@ -173,7 +172,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                         //if the session is text and the user is involved
                         if (isChatAvailible(session)) {
 
-                            startChat(remoteID, session.getCreatedAt().getTime());
+                            startChat(session);
                         } else {
                             startDetails(session);
                         }
@@ -204,15 +203,11 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         }
 
-        private void startChat(String tutorID, long createdAt) {
+        private void startChat(Session session) {
 
-            Log.i(TAG, "openChatWith: " + tutorID);
-            MessagesFragment messagesFragment = new MessagesFragment(tutorID, createdAt);
-            FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.replace(R.id.flContainer, messagesFragment);
-            fragmentTransaction.commit();
+            Intent intent = new Intent(context, MessagesActivity.class);
+            intent.putExtra(Session.PATH, session);
+            context.startActivity(intent);
 
 
         }
@@ -232,7 +227,9 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
                     if (task.isSuccessful()) {
-                        userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME) + task.getResult().getString(User.KEY_LASTNAME));
+                        userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
+                        userRealName.append("   ");
+                        userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
                         Log.i(TAG, "getUserRealName: " + userRealName);
 
                         if (userRealName.indexOf("null") == NO_USER_FOUND) {
