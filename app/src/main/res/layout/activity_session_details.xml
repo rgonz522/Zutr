@@ -100,6 +100,17 @@
             android:textSize="18sp"
             tools:text="Well it  happened" />
 
+        <RatingBar
+            android:id="@+id/rbZutrRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvAnswered"
+            android:layout_alignParentStart="false"
+            android:layout_marginStart="58dp"
+            android:layout_marginTop="40dp"
+            android:clickable="true"
+            android:contextClickable="true" />
+
 
     </RelativeLayout>
 </FrameLayout>

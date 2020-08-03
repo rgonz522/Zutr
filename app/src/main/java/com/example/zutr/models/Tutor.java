@@ -4,6 +4,8 @@ public class Tutor extends User {
 
 
     public static final String PATH = "zutr";
+    public static final String AMT_RATES = "amountOfRates";
+    public static final String RATING = "averageRate";
 
     public Tutor() {
 
