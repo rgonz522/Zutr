@@ -113,6 +113,7 @@ public class MessagesActivity extends AppCompatActivity {
             queryMessages(session.getQuestion());
         }
 
+        Log.i(TAG, "onCreate: ");
 
         btnSendMsg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,12 +128,6 @@ public class MessagesActivity extends AppCompatActivity {
             }
         });
 
-        rvMessage.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                queryMessages(session.getQuestion());
-            }
-        });
 
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT |
                 ItemTouchHelper.LEFT) {
@@ -195,7 +190,10 @@ public class MessagesActivity extends AppCompatActivity {
         final List<Message> newMessages = new ArrayList<>();
 
         Log.i(TAG, "querySessions: session user id : " + localID);
-
+        Log.i(TAG, "queryMessages: local field" + localField);
+        Log.i(TAG, "queryMessages: remote id" + remoteID);
+        Log.i(TAG, "queryMessages: remoted field " + remoteField);
+        Log.i(TAG, "queryMessages: " + question);
 
         Log.i(TAG, "querySessions: ");
 
@@ -204,49 +202,35 @@ public class MessagesActivity extends AppCompatActivity {
                 .whereEqualTo(localField, localID)
                 .whereEqualTo(Session.KEY_QUESTION, question)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
-                            long chatTime = documentSnapshot.getDate(Session.KEY_CREATED_AT).getTime();
+                        Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
 
-                            if (Math.abs(chatTime - createdAt) < DATE_MIN_EQUAL) {
+                        chatDocID = documentSnapshot.getId();
+                        dataBase.collection(CHAT_PATH)
+                                .document(documentSnapshot.getId())
+                                .collection(MESSAGE_PATH)
+                                .get().addOnCompleteListener(task1 -> {
 
-                                Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
+                            for (QueryDocumentSnapshot document : task1.getResult()) {
+                                String hiddenBy = document.getString(HIDDEN_BY);
 
-                                chatDocID = documentSnapshot.getId();
-                                dataBase.collection(CHAT_PATH)
-                                        .document(documentSnapshot.getId())
-                                        .collection(MESSAGE_PATH)
-                                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-
-                                        for (QueryDocumentSnapshot document : task.getResult()) {
-                                            String hiddenBy = document.getString(HIDDEN_BY);
-
-                                            if (hiddenBy == null || !hiddenBy.equals(localID)) {
-                                                Message message = document.toObject(Message.class);
-                                                newMessages.add(message);
-                                            }
-                                        }
-
-                                        updateMessages(newMessages);
-
-                                    }
-
-                                });
-
-
+                                if (hiddenBy == null || !hiddenBy.equals(localID)) {
+                                    Message message = document.toObject(Message.class);
+                                    newMessages.add(message);
+                                }
                             }
 
+                            updateMessages(newMessages);
 
-                        }
+                        });
 
 
                     }
+
+
                 });
 
 

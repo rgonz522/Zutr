@@ -40,10 +40,10 @@ public class SessionDetailsActivity extends AppCompatActivity {
     public static final long DATE_MIN_EQUAL = 900000L;
 
 
-    public static final String MESSAGE_PATH = "";
-    public static final String TUTOR_ID_PATH = "";
-    public static final String STUDENT_ID_PATH = "";
-    public static final String CHAT_PATH = "";
+    public static final String MESSAGE_PATH = "messages";
+    public static final String TUTOR_ID_PATH = "tutorID";
+    public static final String STUDENT_ID_PATH = "studentID";
+    public static final String CHAT_PATH = "chats";
     private static final int NO_USER_FOUND = -1;
 
 
@@ -440,7 +440,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
     private void startMainActivity() {
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
     }
 

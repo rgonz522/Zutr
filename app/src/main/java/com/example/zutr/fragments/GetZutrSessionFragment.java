@@ -20,12 +20,15 @@ import android.widget.Toast;
 
 import com.example.zutr.CheckoutActivity;
 import com.example.zutr.MainActivity;
+import com.example.zutr.MessagesActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
+import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 
@@ -199,15 +202,12 @@ public class GetZutrSessionFragment extends Fragment {
         session.setSubject(subject);
 
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (typeOfSession == Session.SESSION_TEXT) {
-                            createMessageChatSession(question);
-                        }
-
-
+                .addOnCompleteListener(task -> {
+                    if (typeOfSession == Session.SESSION_TEXT) {
+                        createMessageChatSession(question);
                     }
+
+
                 });
     }
 
@@ -224,13 +224,32 @@ public class GetZutrSessionFragment extends Fragment {
         chat.put(Session.KEY_CREATED_AT, new Date());
 
 
-        FirebaseFirestore.getInstance()
+        DocumentReference docref = FirebaseFirestore.getInstance()
                 .collection(SessionDetailsActivity.CHAT_PATH)
-                .document().set(chat)
+                .document();
+
+        docref.set(chat)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         startCheckOut();
+
+                        Map<String, Object> message = new HashMap<>();
+                        message.put(Message.KEY_AUTHOR_ID, userId);
+                        message.put(Message.KEY_MSG_BODY, question);
+                        message.put(Message.KEY_CREATEDAT, new Date());
+
+
+                        docref.collection(MessagesActivity.MESSAGE_PATH)
+                                .document()
+                                .set(message)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Log.i(TAG, "onComplete: succes");
+                                    } else {
+                                        Log.e(TAG, "onComplete: ", task1.getException());
+                                    }
+                                });
                     }
                 });
 
