@@ -51,6 +51,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
     private TextView tvAnswered;
     private RatingBar rbZutrRate;
 
+    private boolean ratedByStudent;
+    private double rating;
     private FirebaseFirestore dataBase;
 
     @Override
@@ -75,6 +77,14 @@ public class SessionDetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         final Session session = (Session) intent.getSerializableExtra(Session.PATH);
 
+        ratedByStudent = session.isRatedByStudent();
+
+
+        if (ratedByStudent) {
+            rbZutrRate.setClickable(false);
+            getRating(session.getTutorId());
+        }
+
 
         //Set the view values with the session values
 
@@ -95,18 +105,22 @@ public class SessionDetailsActivity extends AppCompatActivity {
             rbZutrRate.setVisibility(View.GONE);
             tvAnswered.setVisibility(View.GONE);
             btnZutrStart.setVisibility(View.VISIBLE);
-            btnZutrStart.setOnClickListener(view -> updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType()));
+            btnZutrStart.setOnClickListener(view ->
+                    updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType()));
 
             //if user is student and session has been answered
         } else if (!LogInActivity.IS_TUTOR
-                && !hasNoTutor(session.getTutorId())
-                && !session.isRatedByStudent()) {
+                && !hasNoTutor(session.getTutorId())) {
 
             btnZutrStart.setVisibility(View.GONE);
             etAnswer.setVisibility(View.GONE);
-            rbZutrRate.setOnRatingBarChangeListener((ratingBar, v, b) -> rateByStudent(v, session));
+
+            rbZutrRate.setOnRatingBarChangeListener((ratingBar, v, b) -> {
+                rateByStudent(v, session);
+            });
 
             //if user is tutor and its been answered
+
         } else if (LogInActivity.IS_TUTOR) {
             etAnswer.setVisibility(View.GONE);
             btnZutrStart.setVisibility(View.GONE);
@@ -128,6 +142,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         String tutorID = session.getTutorId();
 
+        session.setRatedByStudent(true);
+        ratedByStudent = true;
         setRatedByStudent(tutorID, session.getStudentId(), session.getQuestion());
 
         dataBase.collection(Tutor.PATH)
@@ -193,10 +209,33 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
                         }
 
+                        rbZutrRate.setClickable(false);
+                        rbZutrRate.setIsIndicator(true);
+                        rbZutrRate.setRating(Float.parseFloat(String.valueOf(average)));
 
                     }
 
                 });
+
+    }
+
+    private void getRating(String tutorID) {
+
+        final Double[] rating = {0.0};
+
+        dataBase.collection(Tutor.PATH)
+                .document(tutorID)
+                .get()
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful()) {
+                        if (task.getResult().get(Tutor.RATING) != null) {
+
+                            rbZutrRate.setRating(task.getResult().getDouble(Tutor.RATING).floatValue());
+                        }
+                    }
+                });
+
 
     }
 
@@ -387,6 +426,8 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
                     tvAnswered.setText(String.format("%s: \n\n%s", userRealName, answer));
                     Log.i(TAG, "onCreate: " + tvAnswered.getText());
+                } else {
+                    tvAnswered.setText(String.format(" \n\n%s", answer));
                 }
             }
         });

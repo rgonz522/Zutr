@@ -16,11 +16,18 @@
 
         <TextView
             android:id="@+id/tvQuestion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_width="315dp"
+            android:layout_height="48dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="false"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="0dp"
+            android:layout_toStartOf="@+id/ivChat"
+            android:gravity="left|center_vertical"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             tools:text="Does benzene happen in mitosis?" />
 
@@ -36,29 +43,6 @@
 
 
     </RelativeLayout>
-    <TextView
-        android:id="@+id/tvTutor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:textColor="@color/colorPrimary"
-        tools:text="Tutor: Beyonce Ruiz" />
-
-    <TextView
-        android:id="@+id/tvSubject"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:textColor="@color/colorLilac"
-        tools:text="Math " />
-
-    <TextView
-        android:id="@+id/tvType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="2dp"
-        android:textColor="@color/colorLilac"
-        tools:text="Math " />
 
     <TextView
         android:id="@+id/tvAnswer"
@@ -66,13 +50,40 @@
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
         android:textColor="@color/colorLilac"
+        android:textSize="16sp"
         tools:text="Benze is cuz Benzene" />
+
+    <TextView
+        android:id="@+id/tvTutor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:textColor="@color/colorPrimary"
+        android:textSize="14sp"
+        tools:text="Tutor: Beyonce Ruiz" />
+
+    <TextView
+        android:id="@+id/tvSubject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:textSize="12sp"
+        tools:text="Math " />
+
+    <TextView
+        android:id="@+id/tvType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:textSize="12sp"
+        tools:text="Math " />
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
+        android:textSize="12sp"
         tools:text="August 15, 2019" />
 
 </LinearLayout>

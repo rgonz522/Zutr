@@ -15,7 +15,7 @@
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="0dp"
         android:gravity="center"
-        android:text="Change Picture" />
+        android:text="Changing Picture..." />
 
     <ImageView
         android:id="@+id/ivProfilePicture"

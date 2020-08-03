@@ -112,13 +112,7 @@ public class ChangeProfilePicFragment extends Fragment {
         pbLoading.setVisibility(View.INVISIBLE);
 
 
-        btnCaptureImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
                 launchCamera();
-            }
-        });
 
     }
 

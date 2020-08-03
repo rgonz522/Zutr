@@ -203,7 +203,7 @@ public class GetZutrSessionFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (typeOfSession == Session.SESSION_TEXT) {
-                            createMessageChatSession();
+                            createMessageChatSession(question);
                         }
 
 
@@ -212,12 +212,13 @@ public class GetZutrSessionFragment extends Fragment {
     }
 
 
-    private void createMessageChatSession() {
+    private void createMessageChatSession(String question) {
 
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
         Map<String, Object> chat = new HashMap<>();
+        chat.put(Session.KEY_QUESTION, question);
         chat.put(SessionDetailsActivity.STUDENT_ID_PATH, userId);
         chat.put(SessionDetailsActivity.TUTOR_ID_PATH, Session.NO_TUTOR_YET);
         chat.put(Session.KEY_CREATED_AT, new Date());

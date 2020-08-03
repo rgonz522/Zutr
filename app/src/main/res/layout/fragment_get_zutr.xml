@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorLilac"
     android:id="@+id/fl_container"
     tools:context=".fragments.GetZutrFragment">
 
@@ -15,26 +15,29 @@
 
         <Button
             android:id="@+id/btnSession"
-            android:layout_width="match_parent"
-            android:layout_height="83dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="false"
             android:layout_centerInParent="true"
-            android:backgroundTint="@color/colorWhite"
+            android:backgroundTint="@color/colorAccent"
+            android:padding="4dp"
+            android:paddingTop="16dp"
             android:text="Start a Session"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="24sp" />
+            android:textSize="14sp" />
 
         <Button
             android:id="@+id/btnQuestion"
-            android:layout_width="match_parent"
-            android:layout_height="79dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/btnSession"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="117dp"
-            android:layout_marginEnd="0dp"
-            android:backgroundTint="@color/colorWhite"
-            android:textColor="@color/colorPrimaryDark"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/colorAccent"
+            android:padding="10dp"
             android:text="Ask a question"
-            android:textSize="24sp" />
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/textView"
@@ -43,12 +46,20 @@
             android:layout_above="@+id/btnSession"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="0dp"
-            android:layout_marginBottom="50dp"
-            android:fontFamily="serif-monospace"
+            android:layout_marginBottom="30dp"
             android:gravity="center"
-            android:text="Get a Zutr"
-            android:textColor="#000000"
-            android:textSize="30sp" />
+            android:text="Ask Away"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="92dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/colorPrimary"
+            app:srcCompat="@drawable/logomakr_1z0hro"
+            tools:src="@tools:sample/backgrounds/scenic" />
 
     </RelativeLayout>
 
