@@ -6,6 +6,7 @@ public abstract class User {
     public static final String KEY_FIRSTNAME = "firstName";
     public static final String KEY_LASTNAME = "lastName";
     public static final String KEY_EMAIL = "email";
+    public static final String KEY_IMAGE = "profileUrl";
     public static final String KEY_ADDRESS = "address";
 
     private String username;

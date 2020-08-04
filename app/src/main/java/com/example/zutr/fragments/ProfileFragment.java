@@ -2,14 +2,6 @@ package com.example.zutr.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,22 +10,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.bumptech.glide.Glide;
-
-
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
-
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -47,17 +36,35 @@ public class ProfileFragment extends Fragment {
     private TextView tvUsername;
     private TextView tvFullName;
     private TextView tvSubjects;
-    private Button btnSignUp;
+    private Button btnSignOut;
 
 
     private FirebaseFirestore database;
     private FirebaseStorage storage;
-    private FirebaseUser user;
-    private FirebaseAuth mAuth;
 
 
+    private boolean isCurrentUser;
+    private String userID;
+    private String path;
 
     public ProfileFragment() {
+        this.userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        isCurrentUser = true;
+        path = LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH;
+
+    }
+
+    public ProfileFragment(String userid, String path) {
+
+        this.userID = userid;
+        this.path = path;
+
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (userid.equals(currentUserID)) {
+            isCurrentUser = true;
+
+        }
 
     }
 
@@ -72,6 +79,8 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
 
 
@@ -81,71 +90,67 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setUpPosts();
 
-        final String path = (LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH);
 
         Log.i(TAG, "onViewCreated: " + path);
         database = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
 
-        Log.i(TAG, "onViewCreated: user " + mAuth.getCurrentUser());
+
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
         tvFullName = view.findViewById(R.id.tvFullName);
         tvUsername = view.findViewById(R.id.tvUsername);
-        btnSignUp = view.findViewById(R.id.btnSignOut);
+        btnSignOut = view.findViewById(R.id.btnSignOut);
 
 
+        database.collection(path).document(userID).get().addOnCompleteListener(task -> {
+
+            if (task.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
 
 
-        database.collection(path).document(user.getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
+                Log.i(TAG, "onComplete: " + tvUsername.getText());
+                tvFullName.setText(String.format("%s  %s", documentSnapshot.get(User.KEY_FIRSTNAME), documentSnapshot.get(User.KEY_LASTNAME)));
 
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
+                //Load ivProfilePic with user's image uri
 
-                    Log.i(TAG, "onComplete: userID" + user.getUid());
-
-                    tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
-                    Log.i(TAG, "onComplete: " + tvUsername.getText());
-                    tvFullName.setText(String.format("%s  %s", documentSnapshot.get(User.KEY_FIRSTNAME), documentSnapshot.get(User.KEY_LASTNAME)));
-
-
-                    Log.i(TAG, "onComplete: name: " + tvUsername.getText() + tvFullName.getText());
+                String imageURL = documentSnapshot.getString(User.KEY_IMAGE);
+                if (imageURL != null) {
+                    Glide.with(getContext()).load(imageURL).circleCrop().into(ivProfilePic);
                 }
-
+                Log.i(TAG, "onComplete: name: " + tvUsername.getText() + tvFullName.getText());
             }
+
         });
 
 
-        //Load ivProfilePic with user's image uri
+        if (isCurrentUser) {
 
-        if (user.getPhotoUrl() != null) {
 
-            Glide.with(getContext()).load(user.getPhotoUrl()).circleCrop().into(ivProfilePic);
+            setUpPosts();
+
+            //Set the picture to be clickable to the edit fragment
+            ivProfilePic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startUserProfileFragment();
+                }
+            });
+
+            btnSignOut.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(getContext(), LogInActivity.class);
+                    startActivity(intent);
+
+                }
+            });
+
+        } else {
+            btnSignOut.setVisibility(View.GONE);
         }
-
-
-        //Set the picture to be clickable to the edit fragment
-        ivProfilePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startUserProfileFragment();
-            }
-        });
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAuth.signOut();
-                Intent intent = new Intent(getContext(), LogInActivity.class);
-                startActivity(intent);
-
-            }
-        });
 
     }
 

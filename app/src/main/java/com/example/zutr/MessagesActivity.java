@@ -10,20 +10,30 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.zutr.adapters.MessagesAdapter;
+import com.example.zutr.fragments.ProfileFragment;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
+import com.example.zutr.models.Student;
+import com.example.zutr.models.Tutor;
+import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -43,8 +53,10 @@ public class MessagesActivity extends AppCompatActivity {
     public static final String STUDENT_ID_PATH = "studentID";
     public static final String TAG = "MessageFragment";
     public static final String HIDDEN_BY = "hiddenBy";
+    private static final int NO_USER_FOUND = -1;
 
     private RecyclerView rvMessage;
+    private TextView tvOpponent;
     private EditText etNewMsg;
     private Button btnSendMsg;
     private Button btnLTXDialog;
@@ -62,7 +74,7 @@ public class MessagesActivity extends AppCompatActivity {
 
     private String chatDocID;
 
-    private long createdAt;
+
 
 
     @Override
@@ -95,6 +107,7 @@ public class MessagesActivity extends AppCompatActivity {
         dataBase = FirebaseFirestore.getInstance();
         messages = new ArrayList<>();
         rvMessage = findViewById(R.id.rvMessages);
+        tvOpponent = findViewById(R.id.tvOpponentName);
         etNewMsg = findViewById(R.id.etNewMessage);
         btnLTXDialog = findViewById(R.id.btnLatexDialog);
         btnSendMsg = findViewById(R.id.btnSendMsg);
@@ -114,6 +127,8 @@ public class MessagesActivity extends AppCompatActivity {
         }
 
         Log.i(TAG, "onCreate: ");
+
+        getUserRealName(remoteField, remoteID);
 
         btnSendMsg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -187,6 +202,12 @@ public class MessagesActivity extends AppCompatActivity {
 
 
         rvMessage.smoothScrollToPosition(0);
+
+
+        tvOpponent.setOnClickListener(view -> {
+
+            startProfileFragment();
+        });
     }
 
 
@@ -395,6 +416,44 @@ public class MessagesActivity extends AppCompatActivity {
                 });
     }
 
+
+    public String getUserRealName(String fieldPath, final String userID) {
+
+        String collectionPath = fieldPath.equals(TUTOR_ID_PATH) ? Tutor.PATH : Student.PATH;
+
+
+        Log.i(TAG, "getUserRealName: " + collectionPath);
+        Log.i(TAG, "getUserRealName: " + userID);
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+
+        final StringBuilder userRealName = new StringBuilder();
+        //has to be an array in order to be changed within
+        //inner CompleteListener Class
+
+        database.collection(collectionPath).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
+                    userRealName.append("   ");
+                    userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
+                    Log.i(TAG, "getUserRealName: " + userRealName);
+
+                    if (userRealName.indexOf("null") == NO_USER_FOUND) {
+                        tvOpponent.setText(userRealName);
+                    }
+                }
+            }
+        });
+
+        return userRealName.toString();
+
+
+    }
+
+
     private void showLatexDialog() {
         ImageView image = new ImageView(this);
         image.setImageResource(R.drawable.latextips);
@@ -409,5 +468,18 @@ public class MessagesActivity extends AppCompatActivity {
                         }).
                         setView(image);
         builder.create().show();
+    }
+
+    private void startProfileFragment() {
+
+        String path = remoteField.equals(TUTOR_ID_PATH) ? Tutor.PATH : Student.PATH;
+
+        findViewById(R.id.rlMessages).setVisibility(View.GONE);
+        Fragment fragment = new ProfileFragment(remoteID, path);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
+        transaction.replace(R.id.fl_container, fragment);
+        transaction.commit();
+
     }
 }
