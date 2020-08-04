@@ -1,18 +1,18 @@
 package com.example.zutr.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SearchView;
 
 import com.example.zutr.R;
 import com.example.zutr.adapters.SessionsAdapter;
@@ -69,6 +69,8 @@ public class OpenSessionsFragment extends Fragment {
 
         querySessions();
 
+
+        TextView tvHeader = view.findViewById(R.id.tvHeader);
         RecyclerView rvSessions = view.findViewById(R.id.rvSessions);
         SearchView svSearch = view.findViewById(R.id.svSearch);
         adapter = new SessionsAdapter(getContext(), sessions);
@@ -84,6 +86,8 @@ public class OpenSessionsFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 search(s);
+                tvHeader.setText(s);
+                svSearch.onActionViewCollapsed();
                 return true;
             }
 
