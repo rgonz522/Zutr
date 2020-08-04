@@ -2,11 +2,6 @@ package com.example.zutr.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +13,11 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.zutr.CheckoutActivity;
-import com.example.zutr.MainActivity;
 import com.example.zutr.MessagesActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
@@ -31,9 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -179,7 +175,7 @@ public class GetZutrSessionFragment extends Fragment {
             number = price.replace('$', '0');
 
         } else {
-            number = price.toString();
+            number = price;
         }
 
         try {
@@ -204,24 +200,24 @@ public class GetZutrSessionFragment extends Fragment {
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
                 .addOnCompleteListener(task -> {
                     if (typeOfSession == Session.SESSION_TEXT) {
-                        createMessageChatSession(question);
+                        createMessageChatSession(session);
                     }
-
+                    startCheckOut(session);
 
                 });
     }
 
 
-    private void createMessageChatSession(String question) {
+    private void createMessageChatSession(Session session) {
 
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
         Map<String, Object> chat = new HashMap<>();
-        chat.put(Session.KEY_QUESTION, question);
+        chat.put(Session.KEY_QUESTION, session.getQuestion());
         chat.put(SessionDetailsActivity.STUDENT_ID_PATH, userId);
         chat.put(SessionDetailsActivity.TUTOR_ID_PATH, Session.NO_TUTOR_YET);
-        chat.put(Session.KEY_CREATED_AT, new Date());
+        chat.put(Session.KEY_CREATED_AT, session.getCreatedAt());
 
 
         DocumentReference docref = FirebaseFirestore.getInstance()
@@ -232,12 +228,12 @@ public class GetZutrSessionFragment extends Fragment {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        startCheckOut();
+                        startCheckOut(session);
 
                         Map<String, Object> message = new HashMap<>();
                         message.put(Message.KEY_AUTHOR_ID, userId);
-                        message.put(Message.KEY_MSG_BODY, question);
-                        message.put(Message.KEY_CREATEDAT, new Date());
+                        message.put(Message.KEY_MSG_BODY, session.getQuestion());
+                        message.put(Message.KEY_CREATEDAT, session.getCreatedAt());
 
 
                         docref.collection(MessagesActivity.MESSAGE_PATH)
@@ -257,8 +253,10 @@ public class GetZutrSessionFragment extends Fragment {
     }
 
 
-    private void startCheckOut() {
+    private void startCheckOut(Session session) {
         Intent intent = new Intent(getContext(), CheckoutActivity.class);
+        Log.i(TAG, "startCheckOut: ");
+        intent.putExtra(Session.PATH, session);
         startActivity(intent);
     }
 

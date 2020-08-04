@@ -8,15 +8,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zutr.models.Session;
 import com.google.common.reflect.TypeToken;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Callback;
@@ -27,12 +28,10 @@ import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.PaymentIntentResult;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.Card;
-
 import com.stripe.android.model.ConfirmPaymentIntentParams;
 import com.stripe.android.model.PaymentIntent;
 import com.stripe.android.model.PaymentMethodCreateParams;
 import com.stripe.android.view.CardInputWidget;
-
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -50,7 +49,12 @@ public class CheckoutActivity extends AppCompatActivity {
 
 
     private Stripe stripe;
-    Button payButton;
+    private TextView tvPrice;
+    private TextView tvService;
+    private TextView tvInfo;
+
+    private ProgressBar pbLoading;
+    private Button payButton;
 
 
     @Override
@@ -71,13 +75,38 @@ public class CheckoutActivity extends AppCompatActivity {
         // Inflate the layout for this fragment
 
 
+        Intent intent = getIntent();
+
+        final Session session = (Session) intent.getSerializableExtra(Session.PATH);
+
+        Log.i(TAG, "onCreate: " + session);
+        if (session == null) {
+            finish();
+        }
+
+
         // Get the card details from the card widget
         CardInputWidget cardInputWidget = findViewById(R.id.cardInputWidget);
         Log.i(TAG, "onCreate: ");
 
 
+        tvPrice = findViewById(R.id.tvPrice);
+        tvInfo = findViewById(R.id.tvInfo);
+        tvService = findViewById(R.id.tvService);
+        pbLoading = findViewById(R.id.pbLoading);
+
+
         // Hook up the pay button to the card widget and stripe instance
         payButton = findViewById(R.id.payButton);
+
+
+        tvPrice.setText(String.format("%s \t\t\t\t\t%s", "Total: ", session.getWage()));
+        tvService.setText(String.format("%s Session, %s"
+                , session.getSessionTypeString()
+                , session.getSubject()));
+        tvInfo.setText(session.getQuestion());
+        pbLoading.setVisibility(View.GONE);
+
 
         payButton.setOnClickListener(new View.OnClickListener() {
 
@@ -85,6 +114,7 @@ public class CheckoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                pbLoading.setVisibility(View.VISIBLE);
                 Log.i(TAG, "onClick: ");
                 Card card = cardInputWidget.getCard();
 

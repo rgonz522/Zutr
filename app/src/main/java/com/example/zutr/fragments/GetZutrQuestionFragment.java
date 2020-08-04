@@ -2,11 +2,6 @@ package com.example.zutr.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,17 +11,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.example.zutr.CheckoutActivity;
-import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Session;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Comparator;
@@ -122,10 +118,10 @@ public class GetZutrQuestionFragment extends Fragment {
                 Double price = getPrice(etPrice.getText().toString());
                 String question = etQuestion.getText().toString();
                 String userEmail = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
+                String subject = spnSubject.getSelectedItem().toString();
 
                 if (price != null && !question.isEmpty() && !userEmail.isEmpty()) {
-                    saveSession(userEmail, price, question);
+                    saveSession(userEmail, price, question, subject);
 
 
                 }
@@ -146,7 +142,7 @@ public class GetZutrQuestionFragment extends Fragment {
             number = price.replace('$', '0');
 
         } else {
-            number = price.toString();
+            number = price;
         }
 
         try {
@@ -160,27 +156,29 @@ public class GetZutrQuestionFragment extends Fragment {
 
     }
 
-    private void saveSession(String currentUser, Double price, String question) {
+    private void saveSession(String currentUser, Double price, String question, String subject) {
 
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
         Session session = new Session(currentUser, price, null, question);
+        session.setSubject(subject);
 
         FirebaseFirestore.getInstance().collection(PATH).document().set(session)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        startCheckOut();
+                        startCheckOut(session);
                     }
                 });
 
 
     }
 
-    private void startCheckOut() {
+    private void startCheckOut(Session session) {
         Intent intent = new Intent(getContext(), CheckoutActivity.class);
+        intent.putExtra(Session.PATH, session);
         startActivity(intent);
     }
 
