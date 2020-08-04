@@ -2,7 +2,6 @@ package com.example.zutr;
 
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.zutr.models.Session;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -49,12 +47,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
 
     private Stripe stripe;
-    private TextView tvPrice;
-    private TextView tvService;
-    private TextView tvInfo;
 
     private ProgressBar pbLoading;
-    private Button payButton;
 
 
     @Override
@@ -90,14 +84,14 @@ public class CheckoutActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: ");
 
 
-        tvPrice = findViewById(R.id.tvPrice);
-        tvInfo = findViewById(R.id.tvInfo);
-        tvService = findViewById(R.id.tvService);
+        TextView tvPrice = findViewById(R.id.tvPrice);
+        TextView tvInfo = findViewById(R.id.tvInfo);
+        TextView tvService = findViewById(R.id.tvService);
         pbLoading = findViewById(R.id.pbLoading);
 
 
         // Hook up the pay button to the card widget and stripe instance
-        payButton = findViewById(R.id.payButton);
+        Button payButton = findViewById(R.id.payButton);
 
 
         tvPrice.setText(String.format("%s \t\t\t\t\t%s", "Total: ", session.getWage()));
@@ -143,24 +137,14 @@ public class CheckoutActivity extends AppCompatActivity {
 
 
     private void displayAlert(@NonNull String title,
-                              @Nullable String message,
-                              boolean restartDemo) {
+                              @Nullable String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message);
-        if (restartDemo) {
-            builder.setPositiveButton("Restart demo",
-                    (DialogInterface dialog, int index) -> {
-                        CardInputWidget cardInputWidget = findViewById(R.id.cardInputWidget);
-                        cardInputWidget.clear();
-                        checkOut(cardInputWidget);
-                    });
-        } else {
-            builder.setPositiveButton("Ok", null);
-        }
+
+        builder.setPositiveButton("Ok", null);
+
         builder.create().show();
-
-
         resetApp();
     }
 
@@ -265,15 +249,12 @@ public class CheckoutActivity extends AppCompatActivity {
             PaymentIntent.Status status = paymentIntent.getStatus();
             if (status == PaymentIntent.Status.Succeeded) {
                 // Payment completed successfully
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 resetApp();
             } else if (status == PaymentIntent.Status.RequiresPaymentMethod) {
                 // Payment failed – allow retrying using a different payment method
                 activity.displayAlert(
                         "Payment failed",
-                        Objects.requireNonNull(paymentIntent.getLastPaymentError()).getMessage(),
-                        false
-                );
+                        Objects.requireNonNull(paymentIntent.getLastPaymentError()).getMessage());
             }
         }
 
@@ -285,7 +266,7 @@ public class CheckoutActivity extends AppCompatActivity {
             }
             Log.i(TAG, "onError: " + e);
             // Payment request failed – allow retrying using the same payment method
-            activity.displayAlert("Error", e.toString(), false);
+            activity.displayAlert("Error", e.toString());
         }
 
 
