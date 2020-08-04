@@ -2,7 +2,6 @@ package com.example.zutr.adapters;
 
 import android.content.Context;
 import android.content.Intent;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,16 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.zutr.MainActivity;
 import com.example.zutr.MessagesActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
-
-import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -32,8 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-
-import java.io.Serializable;
 import java.util.List;
 
 public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHolder> {
@@ -185,9 +177,17 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         }
 
         private boolean isChatAvailible(Session session) {
-            return session.getSessionType() == Session.SESSION_TEXT
+
+            Log.i(TAG, "isChatAvailible:  " + session.getSessionType());
+            Log.i(TAG, "isChatAvailible:  " + session.getTutorId());
+            Log.i(TAG, "isChatAvailible:  " + session.getAnswer());
+            boolean chat = session.getSessionType() == Session.SESSION_TEXT
                     && !session.getTutorId().equals(Session.NO_TUTOR_YET)
                     && session.getTutorId() != null;
+
+            Log.i(TAG, "isChatAvailible: " + chat);
+
+            return chat;
         }
 
         private void startDetails(Session session) {
@@ -198,7 +198,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
             Log.i(TAG, "onClick: " + session.getSessionType());
             // pass the Session[already serializable] , use its already declared path as a key
-            intent.putExtra(Session.PATH, (Serializable) session);
+            intent.putExtra(Session.PATH, session);
             context.startActivity(intent);
 
         }
@@ -218,7 +218,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             FirebaseFirestore database = FirebaseFirestore.getInstance();
 
 
-            final StringBuilder userRealName = new StringBuilder("");
+            final StringBuilder userRealName = new StringBuilder();
             //has to be an array in order to be changed within
             //inner CompleteListener Class
 

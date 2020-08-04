@@ -358,7 +358,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(task -> {
 
-                    Message message = new Message(session.getAnswer(), session.getTutorId(), new Date());
+                    Message message = new Message(session.getAnswer(), null, session.getTutorId(), new Date());
 
 
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {

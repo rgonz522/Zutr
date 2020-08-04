@@ -32,11 +32,11 @@ public class Message {
 
     }
 
-    public Message(String body, String authorID, Date createdAt) {
-        this.body = body;
-        this.authorID = authorID;
-        this.createdAt = createdAt;
-    }
+//    public Message(String body, String authorID, Date createdAt) {
+//        this.body = body;
+//        this.authorID = authorID;
+//        this.createdAt = createdAt;
+//    }
 
     public String getBody() {
         return body;

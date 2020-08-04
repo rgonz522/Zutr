@@ -23,9 +23,7 @@ import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.user_auth.LogInActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -45,7 +43,6 @@ public class MessagesActivity extends AppCompatActivity {
     public static final String STUDENT_ID_PATH = "studentID";
     public static final String TAG = "MessageFragment";
     public static final String HIDDEN_BY = "hiddenBy";
-    private static final long DATE_MIN_EQUAL = 90000L;
 
     private RecyclerView rvMessage;
     private EditText etNewMsg;
@@ -64,6 +61,7 @@ public class MessagesActivity extends AppCompatActivity {
     private String localField;
 
     private String chatDocID;
+
     private long createdAt;
 
 
@@ -105,9 +103,11 @@ public class MessagesActivity extends AppCompatActivity {
         rvMessage.setAdapter(adapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-
+        linearLayoutManager.setStackFromEnd(true);
         rvMessage.setLayoutManager(linearLayoutManager);
 
+
+        rvMessage.scrollToPosition(messages.size() - 1);
 
         if (localField != null && remoteField != null) {
             queryMessages(session.getQuestion());
@@ -154,9 +154,10 @@ public class MessagesActivity extends AppCompatActivity {
                 int swipedPosition = viewHolder.getAdapterPosition();
 
                 Message removedMsg = messages.remove(swipedPosition);
+
                 adapter.notifyDataSetChanged();
 
-                eraseMessage(removedMsg.getCreatedAt().toString(), removedMsg.getHiddenBy());
+                eraseMessage(removedMsg.getBody(), removedMsg.getHiddenBy());
 
 
                 Log.i(TAG, "onSwiped: ");
@@ -222,9 +223,13 @@ public class MessagesActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task1.getResult()) {
                                 String hiddenBy = document.getString(HIDDEN_BY);
 
+                                Log.i(TAG, "queryMessages: hiddenby" + hiddenBy);
+                                Log.i(TAG, "queryMessages: currentUser " + localID);
                                 if (hiddenBy == null || !hiddenBy.equals(localID)) {
                                     Message message = document.toObject(Message.class);
                                     newMessages.add(message);
+                                    Log.i(TAG, " Message " + message.getBody());
+                                    Log.i(TAG, "Adding the nothidden message...... ");
                                 }
                             }
 
@@ -255,7 +260,7 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         adapter.notifyDataSetChanged();
-        rvMessage.smoothScrollToPosition(0);
+        rvMessage.scrollToPosition(messages.size() - 1);
     }
 
     private void sendMessage(String messageBody) {
@@ -263,7 +268,7 @@ public class MessagesActivity extends AppCompatActivity {
         //Subject is not yet implemented
         //At the creation of the Session request , no tutor is yet assigned
 
-        Message message = new Message(messageBody, localID, new Date());
+        Message message = new Message(messageBody, null, localID, new Date());
 
         //Chats -> user/remote chat-> Messages
         FirebaseFirestore.getInstance().collection(CHAT_PATH)
@@ -289,37 +294,105 @@ public class MessagesActivity extends AppCompatActivity {
     }
 
 
-    private void eraseMessage(String createdAt, String hiddenBy) {
+    private void eraseMessage(String body, String hiddenBy) {
 
-        Log.i(TAG, "eraseMessage: " + chatDocID);
 
-        DocumentReference documentReference = dataBase.collection(CHAT_PATH)
+        CollectionReference colRef = dataBase.collection(CHAT_PATH)
+                .document(chatDocID)
+                .collection(MESSAGE_PATH);
+
+        //              colRef.whereEqualTo(Message.KEY_MSG_BODY, body)
+        colRef.get()
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful()) {
+                        Log.i(TAG, "eraseMessage: lookign for " + body);
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                            Log.i(TAG, "eraseMessage: body found: " + document.getString(Message.KEY_MSG_BODY));
+
+                            if (document.getString(Message.KEY_MSG_BODY).equals(body)) {
+                                Log.i(TAG, "eraseMessage: both bodies match");
+                                Log.i(TAG, "eraseMessage: hiddeby:" + hiddenBy);
+                                if (hiddenBy == null || hiddenBy.isEmpty()) {
+                                    colRef.document(document.getId())
+                                            .update(HIDDEN_BY, localID)
+                                            .addOnCompleteListener(task1 -> {
+                                                if (task1.isSuccessful()) {
+                                                    Log.i(TAG, "onComplete: " + "message hidden");
+
+                                                    refreshMessages();
+                                                } else {
+                                                    Log.e(TAG, "onComplete: ", task1.getException());
+                                                }
+
+                                            });
+
+                                } else if (hiddenBy.equals(remoteID)) {
+                                    colRef.document(document.getId())
+                                            .delete().addOnCompleteListener(task12 -> {
+                                        if (task12.isSuccessful()) {
+                                            Log.i(TAG, "onComplete: " + task12.getResult().toString());
+                                            Log.i(TAG, "onComplete: " + "message deleted");
+
+                                            refreshMessages();
+                                        } else {
+                                            Log.e(TAG, "onComplete: ", task12.getException());
+                                        }
+                                    });
+
+                                }
+
+                            }
+                        }
+                    } else {
+                        Log.e(TAG, "eraseMessage: ", task.getException());
+                    }
+                });
+
+
+    }
+
+
+    private void refreshMessages() {
+        dataBase
+                .collection(CHAT_PATH)
                 .document(chatDocID)
                 .collection(MESSAGE_PATH)
-                .document(createdAt);
+                .get()
+                .addOnCompleteListener(task -> {
 
-
-        if (hiddenBy == null) {
-            documentReference.update(HIDDEN_BY, localID).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        Log.i(TAG, "onComplete: " + "message hidden");
-                    }
-                }
-            });
+                        List<Message> newMessages = new ArrayList<>();
+                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
-        } else if (hiddenBy.equals(remoteID)) {
-            documentReference.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Log.i(TAG, "onComplete: " + task.getResult().toString());
-                        Log.i(TAG, "onComplete: " + "message deleted");
+                            String hiddenBy = documentSnapshot.getString(HIDDEN_BY);
+
+                            Log.i(TAG, "--------------------------- ");
+                            Log.i(TAG, "Testing Hidden");
+                            Log.i(TAG, "refreshMessages: " + hiddenBy);
+                            Log.i(TAG, "refreshMessages: " + localID);
+
+
+                            if (hiddenBy == null || !hiddenBy.equals(localID)) {
+
+                                Message message = documentSnapshot.toObject(Message.class);
+                                newMessages.add(message);
+                                Log.i(TAG, "Adding this message:" + message.getBody());
+                            }
+                        }
+
+                        for (Message message : newMessages) {
+
+                            Log.i(TAG, "new message: " + message.getBody());
+                        }
+                        Log.i(TAG, "--------------------------- ");
+                        updateMessages(newMessages);
+
+
                     }
-                }
-            });
-        }
+                });
     }
 
     private void showLatexDialog() {
