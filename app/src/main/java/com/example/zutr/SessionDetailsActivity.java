@@ -1,8 +1,5 @@
 package com.example.zutr;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,22 +7,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.Date;
@@ -37,22 +31,18 @@ import java.util.Objects;
 public class SessionDetailsActivity extends AppCompatActivity {
 
     public static final String TAG = "SessionDetailsActivty";
-    public static final long DATE_MIN_EQUAL = 900000L;
 
 
     public static final String MESSAGE_PATH = "messages";
     public static final String TUTOR_ID_PATH = "tutorID";
     public static final String STUDENT_ID_PATH = "studentID";
     public static final String CHAT_PATH = "chats";
-    private static final int NO_USER_FOUND = -1;
 
 
-    private EditText etAnswer;
     private TextView tvAnswered;
     private RatingBar rbZutrRate;
 
     private boolean ratedByStudent;
-    private double rating;
     private FirebaseFirestore dataBase;
 
     @Override
@@ -70,12 +60,14 @@ public class SessionDetailsActivity extends AppCompatActivity {
         TextView tvType = findViewById(R.id.tvType);
         Button btnZutrStart = findViewById(R.id.btnZutrStart);
         tvAnswered = findViewById(R.id.tvAnswered);
-        etAnswer = findViewById(R.id.etAnswer);
+        EditText etAnswer = findViewById(R.id.etAnswer);
         rbZutrRate = findViewById(R.id.rbZutrRate);
 
 
         Intent intent = getIntent();
         final Session session = (Session) intent.getSerializableExtra(Session.PATH);
+
+        if (session == null) finish();
 
         ratedByStudent = session.isRatedByStudent();
 
@@ -88,15 +80,15 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         //Set the view values with the session values
 
-        if (session == null) {
-            finish();
-        }
+
         tvDate.setText(session.getRelativeTimeAgo());
         tvSubject.setText(session.getSubject());
         tvQuestion.setText(session.getQuestion());
         tvType.setText(getTypeSession(session.getSessionType()));
 
-        getUserRealName(session.getTutorId(), session.getAnswer());
+        if (isAnswerReady(session)) {
+            setUserRealName(session.getTutorId(), session.getAnswer());
+        }
 
 
         //if user is tutor and session has not been answered
@@ -106,7 +98,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
             tvAnswered.setVisibility(View.GONE);
             btnZutrStart.setVisibility(View.VISIBLE);
             btnZutrStart.setOnClickListener(view ->
-                    updateSessionTutor(session.getStudentId(), session.getQuestion(), etAnswer.getText().toString(), session.getSessionType()));
+                    updateSessionTutor(session));
 
             //if user is student and session has been answered
         } else if (!LogInActivity.IS_TUTOR
@@ -115,9 +107,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
             btnZutrStart.setVisibility(View.GONE);
             etAnswer.setVisibility(View.GONE);
 
-            rbZutrRate.setOnRatingBarChangeListener((ratingBar, v, b) -> {
-                rateByStudent(v, session);
-            });
+            rbZutrRate.setOnRatingBarChangeListener((ratingBar, v, b) -> rateByStudent(v, session));
 
             //if user is tutor and its been answered
 
@@ -221,17 +211,18 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
     private void getRating(String tutorID) {
 
-        final Double[] rating = {0.0};
-
         dataBase.collection(Tutor.PATH)
                 .document(tutorID)
                 .get()
                 .addOnCompleteListener(task -> {
 
                     if (task.isSuccessful()) {
-                        if (task.getResult().get(Tutor.RATING) != null) {
 
-                            rbZutrRate.setRating(task.getResult().getDouble(Tutor.RATING).floatValue());
+                        Double rate = task.getResult().getDouble(Tutor.RATING);
+
+                        if (rate != null) {
+
+                            rbZutrRate.setRating(rate.floatValue());
                         }
                     }
                 });
@@ -325,23 +316,23 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void updateSessionTutor(String studentId, String question, final String answer, int sessionType) {
+    private void updateSessionTutor(Session session) {
 
 
         dataBase.collection(Session.PATH)
-                .whereEqualTo(Session.KEY_STUDENT_UID, studentId)
-                .whereEqualTo(Session.KEY_QUESTION, question).get()
+                .whereEqualTo(Session.KEY_STUDENT_UID, session.getStudentId())
+                .whereEqualTo(Session.KEY_QUESTION, session.getQuestion()).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
 
                             dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_TUTOR_UID, currentUserID);
-                            dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, answer);
+                            dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, session.getAnswer());
 
 
-                            if (sessionType == Session.SESSION_TEXT) {
-                                updateChat(studentId, currentUserID, Objects.requireNonNull(document.getDate(Session.KEY_CREATED_AT)), answer);
+                            if (session.getSessionType() == Session.SESSION_TEXT) {
+                                updateChat(session);
                             } else {
                                 startMainActivity();
                             }
@@ -355,42 +346,34 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    private void updateChat(String studentID, String currentUserID, Date sessionCreatedAt, String answer) {
+    private void updateChat(Session session) {
 
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         CollectionReference colRef = FirebaseFirestore.getInstance().collection(CHAT_PATH);
         //Chats -> where equal to solicited question -> Messages -> add response from tutor
 
-        Log.i(TAG, "onComplete: document time" + sessionCreatedAt.getTime());
-
-
-        colRef.whereEqualTo(STUDENT_ID_PATH, studentID)
+        colRef.whereEqualTo(STUDENT_ID_PATH, session.getStudentId())
+                .whereEqualTo(Session.KEY_QUESTION, session.getQuestion())
                 .get()
                 .addOnCompleteListener(task -> {
 
-                    Message message = new Message(answer, currentUserID, new Date());
+                    Message message = new Message(session.getAnswer(), session.getTutorId(), new Date());
 
-                    long chatTime = 0L;
 
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         //set tutor to accepting tutor
 
-                        chatTime = documentSnapshot.getDate(Session.KEY_CREATED_AT).getTime();
 
-                        if (Math.abs(chatTime - sessionCreatedAt.getTime()) < DATE_MIN_EQUAL) {
+                        String chatDocID = documentSnapshot.getId();
 
-                            Log.i(TAG, "onComplete: THEY MATCH: " + documentSnapshot.get(Message.KEY_MSG_BODY));
-                            colRef.document(documentSnapshot.getId()).update(TUTOR_ID_PATH, currentUserID);
+                        colRef.document(chatDocID).update(TUTOR_ID_PATH, currentUserID);
 
-                            //send reply message
-                            colRef.document(documentSnapshot.getId())
-                                    .collection(MESSAGE_PATH)
-                                    .document()
-                                    .set(message);
-                        } else {
-                            Log.i(TAG, "onComplete: they dont match");
-                        }
-                        Log.i(TAG, "onComplete: uodated chat and tutor" + chatTime);
+                        //send reply message
+                        colRef.document(chatDocID)
+                                .collection(MESSAGE_PATH)
+                                .document()
+                                .set(message);
 
                     }
 
@@ -402,37 +385,38 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    public String getUserRealName(final String userID, String answer) {
+    public void setUserRealName(final String userID, String answer) {
 
         Log.i(TAG, "getUserRealName: " + userID);
 
         FirebaseFirestore database = FirebaseFirestore.getInstance();
 
 
-        final StringBuilder userRealName = new StringBuilder("");
         //has to be an array in order to be changed within
         //inner CompleteListener Class
 
         database.collection(Tutor.PATH).document(userID).get().addOnCompleteListener(task -> {
 
             if (task.isSuccessful()) {
-                userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
-                userRealName.append("  ");
-                userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
+                String userRealName = "";
 
-                if (userRealName.indexOf("null") == NO_USER_FOUND) {
+                userRealName += task.getResult().getString(User.KEY_FIRSTNAME);
+                userRealName += "  ";
+                userRealName += task.getResult().getString(User.KEY_LASTNAME);
+
+                if (!userRealName.contains("null")) {
+
                     Log.i(TAG, "getUserRealName: " + userRealName.indexOf("null"));
                     Log.i(TAG, "getUserRealName: " + userRealName);
 
                     tvAnswered.setText(String.format("%s: \n\n%s", userRealName, answer));
+
                     Log.i(TAG, "onCreate: " + tvAnswered.getText());
                 } else {
                     tvAnswered.setText(String.format(" \n\n%s", answer));
                 }
             }
         });
-
-        return userRealName.toString();
 
 
     }
@@ -442,6 +426,12 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, LogInActivity.class);
         startActivity(intent);
+    }
+
+    private boolean isAnswerReady(Session session) {
+        return !session.getTutorId().equals(Session.NO_TUTOR_YET)
+                && session.getTutorId() != null
+                && session.getAnswer() != null;
     }
 
 
