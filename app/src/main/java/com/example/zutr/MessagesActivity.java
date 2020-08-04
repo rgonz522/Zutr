@@ -1,35 +1,33 @@
 package com.example.zutr;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
 import com.example.zutr.adapters.MessagesAdapter;
 import com.example.zutr.models.Message;
-
 import com.example.zutr.models.Session;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +50,7 @@ public class MessagesActivity extends AppCompatActivity {
     private RecyclerView rvMessage;
     private EditText etNewMsg;
     private Button btnSendMsg;
+    private Button btnLTXDialog;
 
     private MessagesAdapter adapter;
     private List<Message> messages;
@@ -99,6 +98,7 @@ public class MessagesActivity extends AppCompatActivity {
         messages = new ArrayList<>();
         rvMessage = findViewById(R.id.rvMessages);
         etNewMsg = findViewById(R.id.etNewMessage);
+        btnLTXDialog = findViewById(R.id.btnLatexDialog);
         btnSendMsg = findViewById(R.id.btnSendMsg);
         adapter = new MessagesAdapter(this, messages);
 
@@ -128,6 +128,11 @@ public class MessagesActivity extends AppCompatActivity {
             }
         });
 
+
+        btnLTXDialog.setOnClickListener(view -> {
+
+            showLatexDialog();
+        });
 
         ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT |
                 ItemTouchHelper.LEFT) {
@@ -265,23 +270,20 @@ public class MessagesActivity extends AppCompatActivity {
                 .whereEqualTo(remoteField, remoteID)
                 .whereEqualTo(localField, localID)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                            FirebaseFirestore.getInstance()
-                                    .collection(CHAT_PATH)
-                                    .document(documentSnapshot.getId())
-                                    .collection(MESSAGE_PATH)
-                                    .document(new Date().toString())
-                                    .set(message);
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        FirebaseFirestore.getInstance()
+                                .collection(CHAT_PATH)
+                                .document(documentSnapshot.getId())
+                                .collection(MESSAGE_PATH)
+                                .document(new Date().toString())
+                                .set(message);
 
-                            messages.add(message);
-                            adapter.notifyDataSetChanged();
-                        }
-
+                        messages.add(message);
+                        adapter.notifyDataSetChanged();
                     }
+
                 });
 
     }
@@ -318,5 +320,21 @@ public class MessagesActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void showLatexDialog() {
+        ImageView image = new ImageView(this);
+        image.setImageResource(R.drawable.latextips);
+
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(this).
+                        setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).
+                        setView(image);
+        builder.create().show();
     }
 }
