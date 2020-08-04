@@ -81,12 +81,18 @@ public class OpenSessionsFragment extends Fragment {
 
         rvSessions.setLayoutManager(linearLayoutManager);
 
+        svSearch.setOnSearchClickListener(view1 -> {
+
+            tvHeader.setVisibility(View.GONE);
+        });
 
         svSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                search(s);
                 tvHeader.setText(s);
+                tvHeader.setVisibility(View.VISIBLE);
+                search(s);
+
                 svSearch.onActionViewCollapsed();
                 return true;
             }
