@@ -2,6 +2,11 @@ package com.example.zutr.fragments;
 
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,23 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.RequestHeaders;
 import com.codepath.asynchttpclient.RequestParams;
-
-import com.example.zutr.R;
-
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.example.zutr.R;
 import com.example.zutr.adapters.ResourceAdapter;
 import com.example.zutr.models.Resource;
 import com.example.zutr.models.Session;
@@ -34,14 +27,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import okhttp3.Headers;
 import okhttp3.MultipartBody;
@@ -56,6 +50,7 @@ public class SuggestionFragment extends Fragment {
 
     private ResourceAdapter adapter;
     private List<Resource> resources;
+    private ProgressBar pbLoading;
 
 
     public SuggestionFragment() {
@@ -83,6 +78,8 @@ public class SuggestionFragment extends Fragment {
 
 
         RecyclerView rvResources = view.findViewById(R.id.rvResource);
+        pbLoading = view.findViewById(R.id.pbLoading);
+
         resources = new ArrayList<>();
         adapter = new ResourceAdapter(resources, getContext());
 
@@ -92,6 +89,7 @@ public class SuggestionFragment extends Fragment {
 
         querySessions();
 
+        pbLoading.setVisibility(View.VISIBLE);
 
     }
 
@@ -169,6 +167,8 @@ public class SuggestionFragment extends Fragment {
                     resources.add(resource);
                     adapter.notifyDataSetChanged();
 
+
+                    pbLoading.setVisibility(View.INVISIBLE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
