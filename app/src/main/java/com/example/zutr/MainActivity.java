@@ -10,8 +10,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.zutr.fragments.GetZutrFragment;
-import com.example.zutr.fragments.HomeFragment;
 import com.example.zutr.fragments.OpenSessionsFragment;
+import com.example.zutr.fragments.ProfileFragment;
 import com.example.zutr.fragments.SuggestionFragment;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
                     case R.id.action_profile:
 
-                        fragment = new HomeFragment();
+                        fragment = new ProfileFragment();
                         break;
                     case R.id.action_compose:
 
