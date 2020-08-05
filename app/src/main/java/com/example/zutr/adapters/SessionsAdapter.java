@@ -110,6 +110,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
                 tvTutor.setVisibility(View.GONE);
                 tvAnswer.setVisibility(View.GONE);
+                ivChat.setVisibility(View.GONE);
                 Log.i(TAG, "bind: not answer");
             } else {
 
@@ -144,6 +145,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             if (session.isSessionQuestion()) {
                 tvDate.setVisibility(View.GONE);
             } else {
+                tvDate.setVisibility(View.VISIBLE);
                 tvDate.setText(session.getTimeStart());
             }
 

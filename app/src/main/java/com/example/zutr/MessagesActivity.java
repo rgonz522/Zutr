@@ -75,8 +75,6 @@ public class MessagesActivity extends AppCompatActivity {
     private String chatDocID;
 
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -332,44 +330,46 @@ public class MessagesActivity extends AppCompatActivity {
                         for (QueryDocumentSnapshot document : task.getResult()) {
 
                             Log.i(TAG, "eraseMessage: body found: " + document.getString(Message.KEY_MSG_BODY));
+                            if (document.getString(Message.KEY_MSG_BODY) != null) {
+                                if (document.getString(Message.KEY_MSG_BODY).equals(body)) {
+                                    Log.i(TAG, "eraseMessage: both bodies match");
+                                    Log.i(TAG, "eraseMessage: hiddeby:" + hiddenBy);
+                                    if (hiddenBy == null || hiddenBy.isEmpty()) {
+                                        colRef.document(document.getId())
+                                                .update(HIDDEN_BY, localID)
+                                                .addOnCompleteListener(task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        Log.i(TAG, "onComplete: " + "message hidden");
 
-                            if (document.getString(Message.KEY_MSG_BODY).equals(body)) {
-                                Log.i(TAG, "eraseMessage: both bodies match");
-                                Log.i(TAG, "eraseMessage: hiddeby:" + hiddenBy);
-                                if (hiddenBy == null || hiddenBy.isEmpty()) {
-                                    colRef.document(document.getId())
-                                            .update(HIDDEN_BY, localID)
-                                            .addOnCompleteListener(task1 -> {
-                                                if (task1.isSuccessful()) {
-                                                    Log.i(TAG, "onComplete: " + "message hidden");
+                                                        refreshMessages();
+                                                    } else {
+                                                        Log.e(TAG, "onComplete: ", task1.getException());
+                                                    }
 
-                                                    refreshMessages();
-                                                } else {
-                                                    Log.e(TAG, "onComplete: ", task1.getException());
-                                                }
+                                                });
 
-                                            });
+                                    } else if (hiddenBy.equals(remoteID)) {
+                                        colRef.document(document.getId())
+                                                .delete().addOnCompleteListener(task12 -> {
+                                            if (task12.isSuccessful()) {
+                                                Log.i(TAG, "onComplete: " + task12.getResult());
+                                                Log.i(TAG, "onComplete: " + "message deleted");
 
-                                } else if (hiddenBy.equals(remoteID)) {
-                                    colRef.document(document.getId())
-                                            .delete().addOnCompleteListener(task12 -> {
-                                        if (task12.isSuccessful()) {
-                                            Log.i(TAG, "onComplete: " + task12.getResult());
-                                            Log.i(TAG, "onComplete: " + "message deleted");
+                                                refreshMessages();
+                                            } else {
+                                                Log.e(TAG, "onComplete: ", task12.getException());
+                                            }
+                                        });
 
-                                            refreshMessages();
-                                        } else {
-                                            Log.e(TAG, "onComplete: ", task12.getException());
-                                        }
-                                    });
+                                    }
 
                                 }
-
                             }
                         }
                     } else {
                         Log.e(TAG, "eraseMessage: ", task.getException());
                     }
+
                 });
 
 
