@@ -6,12 +6,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.agog.mathdisplay.MTMathView;
@@ -56,11 +54,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         Message message = messages.get(position);
 
         String hiddenBy = message.getHiddenBy();
-        if (hiddenBy == null || !hiddenBy.equals(currentUserID)) {
-            holder.bind(message);
-            Log.i(TAG, "onBindViewHolder: " + hiddenBy);
-        } else {
-            Log.i(TAG, "onBindViewHolder: HIDDEN " + hiddenBy);
+        if (message.getBody() != null) {
+            if (hiddenBy == null || !hiddenBy.equals(currentUserID)) {
+                holder.bind(message);
+                Log.i(TAG, "onBindViewHolder: " + hiddenBy);
+            } else {
+                Log.i(TAG, "onBindViewHolder: HIDDEN " + hiddenBy);
+            }
         }
     }
 
