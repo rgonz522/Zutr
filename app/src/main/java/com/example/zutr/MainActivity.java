@@ -1,28 +1,22 @@
 package com.example.zutr;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Bundle;
-
-import android.view.MenuItem;
-
 import com.example.zutr.fragments.GetZutrFragment;
-import com.example.zutr.fragments.HomeFragment;
 import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.ProfileFragment;
-
-
 import com.example.zutr.fragments.SuggestionFragment;
 import com.example.zutr.user_auth.LogInActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-
 import com.google.firebase.firestore.FirebaseFirestore;
 
 

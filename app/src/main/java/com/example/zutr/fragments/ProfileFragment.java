@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,9 +34,11 @@ public class ProfileFragment extends Fragment {
 
 
     private ImageView ivProfilePic;
+    private ImageView ivEdit;
     private TextView tvUsername;
     private TextView tvFullName;
     private TextView tvSubjects;
+    private RatingBar rbZutrRate;
     private Button btnSignOut;
 
 
@@ -91,17 +94,19 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-
-        Log.i(TAG, "onViewCreated: " + path);
         database = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
 
         ivProfilePic = view.findViewById(R.id.ivProfilePicture);
+        ivEdit = view.findViewById(R.id.ivEdit);
         tvFullName = view.findViewById(R.id.tvFullName);
         tvUsername = view.findViewById(R.id.tvUsername);
+        rbZutrRate = view.findViewById(R.id.rbZutrRate);
         btnSignOut = view.findViewById(R.id.btnSignOut);
 
+
+        rbZutrRate.setIsIndicator(true);
 
         database.collection(path).document(userID).get().addOnCompleteListener(task -> {
 
@@ -111,7 +116,9 @@ public class ProfileFragment extends Fragment {
 
                 tvUsername.setText(String.format("@%s", documentSnapshot.get(User.KEY_USERNAME)));
                 Log.i(TAG, "onComplete: " + tvUsername.getText());
-                tvFullName.setText(String.format("%s  %s", documentSnapshot.get(User.KEY_FIRSTNAME), documentSnapshot.get(User.KEY_LASTNAME)));
+                tvFullName.setText(String.format("%s  %s"
+                        , documentSnapshot.get(User.KEY_FIRSTNAME)
+                        , documentSnapshot.get(User.KEY_LASTNAME)));
 
                 //Load ivProfilePic with user's image uri
 
@@ -119,7 +126,15 @@ public class ProfileFragment extends Fragment {
                 if (imageURL != null) {
                     Glide.with(getContext()).load(imageURL).circleCrop().into(ivProfilePic);
                 }
-                Log.i(TAG, "onComplete: name: " + tvUsername.getText() + tvFullName.getText());
+
+                Double rate = documentSnapshot.getDouble(Tutor.RATING);
+
+                if (rate != null) {
+                    rbZutrRate.setRating(rate.floatValue());
+                    rbZutrRate.setVisibility(View.VISIBLE);
+                } else {
+                    rbZutrRate.setVisibility(View.GONE);
+                }
             }
 
         });
@@ -150,6 +165,7 @@ public class ProfileFragment extends Fragment {
 
         } else {
             btnSignOut.setVisibility(View.GONE);
+            ivEdit.setVisibility(View.GONE);
         }
 
     }
