@@ -143,7 +143,7 @@ public class ProfileFragment extends Fragment {
         if (isCurrentUser) {
 
 
-            setUpPosts();
+          //  setUpPosts();
 
             //Set the picture to be clickable to the edit fragment
             ivProfilePic.setOnClickListener(new View.OnClickListener() {

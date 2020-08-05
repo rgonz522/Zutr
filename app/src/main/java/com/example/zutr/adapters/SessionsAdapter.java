@@ -11,11 +11,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.MainActivity;
 import com.example.zutr.MessagesActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
+import com.example.zutr.fragments.ProfileFragment;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -28,15 +32,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHolder> {
+public class SessionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static final String TAG = "SessionsAdapter";
 
     public static final int NO_USER_FOUND = -1;
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
+
 
     private Context context;
     private List<Session> sessions;
 
+    private boolean isPreviousSessions;
 
     public SessionsAdapter(Context context, List<Session> sessions) {
         this.context = context;
@@ -46,18 +54,44 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
 
     @Override
-    public SessionsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_session, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == TYPE_ITEM) {
+            // Here Inflating your recyclerview item layout
+            View itemView = LayoutInflater.from(context).inflate(R.layout.item_session, parent, false);
+            return new ItemViewHolder(itemView);
+        } else if (viewType == TYPE_HEADER) {
+            // Here Inflating your header view
+            View itemView = LayoutInflater.from(context).inflate(R.layout.fragment_profile, parent, false);
+            return new HeaderViewHolder(itemView);
+        } else return null;
+    }
 
 
-        return new SessionsAdapter.ViewHolder(view);
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_HEADER;
+        }
+        return TYPE_ITEM;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SessionsAdapter.ViewHolder holder, int position) {
-        Session session = sessions.get(position);
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
 
-        holder.bind(session);
+        if (holder instanceof HeaderViewHolder) {
+            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
+
+            // You have to set your header items values with the help of model class and you can modify as per your needs
+
+            headerViewHolder.bind();
+        } else if (holder instanceof ItemViewHolder) {
+            Session session = sessions.get(position);
+            if (session != null) {
+                ((ItemViewHolder) holder).bind(session);
+            }
+
+        }
+
 
     }
 
@@ -66,8 +100,28 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         return sessions.size();
     }
 
+    public class HeaderViewHolder extends RecyclerView.ViewHolder {
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        public HeaderViewHolder(View view) {
+            super(view);
+
+
+            ProfileFragment profileFragment = new ProfileFragment();
+            FragmentManager fragmentManager = ((MainActivity) context).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            fragmentTransaction.add(R.id.flProfile, profileFragment);
+            fragmentTransaction.commit();
+
+        }
+
+        public void bind() {
+            Log.i(TAG, "bind: header");
+        }
+    }
+
+    public class ItemViewHolder extends RecyclerView.ViewHolder {
 
 
         private TextView tvSubject;
@@ -83,7 +137,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
         private LinearLayout linearLayout;
 
 
-        public ViewHolder(@NonNull View view) {
+        public ItemViewHolder(@NonNull View view) {
             super(view);
 
 
@@ -178,11 +232,14 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         private boolean isChatAvailible(Session session) {
 
+            Log.i(TAG, "isChatAvailible:  " + session.getSessionType());
+            Log.i(TAG, "isChatAvailible:  " + session.getTutorId());
+            Log.i(TAG, "isChatAvailible:  " + session.getAnswer());
             boolean chat = session.getSessionType() == Session.SESSION_TEXT
                     && !session.getTutorId().equals(Session.NO_TUTOR_YET)
-                    && session.getTutorId() != null
-                    && session.getTutorId() != null
-                    && session.getAnswer() != null;
+                    && session.getTutorId() != null;
+
+            Log.i(TAG, "isChatAvailible: " + chat);
 
             return chat;
         }
