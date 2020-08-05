@@ -130,7 +130,7 @@ public class CheckoutActivity extends AppCompatActivity {
         PaymentMethodCreateParams params = cardInputWidget.getPaymentMethodCreateParams();
         ConfirmPaymentIntentParams confirmParams =
                 ConfirmPaymentIntentParams.createWithPaymentMethodCreateParams
-                        (params, "pi_1H8WeIGxy48jgmpTTtZP3pbo_secret_uy0ko44A5Mf8W5qowSyPNFjlw");
+                        (params, getResources().getString(R.string.StripeClientSecret));
 
         stripe.confirmPayment(CheckoutActivity.this, confirmParams);
     }

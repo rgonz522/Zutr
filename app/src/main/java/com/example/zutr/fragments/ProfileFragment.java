@@ -93,6 +93,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setUpPosts();
 
         database = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -143,7 +144,7 @@ public class ProfileFragment extends Fragment {
         if (isCurrentUser) {
 
 
-            setUpPosts();
+          //  setUpPosts();
 
             //Set the picture to be clickable to the edit fragment
             ivProfilePic.setOnClickListener(new View.OnClickListener() {
