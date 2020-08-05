@@ -54,7 +54,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         Message message = messages.get(position);
 
         String hiddenBy = message.getHiddenBy();
-        if (message.getBody() != null) {
+        if (message.getBody() != null && message.getAuthorID() != null) {
             if (hiddenBy == null || !hiddenBy.equals(currentUserID)) {
                 holder.bind(message);
                 Log.i(TAG, "onBindViewHolder: " + hiddenBy);

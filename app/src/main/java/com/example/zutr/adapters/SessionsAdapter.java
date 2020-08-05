@@ -178,11 +178,14 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         private boolean isChatAvailible(Session session) {
 
+            Log.i(TAG, "isChatAvailible:  " + session.getSessionType());
+            Log.i(TAG, "isChatAvailible:  " + session.getTutorId());
+            Log.i(TAG, "isChatAvailible:  " + session.getAnswer());
             boolean chat = session.getSessionType() == Session.SESSION_TEXT
                     && !session.getTutorId().equals(Session.NO_TUTOR_YET)
-                    && session.getTutorId() != null
-                    && session.getTutorId() != null
-                    && session.getAnswer() != null;
+                    && session.getTutorId() != null;
+
+            Log.i(TAG, "isChatAvailible: " + chat);
 
             return chat;
         }

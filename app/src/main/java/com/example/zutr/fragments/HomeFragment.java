@@ -10,6 +10,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,7 +90,9 @@ public class HomeFragment extends Fragment {
 
         rvSessions.setLayoutManager(linearLayoutManager);
 
+        initiatePersonalProfile();
         querySessions();
+
     }
 
 
@@ -136,5 +140,15 @@ public class HomeFragment extends Fragment {
                 });
 
 
+    }
+
+    private void initiatePersonalProfile() {
+
+
+        ProfileFragment profileFragment = new ProfileFragment();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.flProfile, profileFragment);
+        fragmentTransaction.commit();
     }
 }

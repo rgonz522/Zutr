@@ -83,9 +83,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
         tvQuestion.setText(session.getQuestion());
         tvType.setText(getTypeSession(session.getSessionType()));
 
+        Log.i(TAG, "onCreate: answer:" + session.getAnswer());
+        Log.i(TAG, "onCreate: tutor: " + session.getTutorId());
         if (isAnswerReady(session)) {
+            Log.i(TAG, "onCreate: answer is ready");
             setUserRealName(session.getTutorId(), session.getAnswer());
 
+            Log.i(TAG, "onCreate: usereal name  :" + tvAnswered.getText());
             if (ratedByStudent) {
                 rbZutrRate.setClickable(false);
                 getRating(session.getTutorId());
@@ -440,7 +444,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private boolean isAnswerReady(Session session) {
-        return !(session.getTutorId() == null) &&
+        return session.getTutorId() != null &&
                 !session.getTutorId().equals(Session.NO_TUTOR_YET)
                 && session.getTutorId() != null
                 && session.getAnswer() != null;

@@ -93,7 +93,6 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setUpPosts();
 
         database = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -144,8 +143,6 @@ public class ProfileFragment extends Fragment {
         if (isCurrentUser) {
 
 
-          //  setUpPosts();
-
             //Set the picture to be clickable to the edit fragment
             ivProfilePic.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -182,16 +179,5 @@ public class ProfileFragment extends Fragment {
     }
 
 
-    private void setUpPosts() {
 
-
-        HomeFragment homeFragment = new HomeFragment();
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        fragmentTransaction.add(R.id.flprevious, homeFragment);
-        fragmentTransaction.commit();
-
-
-    }
 }
