@@ -15,7 +15,7 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="15dp"
             android:text="What Kind of Session?"
             android:textSize="24sp" />
 
@@ -28,7 +28,7 @@
             android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="15dp"
             android:text="What Subject?"
             android:textSize="24sp" />
 
@@ -41,6 +41,7 @@
             android:id="@+id/textView6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:text="How can we help?"
             android:textSize="24sp" />
 
@@ -50,6 +51,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:gravity="start|top"
+            android:layout_margin="15dp"
             android:hint="be as descriptive as possible"
             android:inputType="textMultiLine"
             tools:text="be as descriptive as possible " />
@@ -58,7 +60,7 @@
             android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
+            android:layout_margin="15dp"
             android:text="Set Hourly Price"
             android:textSize="24sp" />
 
@@ -72,6 +74,7 @@
             android:id="@+id/etHourlyPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:ems="10"
             android:inputType="numberDecimal" />
 

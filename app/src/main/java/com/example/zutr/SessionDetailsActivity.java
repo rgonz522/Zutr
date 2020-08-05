@@ -10,7 +10,10 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import com.example.zutr.fragments.ProfileFragment;
 import com.example.zutr.models.Message;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Tutor;
@@ -72,12 +75,6 @@ public class SessionDetailsActivity extends AppCompatActivity {
         ratedByStudent = session.isRatedByStudent();
 
 
-        if (ratedByStudent) {
-            rbZutrRate.setClickable(false);
-            getRating(session.getTutorId());
-        }
-
-
         //Set the view values with the session values
 
 
@@ -88,6 +85,11 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
         if (isAnswerReady(session)) {
             setUserRealName(session.getTutorId(), session.getAnswer());
+
+            if (ratedByStudent) {
+                rbZutrRate.setClickable(false);
+                getRating(session.getTutorId());
+            }
         }
 
 
@@ -109,6 +111,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
             rbZutrRate.setOnRatingBarChangeListener((ratingBar, v, b) -> rateByStudent(v, session));
 
+            tvAnswered.setOnClickListener(view -> {
+
+                startProfileFragment(session.getTutorId());
+
+            });
+
+
             //if user is tutor and its been answered
 
         } else if (LogInActivity.IS_TUTOR) {
@@ -121,6 +130,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
             btnZutrStart.setVisibility(View.GONE);
             rbZutrRate.setVisibility(View.GONE);
 
+            Log.i(TAG, "onCreate: " + session.getAnswer());
             tvAnswered.setText(Session.NO_ANSWER);
         }
 
@@ -404,6 +414,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                 userRealName += "  ";
                 userRealName += task.getResult().getString(User.KEY_LASTNAME);
 
+                Log.i(TAG, "setUserRealName: " + userRealName);
                 if (!userRealName.contains("null")) {
 
                     Log.i(TAG, "getUserRealName: " + userRealName.indexOf("null"));
@@ -429,10 +440,23 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
     private boolean isAnswerReady(Session session) {
-        return !session.getTutorId().equals(Session.NO_TUTOR_YET)
+        return !(session.getTutorId() == null) &&
+                !session.getTutorId().equals(Session.NO_TUTOR_YET)
                 && session.getTutorId() != null
                 && session.getAnswer() != null;
     }
 
+    private void startProfileFragment(String remoteID) {
+
+        String path = Tutor.PATH;
+
+        findViewById(R.id.rlDetails).setVisibility(View.GONE);
+        Fragment fragment = new ProfileFragment(remoteID, path);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
+        transaction.replace(R.id.frameLayout, fragment);
+        transaction.commit();
+
+    }
 
 }
