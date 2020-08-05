@@ -21,9 +21,6 @@ import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
@@ -107,12 +104,16 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
 
             Log.i(TAG, "bind: " + session.getTutorId());
-            if (session.getTutorId() == Session.NO_TUTOR_YET || session.getTutorId() == null) {
-                tvTutor.setVisibility(View.GONE);
+            if (session.getTutorId() == Session.NO_TUTOR_YET
+                    || session.getTutorId() == null
+                    || session.getAnswer() == null) {
 
+                tvTutor.setVisibility(View.GONE);
+                tvAnswer.setVisibility(View.GONE);
+                Log.i(TAG, "bind: not answer");
             } else {
 
-
+                tvTutor.setVisibility(View.VISIBLE);
                 // path ->> Student Collection
                 // Student Collection ->> ID ->> Document
 
@@ -122,6 +123,17 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                 String userName = getUserRealName(path, userID);
                 Log.i(TAG, "bind: userName" + userName);
 
+
+                tvAnswer.setText(session.getAnswer());
+
+
+                if (isChatAvailable(session)) {
+                    ivChat.setVisibility(View.VISIBLE);
+                } else {
+                    ivChat.setVisibility(View.GONE);
+
+
+                }
 
             }
             tvType.setText(session.getSessionTypeString());
@@ -135,18 +147,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                 tvDate.setText(session.getTimeStart());
             }
 
-            if (session.isFinished()) {
-                tvAnswer.setText(session.getAnswer());
-            } else {
-                tvAnswer.setVisibility(View.GONE);
-            }
 
-
-            if (isChatAvailible(session)) {
-
-            } else {
-                ivChat.setVisibility(View.GONE);
-            }
 
 
             linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -159,10 +160,9 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                         // get the Session at the position
                         Session session = sessions.get(position);
 
-                        String remoteID = LogInActivity.IS_TUTOR ? session.getStudentId() : session.getTutorId();
 
                         //if the session is text and the user is involved
-                        if (isChatAvailible(session)) {
+                        if (isChatAvailable(session)) {
 
                             startChat(session);
                         } else {
@@ -176,7 +176,8 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         }
 
-        private boolean isChatAvailible(Session session) {
+        private boolean isChatAvailable(Session session) {
+
 
             Log.i(TAG, "isChatAvailible:  " + session.getSessionType());
             Log.i(TAG, "isChatAvailible:  " + session.getTutorId());
@@ -222,19 +223,16 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             //has to be an array in order to be changed within
             //inner CompleteListener Class
 
-            database.collection(collectionPath).document(userID).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+            database.collection(collectionPath).document(userID).get().addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()) {
-                        userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
-                        userRealName.append("   ");
-                        userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
-                        Log.i(TAG, "getUserRealName: " + userRealName);
+                if (task.isSuccessful()) {
+                    userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
+                    userRealName.append("   ");
+                    userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
+                    Log.i(TAG, "getUserRealName: " + userRealName);
 
-                        if (userRealName.indexOf("null") == NO_USER_FOUND) {
-                            tvTutor.setText(userRealName);
-                        }
+                    if (userRealName.indexOf("null") == NO_USER_FOUND) {
+                        tvTutor.setText(userRealName);
                     }
                 }
             });
