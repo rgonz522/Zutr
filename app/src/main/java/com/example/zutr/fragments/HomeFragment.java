@@ -1,6 +1,10 @@
 package com.example.zutr.fragments;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -8,11 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.zutr.R;
 import com.example.zutr.adapters.SessionsAdapter;
@@ -117,7 +116,8 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                if (document.getString(sessionUserId).equals(currentUser.getUid())) {
+                                String sessionUserID = document.getString(sessionUserId);
+                                if (sessionUserID != null && sessionUserID.equals(currentUser.getUid())) {
                                     Session session = document.toObject(Session.class);
 
                                     Log.i(TAG, "onComplete: " + session.isRatedByStudent());

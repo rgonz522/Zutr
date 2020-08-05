@@ -354,7 +354,7 @@ public class MessagesActivity extends AppCompatActivity {
                                     colRef.document(document.getId())
                                             .delete().addOnCompleteListener(task12 -> {
                                         if (task12.isSuccessful()) {
-                                            Log.i(TAG, "onComplete: " + task12.getResult().toString());
+                                            Log.i(TAG, "onComplete: " + task12.getResult());
                                             Log.i(TAG, "onComplete: " + "message deleted");
 
                                             refreshMessages();
