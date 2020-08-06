@@ -11,7 +11,7 @@ public class Message {
 
 
     public static final String KEY_MSG_BODY = "body";
-    public static final String KEY_AUTHOR_ID = "authordID";
+    public static final String KEY_AUTHOR_ID = "authorID";
     public static final String KEY_CREATEDAT = "createdAt";
     public static final String KEY_HIDDENBY = "hiddenBy";
 

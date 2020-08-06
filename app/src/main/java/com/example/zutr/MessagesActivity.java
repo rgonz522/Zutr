@@ -214,14 +214,6 @@ public class MessagesActivity extends AppCompatActivity {
 
         final List<Message> newMessages = new ArrayList<>();
 
-        Log.i(TAG, "querySessions: session user id : " + localID);
-        Log.i(TAG, "queryMessages: local field" + localField);
-        Log.i(TAG, "queryMessages: remote id" + remoteID);
-        Log.i(TAG, "queryMessages: remoted field " + remoteField);
-        Log.i(TAG, "queryMessages: " + question);
-
-        Log.i(TAG, "querySessions: ");
-
         dataBase.collection(CHAT_PATH)
                 .whereEqualTo(remoteField, remoteID)
                 .whereEqualTo(localField, localID)
@@ -242,16 +234,21 @@ public class MessagesActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task1.getResult()) {
                                 String hiddenBy = document.getString(HIDDEN_BY);
 
-                                Log.i(TAG, "queryMessages: hiddenby" + hiddenBy);
-                                Log.i(TAG, "queryMessages: currentUser " + localID);
-                                if (hiddenBy == null || !hiddenBy.equals(localID)) {
-                                    Message message = document.toObject(Message.class);
-                                    newMessages.add(message);
-                                    Log.i(TAG, " Message " + message.getBody());
-                                    Log.i(TAG, "Adding the nothidden message...... ");
-                                }
-                            }
+                                Message newMessage = new Message();
+                                newMessage.setBody(document.getString(Message.KEY_MSG_BODY));
+                                newMessage.setCreatedAt(document.getDate(Message.KEY_CREATEDAT));
+                                newMessage.setAuthorID(document.getString(Message.KEY_AUTHOR_ID));
+                                newMessage.setHiddenBy(document.getString(Message.KEY_HIDDENBY));
 
+                                if (newMessage.getAuthorID() != null && newMessage.getBody() != null) {
+                                    if (newMessage.getHiddenBy() == null
+                                            || !newMessage.getHiddenBy().equals(localID)) {
+
+                                        newMessages.add(newMessage);
+                                    }
+                                }
+
+                            }
                             updateMessages(newMessages);
 
                         });
@@ -307,6 +304,7 @@ public class MessagesActivity extends AppCompatActivity {
                                 .document(new Date().toString())
                                 .set(message);
 
+                        Log.i(TAG, "sendMessage: ");
                         messages.add(message);
                         adapter.notifyDataSetChanged();
                     }
