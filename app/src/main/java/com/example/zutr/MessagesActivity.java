@@ -78,7 +78,7 @@ public class MessagesActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_messages);
+        setContentView(R.layout.activity_messages);
 
 
         Intent intent = getIntent();
