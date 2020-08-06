@@ -289,27 +289,42 @@ public class MessagesActivity extends AppCompatActivity {
 
         Message message = new Message(messageBody, null, localID, new Date());
 
-        //Chats -> user/remote chat-> Messages
-        FirebaseFirestore.getInstance().collection(CHAT_PATH)
-                .whereEqualTo(remoteField, remoteID)
-                .whereEqualTo(localField, localID)
-                .get()
-                .addOnCompleteListener(task -> {
+        if (chatDocID == null || chatDocID.isEmpty()) {
 
-                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                        FirebaseFirestore.getInstance()
-                                .collection(CHAT_PATH)
-                                .document(documentSnapshot.getId())
-                                .collection(MESSAGE_PATH)
-                                .document(new Date().toString())
-                                .set(message);
+
+            //Chats -> user/remote chat-> Messages
+            FirebaseFirestore.getInstance().collection(CHAT_PATH)
+                    .whereEqualTo(remoteField, remoteID)
+                    .whereEqualTo(localField, localID)
+                    .get()
+                    .addOnCompleteListener(task -> {
 
                         Log.i(TAG, "sendMessage: ");
                         messages.add(message);
-                        adapter.notifyDataSetChanged();
-                    }
+                        adapter.notifyItemInserted(messages.size() - 1);
+                    });
+        } else {
+            addMessageFirebase(message);
+        }
 
-                });
+    }
+
+
+    private void addMessageFirebase(Message message) {
+
+
+        FirebaseFirestore.getInstance()
+                .collection(CHAT_PATH)
+                .document(chatDocID)
+                .collection(MESSAGE_PATH)
+                .document(new Date().toString())
+                .set(message);
+
+
+        Log.i(TAG, "sendMessage: ");
+        messages.add(message);
+        adapter.notifyItemInserted(messages.size() - 1);
+
 
     }
 
