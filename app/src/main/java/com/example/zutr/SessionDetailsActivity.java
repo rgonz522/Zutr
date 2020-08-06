@@ -43,6 +43,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
 
 
     private TextView tvAnswered;
+    private EditText etAnswer;
     private RatingBar rbZutrRate;
 
     private boolean ratedByStudent;
@@ -63,7 +64,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
         TextView tvType = findViewById(R.id.tvType);
         Button btnZutrStart = findViewById(R.id.btnZutrStart);
         tvAnswered = findViewById(R.id.tvAnswered);
-        EditText etAnswer = findViewById(R.id.etAnswer);
+        etAnswer = findViewById(R.id.etAnswer);
         rbZutrRate = findViewById(R.id.rbZutrRate);
 
 
@@ -103,8 +104,16 @@ public class SessionDetailsActivity extends AppCompatActivity {
             rbZutrRate.setVisibility(View.GONE);
             tvAnswered.setVisibility(View.GONE);
             btnZutrStart.setVisibility(View.VISIBLE);
-            btnZutrStart.setOnClickListener(view ->
-                    updateSessionTutor(session));
+            btnZutrStart.setOnClickListener(view -> {
+
+                if (etAnswer.getText() != null && etAnswer.getText().toString().length() > 0) {
+                    updateSessionTutor(session, etAnswer.getText().toString());
+                } else {
+                    etAnswer.setError("Empty Answer");
+                    etAnswer.requestFocus();
+                    etAnswer.setText("");
+                }
+            });
 
             //if user is student and session has been answered
         } else if (!LogInActivity.IS_TUTOR
@@ -330,7 +339,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void updateSessionTutor(Session session) {
+    private void updateSessionTutor(Session session, String answer) {
 
 
         dataBase.collection(Session.PATH)
@@ -341,14 +350,15 @@ public class SessionDetailsActivity extends AppCompatActivity {
                         String currentUserID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
 
+                            Log.i(TAG, "updateSessionTutor: " + session.getAnswer());
                             dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_TUTOR_UID, currentUserID);
-                            dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, session.getAnswer());
+                            dataBase.collection(Session.PATH).document(document.getId()).update(Session.KEY_ANSWER, answer);
 
 
                             if (session.getSessionType() == Session.SESSION_TEXT) {
                                 updateChat(session);
                             } else {
-                                startMainActivity();
+                                finish();
                             }
                             Log.i(TAG, "onComplete: ");
 
@@ -392,7 +402,7 @@ public class SessionDetailsActivity extends AppCompatActivity {
                     }
 
 
-                    startMainActivity();
+                    finish();
 
                 });
 
@@ -437,17 +447,13 @@ public class SessionDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void startMainActivity() {
-
-        Intent intent = new Intent(this, LogInActivity.class);
-        startActivity(intent);
-    }
-
     private boolean isAnswerReady(Session session) {
         return session.getTutorId() != null &&
                 !session.getTutorId().equals(Session.NO_TUTOR_YET)
                 && session.getTutorId() != null
-                && session.getAnswer() != null;
+                && session.getAnswer() != null
+                && !session.getAnswer().isEmpty()
+                && !session.getTutorId().isEmpty();
     }
 
     private void startProfileFragment(String remoteID) {

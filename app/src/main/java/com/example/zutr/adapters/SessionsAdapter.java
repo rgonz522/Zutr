@@ -13,9 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zutr.MainActivity;
 import com.example.zutr.MessagesActivity;
 import com.example.zutr.R;
 import com.example.zutr.SessionDetailsActivity;
+import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.models.Session;
 import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
@@ -180,19 +182,15 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         private boolean isChatAvailable(Session session) {
 
+            return session.getSessionType() == Session.SESSION_TEXT
+                    && session.getTutorId() != null &&
+                    !session.getTutorId().equals(Session.NO_TUTOR_YET)
+                    && session.getTutorId() != null
+                    && session.getAnswer() != null
+                    && !session.getAnswer().isEmpty()
+                    && !session.getTutorId().isEmpty();
 
-            Log.i(TAG, "isChatAvailible:  " + session.getSessionType());
-            Log.i(TAG, "isChatAvailible:  " + session.getTutorId());
-            Log.i(TAG, "isChatAvailible:  " + session.getAnswer());
-            boolean chat = session.getSessionType() == Session.SESSION_TEXT
-                    && !session.getTutorId().equals(Session.NO_TUTOR_YET)
-                    && session.getTutorId() != null;
-
-            Log.i(TAG, "isChatAvailible: " + chat);
-
-            return chat;
         }
-
         private void startDetails(Session session) {
 
 
@@ -202,7 +200,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             Log.i(TAG, "onClick: " + session.getSessionType());
             // pass the Session[already serializable] , use its already declared path as a key
             intent.putExtra(Session.PATH, session);
-            context.startActivity(intent);
+            ((MainActivity) (context)).startActivityForResult(intent, OpenSessionsFragment.RESULT_OK);
 
         }
 

@@ -1,8 +1,5 @@
 package com.example.zutr.user_auth;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,19 +8,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
-
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LogInActivity extends AppCompatActivity {
@@ -44,7 +37,7 @@ public class LogInActivity extends AppCompatActivity {
 
     public static boolean IS_TUTOR;
 
-    private boolean tutorChecked;
+    private User currentUser;
 
 
     //overriding the back button so the signed out user
@@ -120,30 +113,27 @@ public class LogInActivity extends AppCompatActivity {
 
     private void authorizingUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-                            isTutor();
+                        isTutor();
 
-                            etEmail.setText("");
-                            etPassword.setText("");
+                        etEmail.setText("");
+                        etPassword.setText("");
 
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            etPassword.setError("Incorrect Email or Password");
-                            etPassword.requestFocus();
-                            Toast.makeText(LogInActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        etPassword.setError("Incorrect Email or Password");
+                        etPassword.requestFocus();
+                        Toast.makeText(LogInActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
 
                     }
+
                 });
 
     }
@@ -161,21 +151,12 @@ public class LogInActivity extends AppCompatActivity {
         final FirebaseUser currentUser = mAuth.getCurrentUser();
 
 
-        database.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+        database.collection(Tutor.PATH).document(currentUser.getUid()).get().addOnSuccessListener(documentSnapshot -> {
 
-                if (documentSnapshot.get(User.KEY_EMAIL) != null) {
-                    IS_TUTOR = true;
-                } else {
-                    IS_TUTOR = false;
-                }
-                startMainActivity();
+            IS_TUTOR = documentSnapshot.get(User.KEY_EMAIL) != null;
+            startMainActivity();
 
-            }
         });
-
-        tutorChecked = true;
 
 
         return IS_TUTOR;

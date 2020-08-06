@@ -268,6 +268,9 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void updateMessages(List<Message> newMessages) {
 
+        for (Message message : newMessages) {
+            Log.i(TAG, "updateMessages: " + message.getBody());
+        }
         messages.clear();
         messages.addAll(newMessages);
 

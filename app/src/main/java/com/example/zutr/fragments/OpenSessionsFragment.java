@@ -1,5 +1,6 @@
 package com.example.zutr.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +32,8 @@ public class OpenSessionsFragment extends Fragment {
 
 
     public static final String TAG = "OpenSessionsFragment";
+    public static final int RESULT_OK = 12394;
+    public static final int RESULT_WRONG = 18383;
 
 
     private SessionsAdapter adapter;
@@ -237,4 +240,24 @@ public class OpenSessionsFragment extends Fragment {
     }
 
 
+    /**
+     * Receive the result from a previous call to
+     * {@link #startActivityForResult(Intent, int)}.  This follows the
+     * related Activity API as described there in
+     * {@link Activity#onActivityResult(int, int, Intent)}.
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    startActivityForResult(), allowing you to identify who this
+     *                    result came from.
+     * @param resultCode  The integer result code returned by the child activity
+     *                    through its setResult().
+     * @param data        An Intent, which can return result data to the caller
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.i(TAG, "onActivityResult: ");
+        querySessions();
+    }
 }
