@@ -56,6 +56,11 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
     public void onBindViewHolder(@NonNull SessionsAdapter.ViewHolder holder, int position) {
         Session session = sessions.get(position);
 
+        if (sessions.size() - 1 == position) {
+
+            holder.bindEmptySession();
+
+        }
         holder.bind(session);
 
     }
@@ -152,8 +157,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             }
 
 
-
-
             linearLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -191,6 +194,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                     && !session.getTutorId().isEmpty();
 
         }
+
         private void startDetails(Session session) {
 
 
@@ -223,25 +227,35 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             //has to be an array in order to be changed within
             //inner CompleteListener Class
 
-            database.collection(collectionPath).document(userID).get().addOnCompleteListener(task -> {
+            if (userID != null && !userID.isEmpty()) {
+                database.collection(collectionPath).document(userID).get().addOnCompleteListener(task -> {
 
-                if (task.isSuccessful()) {
-                    userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
-                    userRealName.append("   ");
-                    userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
-                    Log.i(TAG, "getUserRealName: " + userRealName);
+                    if (task.isSuccessful()) {
+                        userRealName.append(task.getResult().getString(User.KEY_FIRSTNAME));
+                        userRealName.append("   ");
+                        userRealName.append(task.getResult().getString(User.KEY_LASTNAME));
+                        Log.i(TAG, "getUserRealName: " + userRealName);
 
-                    if (userRealName.indexOf("null") == NO_USER_FOUND) {
-                        tvTutor.setText(userRealName);
+                        if (userRealName.indexOf("null") == NO_USER_FOUND) {
+                            tvTutor.setText(userRealName);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                tvTutor.setText(userRealName);
+            }
+
 
             return userRealName.toString();
 
 
         }
 
+        public void bindEmptySession() {
+
+
+            linearLayout.setVisibility(View.INVISIBLE);
+        }
     }
 
 

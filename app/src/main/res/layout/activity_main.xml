@@ -4,26 +4,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#00FFFFFF"
     tools:context=".MainActivity">
 
 
     <FrameLayout
         android:id="@+id/flContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation"
-        android:layout_marginTop="0dp">
+        android:layout_height="match_parent">
 
     </FrameLayout>
 
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
+    <com.gauravk.bubblenavigation.BubbleNavigationLinearView
+        android:id="@+id/top_navigation_constraint"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:backgroundTint="@color/colorWhite"
-        app:menu="@menu/menu_bottom_navigation" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+
+        android:background="@drawable/background2"
+        android:elevation="8dp"
+        android:foregroundGravity="top"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/c_item_rest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:elevation="4dp"
+            app:bt_active="true"
+            app:bt_colorActive="@color/colorPrimaryDark"
+            app:bt_colorInactive="@color/colorAccent"
+            app:bt_icon="@drawable/open"
+            app:bt_padding="8dp"
+            app:bt_shape="@drawable/background2"
+            app:bt_title="For You"
+            app:bt_titlePadding="5dp" />
+
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/c_item_rest_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="#FFFFFF"
+            android:elevation="4dp"
+            app:bt_active="true"
+            app:bt_colorActive="@color/colorPrimaryDark"
+            app:bt_colorInactive="@color/colorAccent"
+            app:bt_icon="@drawable/home"
+            app:bt_padding="8dp"
+            app:bt_shape="@drawable/background2"
+            app:bt_title="Home"
+            app:bt_titlePadding="5dp" />
+
+        <com.gauravk.bubblenavigation.BubbleToggleView
+            android:id="@+id/c_item_rest_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:elevation="4dp"
+            app:bt_active="true"
+            app:bt_colorActive="@color/colorPrimaryDark"
+            app:bt_colorInactive="@color/colorAccent"
+            app:bt_icon="@drawable/chats"
+            app:bt_padding="8dp"
+            app:bt_shape="@drawable/background2"
+            app:bt_title="History"
+            app:bt_titlePadding="5dp" />
+        <!-- Add more child items here - max upto 5 -->
+
+    </com.gauravk.bubblenavigation.BubbleNavigationLinearView>
 
 
 </RelativeLayout>

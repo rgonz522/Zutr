@@ -1,9 +1,8 @@
 package com.example.zutr;
 
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -14,7 +13,8 @@ import com.example.zutr.fragments.HomeFragment;
 import com.example.zutr.fragments.OpenSessionsFragment;
 import com.example.zutr.fragments.SuggestionFragment;
 import com.example.zutr.user_auth.LogInActivity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.gauravk.bubblenavigation.BubbleNavigationLinearView;
+import com.gauravk.bubblenavigation.BubbleToggleView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,8 +24,14 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
 
+    public static final int PROFILE_INDEX = 2;
+    public static final int HOME_INDEX = 1;
+    public static final int SUGGESTION_INDEX = 0;
 
-    private BottomNavigationView bottomNavigationView;
+    private BubbleNavigationLinearView bubbleNavigation;
+
+    private BubbleToggleView bubbleToggleView;
+    private BubbleToggleView bubbleToggleView2;
 
     FragmentManager fragmentManager;
 
@@ -55,47 +61,55 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bubbleNavigation = findViewById(R.id.top_navigation_constraint);
+        bubbleToggleView = findViewById(R.id.c_item_rest);
+        bubbleToggleView2 = findViewById(R.id.c_item_rest_2);
+
+        bubbleNavigation.setCurrentActiveItem(PROFILE_INDEX);
 
 
         fragmentManager = getSupportFragmentManager();
 
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                final Fragment fragment;
-                switch (menuItem.getItemId()) {
-                    case R.id.action_suggestion:
-                        fragment = new SuggestionFragment();
-                        break;
+        startFragment(HOME_INDEX);
 
-                    case R.id.action_profile:
+        bubbleToggleView2.performClick();
 
-                        fragment = new HomeFragment();
-                        break;
-                    case R.id.action_compose:
-
-                        fragment = LogInActivity.IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
-                        break;
-                    default:
-                        fragment = null;
-                }
-
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
-                transaction.replace(R.id.flContainer, fragment);
-                transaction.commit();
-
-
-                return true;
-            }
+        bubbleNavigation.setNavigationChangeListener((view, position) -> {
+            startFragment(position);
         });
-        bottomNavigationView.setSelectedItemId(R.id.action_compose);
 
 
     }
 
 
+    private void startFragment(int position) {
+
+        bubbleNavigation.setCurrentActiveItem(position);
+
+
+        Log.i(TAG, "startFragment: " + bubbleNavigation.getCurrentActiveItemPosition());
+        final Fragment fragment;
+        switch (position) {
+
+            case PROFILE_INDEX:
+                fragment = new HomeFragment();
+                break;
+            case HOME_INDEX:
+                fragment = LogInActivity.IS_TUTOR ? new OpenSessionsFragment() : new GetZutrFragment();
+                break;
+            case SUGGESTION_INDEX:
+                fragment = new SuggestionFragment();
+
+                break;
+            default:
+                fragment = new HomeFragment();
+        }
+
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
+        transaction.replace(R.id.flContainer, fragment);
+        transaction.commit();
+    }
 
 }

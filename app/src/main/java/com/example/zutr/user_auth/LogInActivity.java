@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -29,10 +30,9 @@ public class LogInActivity extends AppCompatActivity {
     private Button btnSignup;
     private Button btnSignZutr;
 
-
+    private ProgressBar pbload;
     private FirebaseAuth mAuth;
     private FirebaseFirestore database;
-
 
 
     public static boolean IS_TUTOR;
@@ -58,7 +58,7 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_in);
+        setContentView(R.layout.activity_log_in_splash);
 
 
         //using Firebase's email and pw auth.
@@ -71,25 +71,51 @@ public class LogInActivity extends AppCompatActivity {
             isTutor();
 
             Log.i(TAG, "onCreate: already signed in");
+        } else {
+            setContentView(R.layout.activity_log_in);
+
+            startUILogIn();
         }
+
+    }
+
+    private void startUILogIn() {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnSignup = findViewById(R.id.btnSignUp);
         btnSignZutr = findViewById(R.id.btnZutrSignUp);
+        pbload = findViewById(R.id.pbLoading);
 
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        pbload.setVisibility(View.INVISIBLE);
 
-                //TODO do a better filtering of user input with UI
+        btnLogin.setOnClickListener(view -> {
+
+            pbload.setVisibility(View.VISIBLE);
+            if (etEmail.getText() != null
+                    && etPassword.getText() != null
+                    && !etEmail.getText().toString().isEmpty()
+                    && !etPassword.getText().toString().isEmpty()) {
+
+
                 String email = etEmail.getText().toString();
                 String password = etPassword.getText().toString();
 
                 authorizingUser(email, password);
 
+
+            } else {
+
+                etEmail.setError("Please fill required fields");
+                etEmail.requestFocus();
+                etEmail.setText("");
+                etPassword.setText("");
+
+                pbload.setVisibility(View.INVISIBLE);
             }
+
+
         });
 
         btnSignZutr.setOnClickListener(new View.OnClickListener() {
@@ -110,7 +136,6 @@ public class LogInActivity extends AppCompatActivity {
 
     }
 
-
     private void authorizingUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
@@ -125,12 +150,17 @@ public class LogInActivity extends AppCompatActivity {
                         etPassword.setText("");
 
                     } else {
+
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        etPassword.setText("");
+                        etEmail.setText("");
                         etPassword.setError("Incorrect Email or Password");
                         etPassword.requestFocus();
                         Toast.makeText(LogInActivity.this, "Authentication failed.",
                                 Toast.LENGTH_SHORT).show();
+
+                        pbload.setVisibility(View.INVISIBLE);
 
                     }
 
