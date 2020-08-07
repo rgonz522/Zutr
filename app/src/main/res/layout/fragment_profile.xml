@@ -17,10 +17,12 @@
 
 
         <RelativeLayout
-            android:layout_width="411dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
             android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
             android:background="@drawable/background2"
             android:elevation="5dp"
             android:padding="20dp">
@@ -68,6 +70,14 @@
                 android:textSize="18sp"
                 tools:text="First Last" />
 
+            <ProgressBar
+                android:id="@+id/pbLoading"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:progressTint="@color/colorPrimaryDark" />
+
             <TextView
                 android:id="@+id/tvUsername"
                 android:layout_width="wrap_content"
@@ -90,7 +100,7 @@
                 android:layout_gravity="right"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="4dp"
                 android:padding="5dp"
                 android:text="Sign Out" />

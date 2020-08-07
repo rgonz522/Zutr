@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -39,6 +40,7 @@ public class ProfileFragment extends Fragment {
     private TextView tvFullName;
     private TextView tvSubjects;
     private RatingBar rbZutrRate;
+    private ProgressBar pbLoad;
     private Button btnSignOut;
 
 
@@ -103,9 +105,11 @@ public class ProfileFragment extends Fragment {
         tvFullName = view.findViewById(R.id.tvFullName);
         tvUsername = view.findViewById(R.id.tvUsername);
         rbZutrRate = view.findViewById(R.id.rbZutrRate);
+        pbLoad = view.findViewById(R.id.pbLoading);
         btnSignOut = view.findViewById(R.id.btnSignOut);
 
-
+        pbLoad.setVisibility(View.VISIBLE);
+        rbZutrRate.setVisibility(View.GONE);
         rbZutrRate.setIsIndicator(true);
 
         database.collection(path).document(userID).get().addOnCompleteListener(task -> {
@@ -166,6 +170,7 @@ public class ProfileFragment extends Fragment {
             ivEdit.setVisibility(View.GONE);
         }
 
+        pbLoad.setVisibility(View.INVISIBLE);
     }
 
     public void startUserProfileFragment() {

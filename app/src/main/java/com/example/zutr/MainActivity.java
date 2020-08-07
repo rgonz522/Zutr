@@ -71,14 +71,12 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
 
-        startFragment(HOME_INDEX);
-
-        bubbleToggleView2.performClick();
-
         bubbleNavigation.setNavigationChangeListener((view, position) -> {
             startFragment(position);
         });
 
+
+        startFragment(HOME_INDEX);
 
     }
 

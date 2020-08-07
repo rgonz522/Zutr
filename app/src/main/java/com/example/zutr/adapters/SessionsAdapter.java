@@ -56,11 +56,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
     public void onBindViewHolder(@NonNull SessionsAdapter.ViewHolder holder, int position) {
         Session session = sessions.get(position);
 
-        if (sessions.size() - 1 == position) {
-
-            holder.bindEmptySession();
-
-        }
         holder.bind(session);
 
     }
@@ -251,11 +246,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
 
         }
 
-        public void bindEmptySession() {
-
-
-            linearLayout.setVisibility(View.INVISIBLE);
-        }
+        
     }
 
 
