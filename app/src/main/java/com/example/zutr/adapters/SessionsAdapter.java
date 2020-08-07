@@ -108,12 +108,13 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
             Log.i(TAG, "bind: " + session.getTutorId());
             if (session.getTutorId() == Session.NO_TUTOR_YET
                     || session.getTutorId() == null
+                    || session.getTutorId().isEmpty()
                     || session.getAnswer() == null) {
 
                 tvTutor.setVisibility(View.GONE);
                 tvAnswer.setVisibility(View.GONE);
                 ivChat.setVisibility(View.GONE);
-                Log.i(TAG, "bind: not answer");
+
             } else {
 
                 tvTutor.setVisibility(View.VISIBLE);
@@ -150,8 +151,6 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                 tvDate.setVisibility(View.VISIBLE);
                 tvDate.setText(session.getTimeStart());
             }
-
-
 
 
             linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -191,6 +190,7 @@ public class SessionsAdapter extends RecyclerView.Adapter<SessionsAdapter.ViewHo
                     && !session.getTutorId().isEmpty();
 
         }
+
         private void startDetails(Session session) {
 
 

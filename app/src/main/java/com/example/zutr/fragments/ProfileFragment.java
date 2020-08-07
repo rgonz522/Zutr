@@ -28,6 +28,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.util.Objects;
+
 public class ProfileFragment extends Fragment {
 
     private static final String TAG = "ProfileFragment";
@@ -124,7 +126,7 @@ public class ProfileFragment extends Fragment {
 
                 String imageURL = documentSnapshot.getString(User.KEY_IMAGE);
                 if (imageURL != null) {
-                    Glide.with(getContext()).load(imageURL).circleCrop().into(ivProfilePic);
+                    Glide.with(Objects.requireNonNull(getContext())).load(imageURL).circleCrop().into(ivProfilePic);
                 }
 
                 Double rate = documentSnapshot.getDouble(Tutor.RATING);
