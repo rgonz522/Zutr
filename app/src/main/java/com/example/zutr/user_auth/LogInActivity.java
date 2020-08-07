@@ -34,7 +34,6 @@ public class LogInActivity extends AppCompatActivity {
     private FirebaseFirestore database;
 
 
-
     public static boolean IS_TUTOR;
 
     private User currentUser;
@@ -58,7 +57,7 @@ public class LogInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_in);
+        setContentView(R.layout.activity_log_in_splash);
 
 
         //using Firebase's email and pw auth.
@@ -71,7 +70,15 @@ public class LogInActivity extends AppCompatActivity {
             isTutor();
 
             Log.i(TAG, "onCreate: already signed in");
+        } else {
+            setContentView(R.layout.activity_log_in);
+            initializeUILogIn();
         }
+
+
+    }
+
+    private void initializeUILogIn() {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
@@ -107,7 +114,6 @@ public class LogInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
 
@@ -155,6 +161,7 @@ public class LogInActivity extends AppCompatActivity {
 
             IS_TUTOR = documentSnapshot.get(User.KEY_EMAIL) != null;
             startMainActivity();
+
 
         });
 

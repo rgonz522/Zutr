@@ -36,6 +36,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.Headers;
 import okhttp3.MultipartBody;
@@ -138,7 +139,7 @@ public class SuggestionFragment extends Fragment {
         params.put("query", search);
 
 
-        String token = getContext().getResources().getString(R.string.MendeleySecret);
+        String token = Objects.requireNonNull(getContext()).getResources().getString(R.string.MendeleySecret);
 
         String url = "https://api.mendeley.com/search/catalog?access_token=" + token;
 
