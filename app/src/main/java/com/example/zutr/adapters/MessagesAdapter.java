@@ -53,8 +53,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
         Message message = messages.get(position);
 
+        Log.i(TAG, "onBindViewHolder: " + message.getBody());
         String hiddenBy = message.getHiddenBy();
-        if (message.getBody() != null && message.getAuthorID() != null) {
+        if (message.getBody() != null && !message.getBody().isEmpty()) {
             if (hiddenBy == null || !hiddenBy.equals(currentUserID)) {
                 holder.bind(message);
                 Log.i(TAG, "onBindViewHolder: " + hiddenBy);
@@ -92,7 +93,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         public void bind(Message message) {
 
 
-            if (message.getAuthorID().equals(currentUserID)) {
+            if (message.getAuthorID() != null && message.getAuthorID().equals(currentUserID)) {
 
                 rlMessage.setGravity(Gravity.RIGHT);
 
@@ -102,7 +103,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             if (message.getBody().contains("\\")) {
                 mathView.setVisibility(View.VISIBLE);
                 mathView.setLatex(message.getBody());
-                mathView.setFontSize(70);
+                mathView.setFontSize(24);
 
                 tvMsgBody.setVisibility(View.GONE);
             } else {
@@ -113,6 +114,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             }
             tvMsgTime.setText(message.getRelativeTimeAgo());
 
+            Log.i(TAG, "bind: " + message.getBody());
 
         }
     }

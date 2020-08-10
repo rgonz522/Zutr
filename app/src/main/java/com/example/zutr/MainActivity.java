@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int HOME_INDEX = 1;
     public static final int SUGGESTION_INDEX = 0;
 
+    private int previousIndex;
+
+
     private BubbleNavigationLinearView bubbleNavigation;
 
     private BubbleToggleView bubbleToggleView;
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
 
-
+        previousIndex = HOME_INDEX;
         bubbleNavigation.setNavigationChangeListener((view, position) -> {
             startFragment(position);
         });
@@ -104,10 +107,28 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new HomeFragment();
         }
 
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
-        transaction.replace(R.id.flContainer, fragment);
-        transaction.commit();
+
+
+        if (previousIndex > position) {
+            transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_from_left, R.anim.enter_from_right, R.anim.exit_from_right);
+
+        } else {
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_from_right, R.anim.enter_from_left, R.anim.exit_from_left);
+        }
+
+
+        transaction.replace(R.id.flContainer, fragment)
+                .addToBackStack(null)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
+        previousIndex = position;
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
 }

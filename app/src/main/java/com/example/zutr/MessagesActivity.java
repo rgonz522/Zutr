@@ -39,7 +39,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -235,20 +234,26 @@ public class MessagesActivity extends AppCompatActivity {
 
                         chatDocID = documentSnapshot.getId();
                         dataBase.collection(CHAT_PATH)
-                                .document(documentSnapshot.getId())
+                                .document(chatDocID)
                                 .collection(MESSAGE_PATH)
                                 .get().addOnCompleteListener(task1 -> {
 
                             for (QueryDocumentSnapshot document : task1.getResult()) {
-                                String hiddenBy = document.getString(HIDDEN_BY);
+                                Message message = document.toObject(Message.class);
 
-                                Log.i(TAG, "queryMessages: hiddenby" + hiddenBy);
-                                Log.i(TAG, "queryMessages: currentUser " + localID);
-                                if (hiddenBy == null || !hiddenBy.equals(localID)) {
-                                    Message message = document.toObject(Message.class);
-                                    newMessages.add(message);
-                                    Log.i(TAG, " Message " + message.getBody());
-                                    Log.i(TAG, "Adding the nothidden message...... ");
+
+                                if (message.getBody() == null || message.getBody().isEmpty()) {
+
+                                } else {
+                                    Log.i(TAG, "queryMessages: hiddenby" + message.getHiddenBy());
+                                    Log.i(TAG, "queryMessages: currentUser " + localID);
+                                    if (message.getHiddenBy() == null || !message.getHiddenBy().equals(localID)) {
+
+                                        newMessages.add(message);
+                                        Log.i(TAG, " Message " + message.getBody());
+                                        Log.i(TAG, "queryMessages: " + message.getAuthorID());
+                                        Log.i(TAG, "Adding the nothidden message...... ");
+                                    }
                                 }
                             }
 
@@ -275,11 +280,8 @@ public class MessagesActivity extends AppCompatActivity {
         messages.addAll(newMessages);
 
 
-        Collections.sort(messages, new Comparator<Message>() {
-            public int compare(Message message1, Message message2) {
-                return message1.getCreatedAt().compareTo(message2.getCreatedAt());
-            }
-        });
+        Collections.sort(messages, (message1, message2) ->
+                message1.getCreatedAt().compareTo(message2.getCreatedAt()));
 
         adapter.notifyDataSetChanged();
         rvMessage.scrollToPosition(messages.size() - 1);
