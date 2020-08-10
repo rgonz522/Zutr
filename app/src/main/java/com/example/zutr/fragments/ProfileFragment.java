@@ -24,6 +24,7 @@ import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
 import com.example.zutr.user_auth.LogInActivity;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -159,6 +160,7 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     FirebaseAuth.getInstance().signOut();
+                    AuthUI.getInstance().signOut(getContext());
                     Intent intent = new Intent(getContext(), LogInActivity.class);
                     startActivity(intent);
 
