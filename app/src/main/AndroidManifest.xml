@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.zutr">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
@@ -31,7 +30,6 @@
         <activity android:name=".MessagesActivity" />
         <activity android:name=".SessionDetailsActivity" />
         <activity android:name=".MainActivity" />
-        <activity android:name=".user_auth.SignUpActivity" />
         <activity android:name=".user_auth.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

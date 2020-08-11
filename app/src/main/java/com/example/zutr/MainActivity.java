@@ -15,6 +15,7 @@ import com.example.zutr.fragments.SuggestionFragment;
 import com.example.zutr.user_auth.LogInActivity;
 import com.gauravk.bubblenavigation.BubbleNavigationLinearView;
 import com.gauravk.bubblenavigation.BubbleToggleView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         bubbleNavigation.setCurrentActiveItem(position);
 
 
+        bubbleNavigation.setOverScrollMode(BottomNavigationView.OVER_SCROLL_NEVER);
         Log.i(TAG, "startFragment: " + bubbleNavigation.getCurrentActiveItemPosition());
         final Fragment fragment;
         switch (position) {

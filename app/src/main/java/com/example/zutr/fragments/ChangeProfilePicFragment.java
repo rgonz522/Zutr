@@ -59,6 +59,7 @@ public class ChangeProfilePicFragment extends Fragment {
 
 
     private Button btnCaptureImage;
+    private Button btnGalleryImage;
     protected ImageView ivPostImage;
     protected ProgressBar pbLoading;
 
@@ -105,6 +106,7 @@ public class ChangeProfilePicFragment extends Fragment {
 
 
         btnCaptureImage = view.findViewById(R.id.btnCaptureImage);
+        btnGalleryImage = view.findViewById(R.id.btnGallery);
 
         ivPostImage = view.findViewById(R.id.ivProfilePicture);
         pbLoading = view.findViewById(R.id.pbLoading);
@@ -112,7 +114,20 @@ public class ChangeProfilePicFragment extends Fragment {
         pbLoading.setVisibility(View.INVISIBLE);
 
 
+        btnCaptureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 launchCamera();
+            }
+        });
+
+        btnGalleryImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
     }
 

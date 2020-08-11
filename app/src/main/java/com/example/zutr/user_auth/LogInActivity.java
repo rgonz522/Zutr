@@ -1,11 +1,11 @@
 package com.example.zutr.user_auth;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -15,23 +15,35 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
+import com.example.zutr.models.Student;
 import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class LogInActivity extends AppCompatActivity {
 
     public static final String TAG = " LoginActivty";
+    public static final int RESULT_SIGN_IN_GOOGLE = 12231;
 
+    private boolean tutor;
 
-    private EditText etEmail;
-    private EditText etPassword;
     private Button btnLogin;
     private Button btnSignup;
     private Button btnSignZutr;
+
 
     private ProgressBar pbload;
     private FirebaseAuth mAuth;
@@ -83,8 +95,6 @@ public class LogInActivity extends AppCompatActivity {
     }
 
     private void startUILogIn() {
-        etEmail = findViewById(R.id.etEmail);
-        etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnSignup = findViewById(R.id.btnSignUp);
         btnSignZutr = findViewById(R.id.btnZutrSignUp);
@@ -96,27 +106,8 @@ public class LogInActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(view -> {
 
             pbload.setVisibility(View.VISIBLE);
-            if (etEmail.getText() != null
-                    && etPassword.getText() != null
-                    && !etEmail.getText().toString().isEmpty()
-                    && !etPassword.getText().toString().isEmpty()) {
 
-
-                String email = etEmail.getText().toString();
-                String password = etPassword.getText().toString();
-
-                //authorizingUser(email, password);
-
-
-            } else {
-
-                etEmail.setError("Please fill required fields");
-                etEmail.requestFocus();
-                etEmail.setText("");
-                etPassword.setText("");
-
-                pbload.setVisibility(View.INVISIBLE);
-            }
+            signInUser();
 
 
         });
@@ -124,53 +115,21 @@ public class LogInActivity extends AppCompatActivity {
         btnSignZutr.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
-                intent.putExtra("Tutor", true);
-                startActivity(intent);
+                tutor = true;
+                signInUser();
             }
         });
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
-                startActivity(intent);
+                tutor = false;
+                signInUser();
             }
         });
 
 
     }
 
-    private void authorizingUser(String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success");
-                        FirebaseUser user = mAuth.getCurrentUser();
-
-                        isTutor();
-
-                        etEmail.setText("");
-                        etPassword.setText("");
-
-                    } else {
-
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.getException());
-                        etPassword.setText("");
-                        etEmail.setText("");
-                        etPassword.setError("Incorrect Email or Password");
-                        etPassword.requestFocus();
-                        Toast.makeText(LogInActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
-
-                        pbload.setVisibility(View.INVISIBLE);
-
-                    }
-
-                });
-
-    }
 
     private void startMainActivity() {
         finish();
@@ -204,7 +163,140 @@ public class LogInActivity extends AppCompatActivity {
     }
 
 
+    public void createNewUser(User user, String path, String docID) {
 
+        database.collection(path).document(docID).set(user)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+
+                        Log.i(TAG, "onSuccess: " + task.getResult());
+                        isTutor();
+                    }
+                });
+
+
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.i(TAG, "onActivityResult: resultCode: " + resultCode);
+
+        if (requestCode == RESULT_SIGN_IN_GOOGLE) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                Log.i(TAG, "onActivityResult: responseObj " + response.toString());
+
+                if (response.isNewUser()) {
+                    Log.i(TAG, "onActivityResult: New user created. About to add to firestore");
+
+                    addUserToFireStore(response, data);
+                } else {
+
+                    isTutor();
+
+                }
+
+
+            } else {
+                if (response == null) {
+                    return;
+                }
+
+                Log.e(TAG, "onActivityResult: Error Authenticating", response.getError().getCause());
+
+            }
+        }
+
+    }
+
+
+    private void addUserToFireStore(IdpResponse response, Intent data) {
+
+        String path = tutor ? Tutor.PATH : Student.PATH;
+
+        // Assigning fields of the user object
+        setUserProfileUrl(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
+
+        String email = response.getEmail();
+        String authUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String name = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        String username = "changeMe!";
+
+        // public Student(String username, String first_name, String last_name, String email, String address) {
+        User user = new Student(username, name, " ", email, "");
+
+
+        createNewUser(user, path, authUserID);
+
+
+    }
+
+    // Kick start sign in
+    private void signInUser() {
+
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .requestProfile()
+                .build();
+
+        List<AuthUI.IdpConfig> PROVIDERS = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().setSignInOptions(gso).build(),
+                new AuthUI.IdpConfig.EmailBuilder().setRequireName(true).build()
+        );
+
+
+        startActivityForResult(
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .setAvailableProviders(PROVIDERS)
+                        .enableAnonymousUsersAutoUpgrade()
+                        .setTheme(R.style.AppTheme)
+                        .setLogo(R.drawable.logomakr_1z0hro)
+                        .build(),
+                RESULT_SIGN_IN_GOOGLE);
+    }
+
+
+    //update firebaseuser profile img based off Uri
+    private void setUserProfileUrl(Uri uri) {
+
+        final String collectionPath = LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH;
+
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+
+        FirebaseAuth.getInstance().getCurrentUser().updateProfile(request)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(LogInActivity.this, "Updated succesfully", Toast.LENGTH_SHORT).show();
+
+                        FirebaseFirestore database = FirebaseFirestore.getInstance();
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        Uri photo = user.getPhotoUrl();
+                        if (photo != null) {
+                            database.collection(collectionPath).document(user.getUid()).update("profileUrl", photo.toString());
+
+                        }
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(LogInActivity.this, "Profile image failed...", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
 
 }
