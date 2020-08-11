@@ -1,9 +1,12 @@
 package com.example.zutr.fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -18,6 +21,7 @@ import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -38,6 +42,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -54,6 +59,7 @@ public class ChangeProfilePicFragment extends Fragment {
 
 
     private static final String TAG = "ChangeProfilePicFrag";
+    public static final String LOADING = "Loading...";
     private static final int PICK_IMAGE_CODE = 10000;
     private static final int PERMISSION_CODE = 3444;
 
@@ -125,6 +131,22 @@ public class ChangeProfilePicFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                            == PackageManager.PERMISSION_DENIED) {
+                        // permission hasn't been granted so need to request
+                        String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                        requestPermissions(permissions, PERMISSION_CODE);
+                    } else {
+                        // permission already granted
+                        pbLoading.setVisibility(View.VISIBLE);
+                        pickImageFromGallery();
+                    }
+                } else {
+                    // system os is less than marshmallow
+                    pbLoading.setVisibility(View.VISIBLE);
+                    pickImageFromGallery();
+                }
             }
         });
 
@@ -162,22 +184,46 @@ public class ChangeProfilePicFragment extends Fragment {
         }
     }
 
+    private void pictureBeingLoaded() {
+        pbLoading.setVisibility(View.VISIBLE);
+        btnGalleryImage.setVisibility(View.GONE);
+        btnCaptureImage.setText(LOADING);
+
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        pbLoading.setVisibility(View.VISIBLE);
+        pictureBeingLoaded();
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                 ivPostImage.setImageBitmap(bitmap);
                 handleUpload(bitmap);
+            } else {
+                Toast.makeText(getContext(), "Photo wasn't taken!", Toast.LENGTH_SHORT).show();
+                pbLoading.setVisibility(View.GONE);
+                startUserProfileFragment();
             }
-        } else { // Result was a failure
-            Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+        }
+
+        if (requestCode == PICK_IMAGE_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), data.getData());
+                    handleUpload(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(getContext(), "No photo selected!", Toast.LENGTH_SHORT).show();
+                pbLoading.setVisibility(View.GONE);
+                startUserProfileFragment();
+            }
         }
     }
+
 
     //Begin Upload proccess from bitmap returned from camera intent
     private void handleUpload(Bitmap bitmap) {
@@ -226,7 +272,7 @@ public class ChangeProfilePicFragment extends Fragment {
                 .setPhotoUri(uri)
                 .build();
 
-       FirebaseAuth.getInstance().getCurrentUser().updateProfile(request)
+        FirebaseAuth.getInstance().getCurrentUser().updateProfile(request)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
