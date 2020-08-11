@@ -1,10 +1,10 @@
 package com.example.zutr.fragments;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 
 import com.example.zutr.MainActivity;
 import com.example.zutr.R;
@@ -40,7 +39,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 
-
 import static android.app.Activity.RESULT_OK;
 
 
@@ -56,6 +54,8 @@ public class ChangeProfilePicFragment extends Fragment {
 
 
     private static final String TAG = "ChangeProfilePicFrag";
+    private static final int PICK_IMAGE_CODE = 10000;
+    private static final int PERMISSION_CODE = 3444;
 
 
     private Button btnCaptureImage;
@@ -125,6 +125,28 @@ public class ChangeProfilePicFragment extends Fragment {
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
         }
     }
+
+
+    private void pickImageFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pbLoading.setVisibility(View.VISIBLE);
+                    pickImageFromGallery();
+                } else {
+                    Toast.makeText(getContext(), "Gallery access was denied!", Toast.LENGTH_SHORT).show();
+
+                }
+        }
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

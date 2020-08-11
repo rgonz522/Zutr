@@ -1,12 +1,10 @@
 package com.example.zutr.user_auth;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,12 +16,15 @@ import com.example.zutr.models.Tutor;
 import com.example.zutr.models.User;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Arrays;
@@ -38,13 +39,6 @@ public class SignUpActivity extends AppCompatActivity {
     public static final int RESULT_SIGN_IN_GOOGLE = 12231;
 
 
-    private Button btnSignUp;
-    private EditText etUserName;
-    private EditText etFirstName;
-    private EditText etLastName;
-    private EditText etPassword;
-    private EditText etAddress;
-    private EditText etEmail;
     private SignInButton signbtnGoogle;
 
     private User user;
@@ -64,27 +58,11 @@ public class SignUpActivity extends AppCompatActivity {
 
 
         FirebaseAuth.getInstance().signOut();
-        btnSignUp = findViewById(R.id.btnSignUp);
-        etUserName = findViewById(R.id.etEmail);
-        etFirstName = findViewById(R.id.etFirstName);
-        etLastName = findViewById(R.id.etLastName);
-        etPassword = findViewById(R.id.etPassword);
-        etAddress = findViewById(R.id.etAddress);
-        etEmail = findViewById(R.id.etEmail);
         signbtnGoogle = findViewById(R.id.sign_in_google);
 
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
 
-
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                registerUser();
-
-            }
-        });
 
 
         signbtnGoogle.setOnClickListener(new View.OnClickListener() {
@@ -93,101 +71,6 @@ public class SignUpActivity extends AppCompatActivity {
                 signInUser();
             }
         });
-
-    }
-
-    private void registerUser() {
-
-        final String path = (tutor ? TUTOR_PATH : STUDENT_PATH);
-
-        final String username = etUserName.getText().toString().trim();
-        final String first_name = etFirstName.getText().toString().trim();
-        final String last_name = etLastName.getText().toString().trim();
-        final String email = etEmail.getText().toString().trim();
-        final String address = etAddress.getText().toString().trim() + "";
-        final String password = etPassword.getText().toString().trim();
-
-
-        if (username.isEmpty()) {
-            etUserName.setError(getString(R.string.input_error_username));
-            etUserName.requestFocus();
-            return;
-        }
-
-        if (first_name.isEmpty()) {
-            etFirstName.setError(getString(R.string.input_error_name));
-            etFirstName.requestFocus();
-            return;
-        }
-
-        if (email.isEmpty()) {
-            etEmail.setError(getString(R.string.input_error_email));
-            etEmail.requestFocus();
-            return;
-        }
-
-        //if email is acceptable format ie: abc@email.com
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError(getString(R.string.input_error_email_invalid));
-            etEmail.requestFocus();
-            return;
-        }
-        if (password.isEmpty()) {
-            etPassword.setError(getString(R.string.input_error_password));
-            etPassword.requestFocus();
-            return;
-        }
-
-        if (password.length() < 8) {
-            etPassword.setError(getString(R.string.input_error_password_length));
-            etPassword.requestFocus();
-            return;
-        }
-
-        if (last_name.isEmpty()) {
-            etLastName.setError(getString(R.string.input_error_lastname));
-            etLastName.requestFocus();
-            return;
-        }
-
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-
-
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-
-                        if (task.isSuccessful()) {
-
-                            Log.i(TAG, "onComplete: created autho successfully" + task.getResult().getUser().getUid());
-                            createNewUser(new Student(username, first_name, last_name, email, address), path, task.getResult().getUser().getUid());
-
-
-                            etEmail.setText("");
-                            etPassword.setText("");
-                            etAddress.setText("");
-                            etFirstName.setText("");
-                            etLastName.setText("");
-                            etUserName.setText("");
-
-                        } else {
-                            Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG).show();
-                            etEmail.setError(getString(R.string.input_error_email_invalid));
-                            etEmail.requestFocus();
-                            Log.e(TAG, "onComplete: task failed ", task.getException());
-                        }
-
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(SignUpActivity.this, "An account with that email already exists", Toast.LENGTH_LONG).show();
-                Log.e(TAG, "onComplete: task failed ", e);
-            }
-        });
-
 
     }
 
@@ -217,21 +100,6 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-//    private void signIn() {
-//
-//        // Configure sign-in to request the user's ID, email address, and basic
-//        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-//        // Configure Google Sign In
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .build();
-//        // Build a GoogleSignInClient with the options specified by gso.
-//        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-//
-//        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-//        startActivityForResult(signInIntent , RESULT_SIGN_IN_GOOGLE);
-//    }
 
 
     @Override
@@ -253,6 +121,8 @@ public class SignUpActivity extends AppCompatActivity {
                     //  getUserAndStoreInSharedPref
                 }
 
+                startLoginActivity();
+
 
             } else {
                 if (response == null) {
@@ -272,7 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
         String path = tutor ? Tutor.PATH : Student.PATH;
 
         // Assigning fields of the user object
-
+        setUserProfileUrl(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
 
         String email = response.getEmail();
         String authUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -283,15 +153,29 @@ public class SignUpActivity extends AppCompatActivity {
         User user = new Student(username, name, " ", email, "");
 
 
+        createNewUser(user, path, authUserID);
+
+
     }
 
     // Kick start sign in
     private void signInUser() {
 
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .requestProfile()
+                .build();
+
         List<AuthUI.IdpConfig> PROVIDERS = Arrays.asList(
-                new AuthUI.IdpConfig.GoogleBuilder().build(),
-                new AuthUI.IdpConfig.EmailBuilder().setRequireName(false).build()
+                new AuthUI.IdpConfig.GoogleBuilder().setSignInOptions(gso).build(),
+                new AuthUI.IdpConfig.EmailBuilder().setRequireName(true).build()
         );
+
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        //GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
 
         startActivityForResult(
@@ -302,6 +186,38 @@ public class SignUpActivity extends AppCompatActivity {
                         .setLogo(R.drawable.logomakr_1z0hro)
                         .build(),
                 RESULT_SIGN_IN_GOOGLE);
+    }
+
+
+    //update firebaseuser profile img based off Uri
+    private void setUserProfileUrl(Uri uri) {
+
+        final String collectionPath = LogInActivity.IS_TUTOR ? Tutor.PATH : Student.PATH;
+
+        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                .setPhotoUri(uri)
+                .build();
+
+        FirebaseAuth.getInstance().getCurrentUser().updateProfile(request)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(SignUpActivity.this, "Updated succesfully", Toast.LENGTH_SHORT).show();
+
+                        FirebaseFirestore database = FirebaseFirestore.getInstance();
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                        database.collection(collectionPath).document(user.getUid()).update("profileUrl", user.getPhotoUrl().toString());
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(SignUpActivity.this, "Profile image failed...", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
 

@@ -24,7 +24,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -106,7 +105,7 @@ public class HomeFragment extends Fragment {
         Log.i(TAG, "querySessions: ");
 
         dataBase.collection(Session.PATH)
-                .orderBy(Session.KEY_CREATED_AT, Query.Direction.DESCENDING)
+                .whereEqualTo(sessionUserId, currentUser.getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -114,13 +113,12 @@ public class HomeFragment extends Fragment {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                String sessionUserID = document.getString(sessionUserId);
-                                if (sessionUserID != null && sessionUserID.equals(currentUser.getUid())) {
-                                    Session session = document.toObject(Session.class);
 
-                                    Log.i(TAG, "onComplete: " + session.isRatedByStudent());
-                                    newSessions.add(session);
-                                }
+                                Session session = document.toObject(Session.class);
+
+                                Log.i(TAG, "onComplete: " + session.isRatedByStudent());
+                                newSessions.add(session);
+
 
                             }
                         } else {
