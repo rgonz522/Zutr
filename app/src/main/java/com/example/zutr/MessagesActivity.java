@@ -278,8 +278,16 @@ public class MessagesActivity extends AppCompatActivity {
             Log.i(TAG, "updateMessages: " + message.getBody());
             Log.i(TAG, "updateMessages: hidden by " + message.getHiddenBy());
         }
+
+
         messages.clear();
         messages.addAll(newMessages);
+
+
+        for (Message message : newMessages) {
+            Log.i(TAG, "updateMessages: " + message.getBody());
+            Log.i(TAG, "updateMessages: hidden by " + message.getHiddenBy());
+        }
 
 
         Collections.sort(messages, (message1, message2) ->
@@ -291,17 +299,24 @@ public class MessagesActivity extends AppCompatActivity {
 
     private void updateMessages(List<Message> newMessages, String bodyToRemove) {
 
-        messages.clear();
 
-        for (Message message : newMessages) {
-            Log.i(TAG, "updateMessages: " + message.getBody());
+        for (int index = 0; index < newMessages.size(); index++) {
+            Log.i(TAG, "updateMessages: " + newMessages.get(index).getBody());
 
 
-            if (message.getBody().equals(bodyToRemove)) {
+            if (newMessages.get(index).getBody().equals(bodyToRemove)) {
                 Log.i(TAG, "updateMessages: " + "removing the body");
-                messages.add(message);
+                newMessages.remove(index);
 
             }
+        }
+
+        if (messages == newMessages) {
+            Log.i(TAG, "updateMessages: same reference");
+        } else {
+            messages.clear();
+            messages.addAll(newMessages);
+            Log.i(TAG, "updateMessages: not same refernce");
         }
 
 
