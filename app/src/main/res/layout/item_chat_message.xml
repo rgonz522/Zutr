@@ -6,15 +6,16 @@
     android:layout_margin="8dp"
 
 
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="2dp">
 
     <RelativeLayout
         android:id="@+id/rlMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:clipChildren="false"
-        android:clipToPadding="false"
-        android:layout_margin="20dp">
+        android:clipToPadding="false">
 
 
         <TextView

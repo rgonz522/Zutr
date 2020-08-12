@@ -169,7 +169,8 @@ public class MessagesActivity extends AppCompatActivity {
 
                 adapter.notifyDataSetChanged();
 
-                eraseMessage(removedMsg.getBody(), removedMsg.getHiddenBy());
+                Log.i(TAG, "onSwiped: " + removedMsg.getHiddenBy());
+                eraseMessage(removedMsg);
 
 
                 Log.i(TAG, "onSwiped: ");
@@ -275,6 +276,7 @@ public class MessagesActivity extends AppCompatActivity {
 
         for (Message message : newMessages) {
             Log.i(TAG, "updateMessages: " + message.getBody());
+            Log.i(TAG, "updateMessages: hidden by " + message.getHiddenBy());
         }
         messages.clear();
         messages.addAll(newMessages);
@@ -286,6 +288,30 @@ public class MessagesActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
         rvMessage.scrollToPosition(messages.size() - 1);
     }
+
+    private void updateMessages(List<Message> newMessages, String bodyToRemove) {
+
+        messages.clear();
+
+        for (Message message : newMessages) {
+            Log.i(TAG, "updateMessages: " + message.getBody());
+
+
+            if (message.getBody().equals(bodyToRemove)) {
+                Log.i(TAG, "updateMessages: " + "removing the body");
+                messages.add(message);
+
+            }
+        }
+
+
+        Collections.sort(messages, (message1, message2) ->
+                message1.getCreatedAt().compareTo(message2.getCreatedAt()));
+
+        adapter.notifyDataSetChanged();
+        rvMessage.scrollToPosition(messages.size() - 1);
+    }
+
 
     private void sendMessage(String messageBody) {
 
@@ -318,64 +344,74 @@ public class MessagesActivity extends AppCompatActivity {
     }
 
 
-    private void eraseMessage(String body, String hiddenBy) {
+    private void eraseMessage(Message erasedMsg) {
 
 
         CollectionReference colRef = dataBase.collection(CHAT_PATH)
                 .document(chatDocID)
                 .collection(MESSAGE_PATH);
 
-        //              colRef.whereEqualTo(Message.KEY_MSG_BODY, body)
-        colRef.get()
-                .addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()) {
-                        Log.i(TAG, "eraseMessage: lookign for " + body);
+        if (erasedMsg.getHiddenBy() != null && !erasedMsg.getHiddenBy().isEmpty()) {
+            colRef.document(erasedMsg.getCreatedAt().toString()).update(Message.KEY_HIDDENBY, localID);
+        } else {
+            colRef.document(erasedMsg.getCreatedAt().toString()).delete();
+        }
 
-                        for (QueryDocumentSnapshot document : task.getResult()) {
+        updateMessages(messages, erasedMsg.getBody());
 
-                            Log.i(TAG, "eraseMessage: body found: " + document.getString(Message.KEY_MSG_BODY));
-                            if (document.getString(Message.KEY_MSG_BODY) != null) {
-                                if (document.getString(Message.KEY_MSG_BODY).equals(body)) {
-                                    Log.i(TAG, "eraseMessage: both bodies match");
-                                    Log.i(TAG, "eraseMessage: hiddeby:" + hiddenBy);
-                                    if (hiddenBy == null || hiddenBy.isEmpty()) {
-                                        colRef.document(document.getId())
-                                                .update(HIDDEN_BY, localID)
-                                                .addOnCompleteListener(task1 -> {
-                                                    if (task1.isSuccessful()) {
-                                                        Log.i(TAG, "onComplete: " + "message hidden");
 
-                                                        refreshMessages();
-                                                    } else {
-                                                        Log.e(TAG, "onComplete: ", task1.getException());
-                                                    }
-
-                                                });
-
-                                    } else if (hiddenBy.equals(remoteID)) {
-                                        colRef.document(document.getId())
-                                                .delete().addOnCompleteListener(task12 -> {
-                                            if (task12.isSuccessful()) {
-                                                Log.i(TAG, "onComplete: " + task12.getResult());
-                                                Log.i(TAG, "onComplete: " + "message deleted");
-
-                                                refreshMessages();
-                                            } else {
-                                                Log.e(TAG, "onComplete: ", task12.getException());
-                                            }
-                                        });
-
-                                    }
-
-                                }
-                            }
-                        }
-                    } else {
-                        Log.e(TAG, "eraseMessage: ", task.getException());
-                    }
-
-                });
+//        //              colRef.whereEqualTo(Message.KEY_MSG_BODY, body)
+//        colRef.get()
+//                .addOnCompleteListener(task -> {
+//
+//                    if (task.isSuccessful()) {
+//                        Log.i(TAG, "eraseMessage: lookign for " + );
+//
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//
+//                            Log.i(TAG, "eraseMessage: body found: " + document.getString(Message.KEY_MSG_BODY));
+//                            if (document.getString(Message.KEY_MSG_BODY) != null) {
+//                                if (document.getString(Message.KEY_MSG_BODY).equals(body)) {
+//                                    Log.i(TAG, "eraseMessage: both bodies match");
+//                                    Log.i(TAG, "eraseMessage: hiddeby:" + hiddenBy);
+//                                    if (hiddenBy == null || hiddenBy.isEmpty()) {
+//                                        colRef.document(document.getId())
+//                                                .update(HIDDEN_BY, localID)
+//                                                .addOnCompleteListener(task1 -> {
+//                                                    if (task1.isSuccessful()) {
+//                                                        Log.i(TAG, "onComplete: " + "message hidden");
+//
+//                                                       updateMessages(messages, body);
+//                                                    } else {
+//                                                        Log.e(TAG, "onComplete: ", task1.getException());
+//                                                    }
+//
+//                                                });
+//
+//                                    } else if (hiddenBy.equals(remoteID)) {
+//                                        colRef.document(document.getId())
+//                                                .delete().addOnCompleteListener(task12 -> {
+//                                            if (task12.isSuccessful()) {
+//                                                Log.i(TAG, "onComplete: " + task12.getResult());
+//                                                Log.i(TAG, "onComplete: " + "message deleted");
+//
+//                                                updateMessages(messages, body);
+//                                            } else {
+//                                                Log.e(TAG, "onComplete: ", task12.getException());
+//                                            }
+//                                        });
+//
+//                                    }
+//
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        Log.e(TAG, "eraseMessage: ", task.getException());
+//                    }
+//
+//                });
 
 
     }

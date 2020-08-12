@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -21,13 +21,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
+        android:layout_gravity="bottom|center"
 
+        android:layout_marginBottom="10dp"
         android:background="@drawable/background2"
         android:elevation="8dp"
         android:foregroundGravity="top"
         android:orientation="horizontal"
-        android:padding="12dp">
+        android:padding="12dp"
+        app:layout_anchorGravity="bottom"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior">
 
         <com.gauravk.bubblenavigation.BubbleToggleView
             android:id="@+id/c_item_rest"
@@ -79,4 +82,4 @@
     </com.gauravk.bubblenavigation.BubbleNavigationLinearView>
 
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

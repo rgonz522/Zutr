@@ -103,7 +103,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             if (message.getBody().contains("\\")) {
                 mathView.setVisibility(View.VISIBLE);
                 mathView.setLatex(message.getBody());
-                mathView.setFontSize(24);
+                mathView.setFontSize(50);
 
                 tvMsgBody.setVisibility(View.GONE);
             } else {
