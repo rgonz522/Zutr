@@ -248,6 +248,9 @@ public class MessagesActivity extends AppCompatActivity {
                                 } else {
                                     Log.i(TAG, "queryMessages: hiddenby" + message.getHiddenBy());
                                     Log.i(TAG, "queryMessages: currentUser " + localID);
+                                    Log.i(TAG, "queryMessages: " + message.getCreatedAt().getTime());
+                                    Log.i(TAG, "queryMessages: " + message.getCreatedAt());
+
                                     if (message.getHiddenBy() == null || !message.getHiddenBy().equals(localID)) {
 
                                         newMessages.add(message);
@@ -335,6 +338,9 @@ public class MessagesActivity extends AppCompatActivity {
 
         Message message = new Message(messageBody, null, localID, new Date());
 
+        Log.i(TAG, "sendMessage: " + new Date().getTime());
+        Log.i(TAG, "sendMessage: " + new Date().getTime());
+
         //Chats -> user/remote chat-> Messages
         FirebaseFirestore.getInstance().collection(CHAT_PATH)
                 .whereEqualTo(remoteField, remoteID)
@@ -347,7 +353,7 @@ public class MessagesActivity extends AppCompatActivity {
                                 .collection(CHAT_PATH)
                                 .document(documentSnapshot.getId())
                                 .collection(MESSAGE_PATH)
-                                .document(new Date().toString())
+                                .document(message.getCreatedAt().toString())
                                 .set(message);
 
                         messages.add(message);
@@ -355,6 +361,7 @@ public class MessagesActivity extends AppCompatActivity {
                     }
 
                 });
+
 
     }
 

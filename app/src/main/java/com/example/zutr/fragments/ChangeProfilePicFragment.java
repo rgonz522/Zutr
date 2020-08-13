@@ -60,6 +60,7 @@ public class ChangeProfilePicFragment extends Fragment {
 
     private static final String TAG = "ChangeProfilePicFrag";
     public static final String LOADING = "Loading...";
+    public static final String CAMERA_CHOICE = "Take Picture";
     private static final int PICK_IMAGE_CODE = 10000;
     private static final int PERMISSION_CODE = 3444;
 
@@ -119,10 +120,13 @@ public class ChangeProfilePicFragment extends Fragment {
 
         pbLoading.setVisibility(View.INVISIBLE);
 
+        btnCaptureImage.setText(CAMERA_CHOICE);
+        btnGalleryImage.setVisibility(View.VISIBLE);
 
         btnCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                btnCaptureImage.setText(LOADING);
                 launchCamera();
             }
         });
@@ -147,6 +151,9 @@ public class ChangeProfilePicFragment extends Fragment {
                     pbLoading.setVisibility(View.VISIBLE);
                     pickImageFromGallery();
                 }
+
+
+                btnGalleryImage.setVisibility(View.GONE);
             }
         });
 
