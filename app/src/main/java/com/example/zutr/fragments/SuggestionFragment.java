@@ -46,6 +46,7 @@ public class SuggestionFragment extends Fragment {
 
 
     public static final String TAG = "Suggestion Fragments";
+    public static final String NO_RESOURCES = "Start More Sessions to see Suggested Resources";
 
 
     private ResourceAdapter adapter;
@@ -101,9 +102,6 @@ public class SuggestionFragment extends Fragment {
         final String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
-        final List<String> sessions = new ArrayList<>();
-
-
         FirebaseFirestore.getInstance()
                 .collection(Session.PATH)
                 .whereEqualTo(sessionUserId, userID)
@@ -112,9 +110,27 @@ public class SuggestionFragment extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+
+                            if (task.getResult() == null || task.getResult().size() == 0) {
+                                Resource resource = new Resource();
+                                resource.setTitle(NO_RESOURCES);
+                                resources.add(resource);
+                                adapter.notifyDataSetChanged();
+                                pbLoading.setVisibility(View.GONE);
+                                return;
+                            }
+
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 searchKeywords(document.getString(Session.KEY_QUESTION));
+
+                                String subject = document.getString(Session.KEY_SUBJECT);
+                                if (subject != null && !subject.isEmpty()) {
+                                    searchKeywords(subject);
+                                }
+
+
                             }
+
 
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
